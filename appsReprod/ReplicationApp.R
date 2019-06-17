@@ -1,0 +1,212 @@
+
+library("shiny")
+library("shinyWidgets")
+# library("sampleSize")
+# library("pCalibrate")
+source("helpers_power.R")
+source("helpers_relSampleSize.R")
+
+# Define User Interface ----
+ui <- fluidPage(
+  titlePanel("Design of Replication Studies"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      fluidRow(
+      column(12,
+             radioButtons("fixed",
+                                h4("Specify"),
+                                choices = list("Relative sample size" = 1,
+                                               "Replication power" = 2),
+                          # "Power" = 2),
+                                selected = 1))
+      ),
+      fluidRow(
+        column(6, 
+               conditionalPanel(
+                 condition = "input.fixed == 1",
+                 numericInput("c", 
+                              h4("Relative sample size"), 
+                              value = 1, min=0, max=50, step=0.2)),
+        # column(6, 
+               conditionalPanel(
+               condition = "input.fixed == 2",
+               numericInput("power", 
+                            h4("Replication power (in %)"),
+                            # h4("Power (in %)"), 
+                            value = 80, min=0, max=100, step=5))),
+        column(6, 
+               numericInput("alpha", 
+                            h4("Significance level"), 
+                            value = 0.05, min=0, max=1, step=0.01))
+      ),
+        
+      fluidRow(
+        column(12,
+               numericInput("p.o",
+                            h4("p-value in original study"),
+                            # h4("p-value of original study"),
+                            value = 0.01, min=0, max=1, step=0.01))
+      ),
+        fluidRow(
+          column(12, 
+                 pickerInput("prior", 
+                             h4("Power calculation"),
+                             # h4("Assumptions about effect size"),
+                             # h4("Uncertainty of effect size incorporated"), 
+                             choices = list("Traditional" = 1, 
+                                            "Predictive" = 2), 
+                             selected = 1, multiple=TRUE))),
+      
+    
+      fluidRow(
+        column(12,
+               sliderInput("p.max",
+                           label=h4("Maximum p-value (x-axis)"),
+                           value = 0.05, min=0.01, max=0.3, step=0.01))
+      )),
+    
+    mainPanel(
+        # You can set many attributes, not just colors
+        tags$style(type='text/css', '#info {background-color: white; color: blue;}'),
+        tags$style(type='text/css', '#info2 {background-color: white; color: limegreen;}'),
+        
+       
+        plotOutput("Plot", click = "data_click"),
+          # htmlOutput("info"),
+         # htmlOutput("info2"),
+         verbatimTextOutput("info"),
+         verbatimTextOutput("info2"),
+         # verbatimTextOutput("warning"),
+          htmlOutput("warning"),
+      width=7
+    )
+  )
+)
+
+######################################################################
+
+# Define server logic ----
+server <- function(input, output, session) {
+  
+
+  output$Plot <- renderPlot({ 
+    
+    p.min <- 0.000001
+    p.max <- input$p.max
+    
+    if(input$fixed == 1){
+     
+      powerPlot(p.max=p.max)
+      p <- exp(seq(log(p.min), log(p.max), length.out=250))
+      
+      
+      mycol <- c(4,3)
+      
+      if(1 %in% input$prior){
+        standardPowerCurve(p=p, c=input$c, alpha=input$alpha, col=mycol[1])
+        segm.power(p=input$p.o, c=input$c, alpha=input$alpha, prior="point")
+        points(x=input$p.o, y=100*Power(p=input$p.o, c=input$c, alpha=input$alpha, prior="point"), 
+               col=mycol[1], pch=19)
+      }
+      if(2 %in% input$prior){
+        classicalPowerCurve(p=p, c=input$c, alpha=input$alpha, col=mycol[2])
+        segm.power(p=input$p.o, c=input$c, alpha=input$alpha, prior="normal")
+        points(x=input$p.o, y=100*Power(p=input$p.o, c=input$c, alpha=input$alpha, prior="normal"), 
+               col=mycol[2], pch=19)
+      }
+      # if both priors are selected
+      if(length(input$prior) >1){
+        legend("bottomright", c("Traditional", "Predictive"), col=mycol, lty=1, lwd=2, cex=1.1)
+      }
+    }
+    if(input$fixed == 2){
+      if(input$power/100 <= input$alpha)
+        stop("The power has to be larger than the significance level.")
+      c.max <- 10
+      sampleSizePlot(p.max=p.max, c.max=c.max)
+      p <- exp(seq(log(p.min), log(p.max), length.out=250))
+      
+  
+      mycol <- c(4,3)
+        if(1 %in% input$prior){
+          SamSizeCurve(p=p, alpha=input$alpha, power=input$power/100, prior="point", col=mycol[1])
+             segm.rss(p=input$p.o, power=input$power/100, alpha=input$alpha, prior="point", col=2)
+          points(x=input$p.o, y=relSampleSize(p=input$p.o, power=input$power/100, alpha=input$alpha, prior="point"), 
+                 col=mycol[1], pch=19)
+        }
+         if(2 %in% input$prior){
+           SamSizeCurve(p=p, alpha=input$alpha, power=input$power/100, prior="normal", col=mycol[2])
+           segm.rss(p=input$p.o, power=input$power/100, alpha=input$alpha, prior="normal", col=2)
+           points(x=input$p.o, y=relSampleSize(p=input$p.o, power=input$power/100, alpha=input$alpha, prior="normal"), 
+                  col=mycol[2], pch=19)
+         }
+      # if both priors are selected
+      if(length(input$prior) >1){
+        legend("topleft", c("Traditional", "Predictive"), col=mycol, lty=1, lwd=2, cex = 1.1)
+      }
+    }
+    
+    
+    
+        observeEvent(input$data_click, {
+          updateNumericInput(session, "p.o", value= format(input$data_click$x, digits=2, nsmall=1))
+        })
+  }, height=400)
+#   
+  output$info <- renderText({
+    
+    if(1 %in% input$prior){
+      if(input$fixed == 1){
+        power <- 100*StandardPower(n=50, delta=p.to.z(input$p.o)/sqrt(50/(input$c)), sd=1,
+                                   sig.level=input$alpha, type="one.sample")
+        power.r <- round(power, 1)
+        return(paste0("Traditional power: ", power.r, "%"))
+      }
+      if(input$fixed == 2){
+        if(input$power/100 <= input$alpha)
+          stop(" ")
+        c <- relSampleSize(p=input$p.o, power=input$power/100, alpha=input$alpha, prior="point")
+        c.r <- format(c, digits=2)
+        return(paste0("Relative sample size: ", c.r))
+        # return(paste0("Relative sample size ignoring uncertainty: ", c.r))
+      }
+    }
+  })
+  
+  output$info2 <- renderText({
+    if(2 %in% input$prior){
+      if(input$fixed == 1){
+        power <- 100*ClassicalPower(n0=50, n=input$c*50, 
+                                    delta=p.to.z(input$p.o)/sqrt(50), sd=1,
+                                    sig.level=input$alpha, type="one.sample")
+        power.r <- round(power, 1)
+        return(paste0("Predictive power: ", power.r, "%"))
+        # return(paste0("Power under uncertainty: ", power.r, "%"))
+      }
+      if(input$fixed == 2){
+        if(input$power/100 <= input$alpha)
+          stop(" ")
+        c <- relSampleSize(p=input$p.o, power=input$power/100, alpha=input$alpha, prior="normal")
+        c.r <- format(c, digits=2)
+        return(paste0("Relative sample size: ", c.r))
+        # return(paste0("Relative sample size under uncertainty: ", c.r))
+      }
+    }
+  })
+  
+  output$warning <- renderUI({
+      power.max <- 100*(1 - input$p.o/2)
+     if(input$fixed==2 && input$power >= power.max && 2 %in% input$prior){
+        power.max.r <- format(power.max, digits=1, nsmall=1)
+    str1 <- paste0("Warning: Such a high predictive power cannot be attained.")
+    str2 <- paste0("The replication power must be smaller than ",
+                                     power.max.r, "%.")
+    HTML(paste(str1, str2))
+    # HTML(paste(str1, str2, sep = '<br/>'))
+     }
+  })
+}
+
+# Run the app ----
+shinyApp(ui = ui, server = server)
