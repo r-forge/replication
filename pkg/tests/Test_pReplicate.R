@@ -21,7 +21,7 @@ pRS3 <- powerReplicationSuccess(po=p, c=1/2)
 y <- cbind(pS,pS2,pS3,pR,pR2,pR3,pRS,pRS2,pRS3)
 
 if(1){
-    par(las=1, mfrow=c(2,1))
+    par(las=1, mfrow=c(1,1))
     matplot(p, y, type="l", ylim=c(0,1), lwd=2,
             lty=c(1,1,1,5,5,5,6,6,6), col=c(1,2,3,1,2,3),
             xlab="p-value", ylab="Power")

@@ -10,7 +10,14 @@ zSceptical <- function(to, tr, c){
     
     t2H <- harm.mean(to^2, tr^2)
     t2A <- arit.mean(to^2, tr^2)
-    t2 <- ifelse(c==1, t2H/2, (sqrt(t2A*(t2A+(c-1)*t2H))-t2A)/(c-1))
+    if(length(c)==1){
+        if(c==1)
+            t2 <- t2H/2
+        else
+            t2 <- (sqrt(t2A*(t2A+(c-1)*t2H))-t2A)/(c-1)
+    }
+    if(length(c)>1)
+        t2 <- ifelse(c==1, t2H/2, (sqrt(t2A*(t2A+(c-1)*t2H))-t2A)/(c-1))
     return(sqrt(t2))
 }
 
