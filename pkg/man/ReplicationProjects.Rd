@@ -14,10 +14,10 @@
   A data frame with 143 observations on the following 13 variables:
   \describe{
     \item{\code{study}}{
-    Study identifier, usually names of authors from original study.
+    Study identifier, usually names of authors from original study
     }
     \item{\code{project}}{
-    Name of replication project.
+    Name of replication project
     }
     \item{\code{r_O}}{
     Effect estimate of original study transformed to correlation scale
@@ -44,10 +44,10 @@
     Sample size in replication study
     }
     \item{\code{pval_O}}{
-    P-value from significance test of effect estimate from original study
+    Two-sided P-value from significance test of effect estimate from original study
     }
     \item{\code{pval_R}}{
-    P-value from significance test of effect estimate from replication study
+    Two-sided P-value from significance test of effect estimate from replication study
     }
     \item{\code{pm_belief}}{
     Peer belief about whether replication effect estimate will achieve statistical significance elicited through prediction market (only available for EERP and SSRP)
@@ -78,14 +78,33 @@ Cova,  F.,  Strickland,  B.,  Abatista,  A.,  Allard,  A.,  Andow,  J., Attie, M
   
 \examples{
 data("ReplicationProjects", package = "ReplicationSuccess")
-projects <- unique(ReplicationProjects$project)
+
+## Plots of effect estimates
 par(mfrow = c(2, 2), las = 1)
-for (p in projects) {
-  plot(r_R ~ r_O, data = subset(ReplicationProjects, project == p),
-       ylim = c(-0.5, 1), xlim = c(-0.5, 1), main = p,
-       xlab = expression(italic(r)[o]), ylab = expression(italic(r)[r]))
+for (p in unique(ReplicationProjects$project)) {
+  data_project <- subset(ReplicationProjects, project == p)
+  plot(r_R ~ r_O, data = data_project, ylim = c(-0.5, 1), 
+       xlim = c(-0.5, 1), main = p, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]))
   abline(h = 0, lty = 2)
   abline(a = 0, b = 1, col = "grey")
 }
+
+## Plots of peer beliefs
+ReplicationProjects$significant <- factor(ReplicationProjects$pval_R < 0.05,
+                                          levels = c(FALSE, TRUE),
+                                          labels = c("no", "yes"))
+par(mfrow = c(1, 2), las = 1)
+for (p in c("Experimental Economics", "Social Sciences")) {
+  data_project <- subset(ReplicationProjects, project == p)
+  boxplot(pm_belief ~ significant, data = data_project, ylim = c(0, 1), 
+          main = p, xlab = "Replication effect significant", ylab = "Peer belief")
+  points(pm_belief ~ significant, data = data_project)
+}
+
+
+## Computing the sceptical p-value
+ps <- with(ReplicationProjects,
+           pSceptical(to = z_O/z_se_O, tr = z_R/z_se_R, c = z_se_O^2/z_se_R^2))
 }
 \keyword{datasets}
