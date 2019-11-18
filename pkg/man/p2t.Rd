@@ -19,9 +19,9 @@ p2t(p, alternative="two.sided")
 %%     ~~Describe \code{bf} here~~
 }
    \item{alternative}{
-    type of p-value. Either "two.sided" or "one.sided". 
-    Defaults to "two.sided". Specifies if the P-values are one-sided or
-two-sided. 
+    type of p-value. Either \code{"two.sided"}, \code{"less"}, or \code{"greater"}. 
+    Defaults to "two.sided". Specifies if the P-values are two-sided or 
+    one-sided.
 %%     ~~Describe \code{prior.odds} here~~
 }
 }
@@ -52,7 +52,8 @@ two-sided.
 %}
 \examples{
 p2t(p=c(0.005, 0.01, 0.05))
-p2t(p=c(0.005, 0.01, 0.05), alternative="one.sided")
+p2t(p=c(0.005, 0.01, 0.05), alternative="greater")
+p2t(p=c(0.005, 0.01, 0.05), alternative="less")
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

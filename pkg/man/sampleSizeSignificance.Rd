@@ -3,13 +3,13 @@
 \title{
   Computes the required relative sample size to achieve significance with a certain power}
 \description{
-  The relative sample size to achieve significance is computed based on the test statistic of the original study, the power, the design prior, and the realative heterogeneity.
+  The relative sample size to achieve significance is computed based on the test statistic of the original study, the power, the design prior, and the relative heterogeneity.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
   sampleSizeSignificance(po = NULL, to = p2t(po, alternative = alternative),
   power, level = 0.05, designPrior = "conditional", alternative = "two.sided",
-  shrinkage = FALSE, d = 0)
+  d=0, shrinkage=1, EB=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -31,27 +31,34 @@
     Defaults to \code{"conditional"}.
   }
   \item{alternative}{
-    Either \code{"one.sided"} or \code{"two.sided"}.  
+    Either \code{"less"}, \code{"greater"}, or \code{"two.sided"}.  
     Defaults to \code{"two.sided"}.  
-    Specifies if the P-value is one-sided or two-sided. 
-    If the P-value is one-sided, then sample size calculations are based on a one-sided assessment of significance.
-  }
-  \item{shrinkage}{
-  Either \code{TRUE} or \code{FALSE}. 
-  Defaults to \code{FALSE}. If \code{TRUE} and \code{designPrior="predictive"}, the probability of significance is computed under a predictive distribution where the original effect is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
+    Specifies if the alternative is one-sided or two-sided. 
+    If the alternative is one-sided, then sample size calculations are based on a one-sided assessment of significance.
   }
   \item{d}{
   The relative between-study heterogeneity, i.e. the ratio of the heterogeneity variance to the variance of the original effect estimate.
+  Is only taken into account when \code{designPrior = "predictive"}.
+  } 
+  \item{shrinkage}{
+  A number in [0,1]. 
+  Defaults to \code{1}. 
+  Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is halfed for \code{shrinkage = 0.5}). 
+  }
+  \item{EB}{
+  If \code{EB = TRUE}, the power is computed under a predictive distribution where the contribution of the original study is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
   }
 }
 \value{
-  The relative sample size to achieve significance. 
+  The relative sample size to achieve significance in the specified direction. 
   If larger than 1000 then Inf is returned. 
 }
 \references{
   Held, L. (2019). A new standard for the analysis and design of replication studies (with discussion). 
   To appear in \emph{Journal of the Royal Statistical Society, Series A}. 
   \url{https://arxiv.org/abs/1811.10287}
+  
+  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. doi:10.31234/osf.io/fhwb7
 }
 \author{
   Leonhard Held, 
@@ -60,10 +67,11 @@
 \examples{
 sampleSizeSignificance(po = 0.005, power = 0.8)
 sampleSizeSignificance(po = 0.005, power = 0.8, designPrior = "predictive")
-sampleSizeSignificance(po = 0.005, power = 0.8, alternative = "one.sided")
+sampleSizeSignificance(po = 0.005, power = 0.8, alternative = "greater")
 sampleSizeSignificance(po = 0.005, power = 0.8, designPrior = "predictive", 
-                       alternative = "one.sided", shrinkage = FALSE, d = 1)
+                       alternative = "greater", d = 1)
 sampleSizeSignificance(po = 0.005, power = 0.8, designPrior = "predictive", 
-                       shrinkage = TRUE, d = 1)
-
+                       shrinkage = 0.5, d = 0.25)
+sampleSizeSignificance(to = 3, power = 0.8, designPrior = "predictive", 
+                       d = 0.5, EB = TRUE)
 }

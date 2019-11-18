@@ -5,13 +5,13 @@
 %%  ~~function to do ... ~~
 \description{
   Computes the probability that a replication study yields a significant effect
-  estimate in the same direction as in the original study. 
+  estimate in the specified direction. %in the same direction as in the original study. 
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
 powerSignificance(po=NULL, to=p2t(po, alternative=alternative), c=1,
-level=0.05, designPrior="conditional", alternative="two.sided", 
-shrinkage=FALSE, d=0)
+level=0.05, designPrior="conditional", alternative="two.sided", d=0,
+shrinkage=1, EB=FALSE)
 }
 \arguments{
   \item{po}{
@@ -34,26 +34,31 @@ shrinkage=FALSE, d=0)
     Defaults to \code{"conditional"}.
   }
   \item{alternative}{
-    Either \code{"one.sided"} or \code{"two.sided"}.  
+    Either \code{"less"}, \code{"greater"}, or \code{"two.sided"}.  
     Defaults to \code{"two.sided"}.  
-    Specifies if the P-value is one-sided or two-sided. 
-    If the P-value is one-sided, then sample size calculations are based on a one-sided assessment of significance.
-  }
-  \item{shrinkage}{
-  Either \code{TRUE} or \code{FALSE}. 
-  Defaults to \code{FALSE}. If \code{TRUE} and \code{designPrior="predictive"}, the probability of significance is computed under a predictive distribution where the original effect is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
+    Specifies direction of the alternative. 
+    If the alternative is one-sided, then sample size calculations are based on a one-sided assessment of significance.
   }
   \item{d}{
   The relative between-study heterogeneity, i.e. the ratio of the heterogeneity variance to the variance of the original effect estimate.
-  }  
+  Is only taken into account when \code{designPrior = "predictive"}.
+  } 
+  \item{shrinkage}{
+  A number in [0,1]. 
+  Defaults to \code{1}. 
+  Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is halfed for \code{shrinkage = 0.5}). 
+  }
+  \item{EB}{
+  If \code{EB = TRUE}, the power is computed under a predictive distribution where the contribution of the original study is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
+  }
 }
   \details{
-    This extends the 'replication probability', the probability of repeating a statistically significant result by Goodman (1992), to the case of possibly unequal sample sizes and possible between study heterogeneity, see also Senn (2002). 
+    This extends the 'replication probability', the probability of repeating a statistically significant result by Goodman (1992), to the case of possibly unequal sample sizes (see Senn (2002)), possible between study heterogeneity and shrinkage (see Pawel and Held (2019)). 
     
     %%  ~~ If necessary, more details than the description above ~~
   }
   \value{
-    The probability that a replication study yields a significant effect estimate in the same direction as in the original study. 
+    The probability that a replication study yields a significant effect estimate in the specified direction. 
   }
   \references{
     Goodman, S. N. (1992). A comment on replication, p-values and evidence, \emph{Statistics in Medicine}, \bold{11}, 875--879. 
@@ -63,6 +68,8 @@ shrinkage=FALSE, d=0)
     Held, L. (2019). A new standard for the analysis and design of replication studies (with discussion). 
   To appear in \emph{Journal of the Royal Statistical Society, Series A}. 
   \url{https://arxiv.org/abs/1811.10287}
+  
+  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. doi:10.31234/osf.io/fhwb7
 
   }
   \author{
@@ -72,13 +79,14 @@ shrinkage=FALSE, d=0)
   \examples{
     powerSignificance(po=0.005, c=2)
     powerSignificance(po=0.005, c=2, designPrior="predictive")
-    powerSignificance(po=0.005, c=2, alternative="one.sided")
-    powerSignificance(po=0.005, c=2, designPrior="predictive", alternative="one.sided")
-    
+    powerSignificance(po=0.005, c=2, alternative="greater")
+    powerSignificance(to=-3, c=2, designPrior="predictive", alternative="less")
     powerSignificance(po=0.005, c=1/2)
     powerSignificance(po=0.005, c=1/2, designPrior="predictive")
-    powerSignificance(po=0.005, c=1/2, alternative="one.sided")
-    powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="one.sided")
-    powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="one.sided", shrinkage=TRUE, d = 1)
-
+    powerSignificance(po=0.005, c=1/2, alternative="greater")
+    powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater")
+    powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater", 
+                      d = 0.5, shrinkage=0.5)
+    powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater", 
+                      d = 0.5, EB = TRUE)
 }

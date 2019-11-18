@@ -56,9 +56,10 @@
 }
 \details{
 %%  ~~ If necessary, more details than the __description__ above ~~
+  Two-sided P-values were calculated assuming normality of Fisher-z transformed effect estimates.
   From the RPP only the \emph{meta-analytic subset} is included, which consists of 73 out of 100 study pairs for which the standard error of the z-transformed correlation coeffient can be computed. 
   From the EPRP only 31 out of 40 study pairs are included where effective sample size for original and replication study are available simultaneously.
-  For details about how the the data was preprocessed see supplement S1 in **add preprint url here** 
+  For details about how the the data was preprocessed see supplement S1 of Pawel and Held (2019).
 }
 \source{
 %%  ~~ reference to a publication or URL from which the data were obtained ~~
@@ -72,7 +73,7 @@ Cova,  F.,  Strickland,  B.,  Abatista,  A.,  Allard,  A.,  Andow,  J., Attie, M
  
   Open Science Collaboration. (2015). Estimating the reproducibility of psychological science. \emph{Science}, 349, aac4716. doi:10.1126/science.aac4716
   
-  Pawel, S., Held, L. (2019) Probabilistic forecasting of replication studies. **add preprint url here** 
+  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. doi:10.31234/osf.io/fhwb7
 }
 
   

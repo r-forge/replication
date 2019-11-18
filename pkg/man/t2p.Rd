@@ -19,9 +19,9 @@ t2p(t, alternative="two.sided")
 %%     ~~Describe \code{bf} here~~
 }
    \item{alternative}{Underlying
-    alternative of p-value. Either "two.sided" or "one.sided". 
-    Defaults to "two.sided". Specifies if the P-values are one-sided or
-two-sided. 
+    alternative of p-value. Either \code{"two.sided"}, \code{"less"}, or \code{"greater"}.
+    Defaults to "two.sided". Specifies if the P-values are two-sided or
+    one-sided. 
 %%     ~~Describe \code{prior.odds} here~~
 }
 }
@@ -52,7 +52,8 @@ two-sided.
 %}
 \examples{
 t2p(t=c(1,2,5))
-t2p(t=c(1,2,5), alternative="one.sided")
+t2p(t=c(1,2,5), alternative="less")
+t2p(t=c(1,2,5), alternative="greater")
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
