@@ -7,7 +7,6 @@
 }
 \description{
   Data from the \emph{Social Sciences Replication Project} (SSRP) including the details of the interim analysis. 
-  % Charlotte: Add when the interim analysis was performed etc etc 
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }
 \usage{data("SSRP")}
