@@ -31,6 +31,6 @@ of credibility. \emph{Royal Society Open Science}, 5:171047. \url{https://doi.or
 Leonhard Held
 }
 \examples{
-alphaIntrinsic(alpha=c(0.05, 0.1))
-alphaIntrinsic(alpha=c(0.05, 0.1), alternative="one.sided")
+alphaIntrinsic(alpha= c(0.005, 0.01, 0.05))
+alphaIntrinsic(alpha= c(0.005, 0.01, 0.05), alternative="one.sided")
 }

@@ -51,9 +51,9 @@ p2t(p, alternative="two.sided")
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 %}
 \examples{
-p2t(p=c(0.005, 0.01, 0.05))
-p2t(p=c(0.005, 0.01, 0.05), alternative="greater")
-p2t(p=c(0.005, 0.01, 0.05), alternative="less")
+p2t(p= c(0.005, 0.01, 0.05))
+p2t(p= c(0.005, 0.01, 0.05), alternative="greater")
+p2t(p= c(0.005, 0.01, 0.05), alternative="less")
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
