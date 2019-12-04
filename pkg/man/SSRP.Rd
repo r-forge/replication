@@ -76,12 +76,12 @@
  
 }
 \source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
+  \url{https://osf.io/abu7k}
 }
 \references{
-  Camerer, C. F., Dreber, A., Holzmeister, F., Ho, T.-H., Huber, J., Johannesson, M., ... Wu, H. (2018). Evaluating the replicability of social science experiments in Nature and Science  between 2010 and 2015. \emph{Nature Human Behaviour}, 2, 637–644. doi:10.1038/s41562-018-0399-z
+  Camerer, C. F., Dreber, A., Holzmeister, F., Ho, T.-H., Huber, J., Johannesson, M., ... Wu, H. (2018). Evaluating the replicability of social science experiments in Nature and Science  between 2010 and 2015. \emph{Nature Human Behaviour}, 2, 637-644. \url{https://dx.doi.org/10.1038/s41562-018-0399-z}
   
-Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. doi:10.31234/osf.io/fhwb7
+Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 }
 
   

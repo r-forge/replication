@@ -5,13 +5,12 @@
 ###############################################
 
 ClassicalTarget <- function(c, to, level = 0.05, power, alternative = alternative,
-                            d = 0, shrinkage = 1, EB = EB){
+                            d = 0, shrinkage = 1, designPrior){
     term <- powerSignificance(to = to, c = c, level = level,
-                              designPrior = "predictive",
+                              designPrior = designPrior,
                               alternative = alternative,
                               d = d,
-                              shrinkage = shrinkage,
-                              EB = EB)
+                              shrinkage = shrinkage)
     return(term - power)
 }
 
@@ -22,8 +21,7 @@ sampleSizeSignificance <- function(po = NULL,
                                    designPrior = "conditional",
                                    alternative = "two.sided",
                                    d = 0,
-                                   shrinkage = 1,
-                                   EB = FALSE){
+                                   shrinkage = 1){
     c <- numeric()
     for(i in seq_len(length(to))){
         if(designPrior == "conditional"){
@@ -31,7 +29,7 @@ sampleSizeSignificance <- function(po = NULL,
             v <- p2t(level, alternative = alternative)
             c <- (u + v)^2*(1/to)^2
         }
-        if(designPrior == "predictive"){
+        if(designPrior %in% c("predictive", "EB")){
             power.limit <- pnorm(abs(to[i]))
             if (power > power.limit) {
                 power.limit.r <- floor(power.limit * 1000)/1000
@@ -44,7 +42,7 @@ sampleSizeSignificance <- function(po = NULL,
                                              alternative = alternative,
                                              d = d,
                                              shrinkage = shrinkage,
-                                             EB = EB)
+                                             designPrior = "conditional")
             n.l <- 0
             n.u <- 100
             target.l <- ClassicalTarget(c = n.l, 
@@ -53,13 +51,13 @@ sampleSizeSignificance <- function(po = NULL,
                                         power = power,
                                         alternative = alternative,
                                         shrinkage = shrinkage,
-                                        EB = EB)
+                                        designPrior = designPrior)
             target.u <- ClassicalTarget(c = n.u, to = to[i],
                                         level = level,
                                         power = power,
                                         alternative = alternative,
                                         shrinkage = shrinkage,
-                                        EB = EB)
+                                        designPrior = designPrior)
             if (sign(target.l) == sign(target.u)) 
                 c[i] <- NA
             else c[i] <- uniroot(ClassicalTarget, 
@@ -71,7 +69,7 @@ sampleSizeSignificance <- function(po = NULL,
                                  alternative = alternative,
                                  d = d,
                                  shrinkage = shrinkage,
-                                 EB = EB)$root
+                                 designPrior = designPrior)$root
         }
     }
     return(c)

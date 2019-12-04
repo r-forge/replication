@@ -23,24 +23,30 @@ powerSignificance <- function(po = NULL, to = p2t(po, alternative = alternative)
                               designPrior = "conditional",
                               alternative = "two.sided",
                               d = 0,
-                              shrinkage = 1,
-                              EB = FALSE){
+                              shrinkage = 1){
+    if (!(designPrior %in% c("conditional", "predictive", "EB")))
+        stop('designPrior must be either "conditional", "predictive", or "EB"')
+    if (min(c, na.rm = TRUE) < 0)
+        stop("c must be larger than 0")
+    if (min(d, na.rm = TRUE) < 0)
+        stop("d cannot be negative")
+    if ((min(shrinkage, na.rm = TRUE) < 0 || max(shrinkage, na.rm = TRUE) > 1)) 
+        stop("shrinkage must be in [0, 1]")
     v <- p2t(level, alternative = alternative)
     lowertail <- ifelse(alternative == "less", TRUE, FALSE)
     # to <- abs(to)
-    if (EB == TRUE){
-        s <- pmax(1 - (1 + d)/to^2, 0)
-        pSig <- pnorm(q = v, mean = s*to*sqrt(c),
-                      sd = sqrt(s*c*(1 + d) + 1 + d*c),
-                      lower.tail = lowertail)
-        return(pSig)
-    }
     if(designPrior == "conditional")
         pSig <- pnorm(q = v, mean = shrinkage*to*sqrt(c), 
                       lower.tail = lowertail)
     if(designPrior == "predictive"){
         pSig <- pnorm(q = v, mean = shrinkage*to*sqrt(c),
                       sd = sqrt(c + 1 + 2*d*c),
+                      lower.tail = lowertail)
+    }
+    if (designPrior == "EB"){
+        s <- pmax(1 - (1 + d)/to^2, 0)
+        pSig <- pnorm(q = v, mean = s*shrinkage*to*sqrt(c),
+                      sd = sqrt(s*c*(1 + d) + 1 + d*c),
                       lower.tail = lowertail)
     }
     return(pSig)

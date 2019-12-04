@@ -11,7 +11,7 @@
 \usage{
 powerSignificance(po=NULL, to=p2t(po, alternative=alternative), c=1,
 level=0.05, designPrior="conditional", alternative="two.sided", d=0,
-shrinkage=1, EB=FALSE)
+shrinkage=1)
 }
 \arguments{
   \item{po}{
@@ -30,8 +30,8 @@ shrinkage=1, EB=FALSE)
     Significance level.
   }
   \item{designPrior}{
-    Either \code{"conditional"} or \code{"predictive"}.  
-    Defaults to \code{"conditional"}.
+    Either \code{"conditional"}, \code{"predictive"}, or \code{"EB"}.  
+    Defaults to \code{"conditional"}. If \code{"EB"}, the power is computed under a predictive distribution where the contribution of the original study is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
   }
   \item{alternative}{
     Either \code{"less"}, \code{"greater"}, or \code{"two.sided"}.  
@@ -41,15 +41,13 @@ shrinkage=1, EB=FALSE)
   }
   \item{d}{
   The relative between-study heterogeneity, i.e. the ratio of the heterogeneity variance to the variance of the original effect estimate.
-  Is only taken into account when \code{designPrior = "predictive"}.
+  Is only taken into account when \code{designPrior = "predictive"} or \code{designPrior = "EB"}.
   } 
   \item{shrinkage}{
   A number in [0,1]. 
   Defaults to \code{1}. 
   Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is halfed for \code{shrinkage = 0.5}). 
-  }
-  \item{EB}{
-  If \code{EB = TRUE}, the power is computed under a predictive distribution where the contribution of the original study is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
+  Recommended to set to 1 when designPrior is \code{"EB"}.
   }
 }
   \details{
@@ -61,7 +59,7 @@ shrinkage=1, EB=FALSE)
     The probability that a replication study yields a significant effect estimate in the specified direction. 
   }
   \references{
-    Goodman, S. N. (1992). A comment on replication, p-values and evidence, \emph{Statistics in Medicine}, \bold{11}, 875--879. 
+    Goodman, S. N. (1992). A comment on replication, p-values and evidence, \emph{Statistics in Medicine}, \bold{11}, 875--879. \url{https://dx.doi.org/10.1002/sim.4780110705}
     
     Senn, S. (2002). Letter to the Editor, \emph{Statistics in Medicine}, \bold{21}, 2437--2444. 
 
@@ -69,7 +67,7 @@ shrinkage=1, EB=FALSE)
   To appear in \emph{Journal of the Royal Statistical Society, Series A}. 
   \url{https://arxiv.org/abs/1811.10287}
   
-  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. doi:10.31234/osf.io/fhwb7
+  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 
   }
   \author{
@@ -87,6 +85,6 @@ shrinkage=1, EB=FALSE)
     powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater")
     powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater", 
                       d = 0.5, shrinkage=0.5)
-    powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater", 
-                      d = 0.5, EB = TRUE)
+    powerSignificance(po=0.005, c=1/2, designPrior="EB", alternative="greater", 
+                      d = 0.5)
 }

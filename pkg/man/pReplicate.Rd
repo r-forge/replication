@@ -41,7 +41,7 @@ The probability that a replication study yields an effect
 }
 \references{
 Killeen, P. R. (2005). An alternative to null-hypothesis significance
-tests. \emph{Psychological Science}, \bold{16}(5), 345--353.
+tests. \emph{Psychological Science}, \bold{16}(5), 345--353. \url{https://doi.org/10.1111/j.0956-7976.2005.01538.x}
 
 Senn, S. (2002). Letter to the Editor, \emph{Statistics in Medicine},
 \bold{21}, 2437--2444.

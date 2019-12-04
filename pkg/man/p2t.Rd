@@ -19,9 +19,9 @@ p2t(p, alternative="two.sided")
 %%     ~~Describe \code{bf} here~~
 }
    \item{alternative}{
-    type of p-value. Either \code{"two.sided"}, \code{"less"}, or \code{"greater"}. 
-    Defaults to "two.sided". Specifies if the P-values are two-sided or 
-    one-sided.
+    Specifies direction of the alternative of p-value. 
+    Either \code{"less"}, \code{"greater"}, \code{"one.sided"}, \code{"two.sided"}.  
+    Defaults to \code{"two.sided"}.  
 %%     ~~Describe \code{prior.odds} here~~
 }
 }

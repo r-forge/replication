@@ -62,18 +62,24 @@
   For details about how the the data was preprocessed see supplement S1 of Pawel and Held (2019).
 }
 \source{
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
+  RPP: \url{https://github.com/CenterForOpenScience/rpp/}
+  
+  EERP: \url{https://osf.io/pnwuz/}
+  
+  SSRP: \url{https://osf.io/abu7k}
+  
+  EPRP: \url{https://osf.io/4ewkh/}
 }
 \references{
-  Camerer, C. F., Dreber, A., Forsell, E., Ho, T.-H., Huber, J., Johannesson, M., ... Hang, W. (2016). Evaluating replicability of laboratory experiments in economics. \emph{Science}, 351, 1433–1436. doi:10.1126/science.aaf0918
+  Camerer, C. F., Dreber, A., Forsell, E., Ho, T.-H., Huber, J., Johannesson, M., ... Hang, W. (2016). Evaluating replicability of laboratory experiments in economics. \emph{Science}, 351, 1433-1436. \url{https://dx.doi.org/10.1126/science.aaf0918}
   
-  Camerer, C. F., Dreber, A., Holzmeister, F., Ho, T.-H., Huber, J., Johannesson, M., ... Wu, H. (2018). Evaluating the replicability of social science experiments in Nature and Science  between 2010 and 2015. \emph{Nature Human Behaviour}, 2, 637–644. doi:10.1038/s41562-018-0399-z
+  Camerer, C. F., Dreber, A., Holzmeister, F., Ho, T.-H., Huber, J., Johannesson, M., ... Wu, H. (2018). Evaluating the replicability of social science experiments in Nature and Science  between 2010 and 2015. \emph{Nature Human Behaviour}, 2, 637-644. \url{https://dx.doi.org/10.1038/s41562-018-0399-z}
   
-Cova,  F.,  Strickland,  B.,  Abatista,  A.,  Allard,  A.,  Andow,  J., Attie, M., ... Zhou, X. (2018). Estimating the reproducibility of experimental philosophy. \emph{Review of Philosophy and Psychology}. doi:10.1007/s13164-018-0400-9
+Cova,  F.,  Strickland,  B.,  Abatista,  A.,  Allard,  A.,  Andow,  J., Attie, M., ... Zhou, X. (2018). Estimating the reproducibility of experimental philosophy. \emph{Review of Philosophy and Psychology}. \url{https://dx.doi.org/10.1007/s13164-018-0400-9}
  
-  Open Science Collaboration. (2015). Estimating the reproducibility of psychological science. \emph{Science}, 349, aac4716. doi:10.1126/science.aac4716
+  Open Science Collaboration. (2015). Estimating the reproducibility of psychological science. \emph{Science}, 349, aac4716. \url{https://dx.doi.org/10.1126/science.aac4716}
   
-  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. doi:10.31234/osf.io/fhwb7
+  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 }
 
   

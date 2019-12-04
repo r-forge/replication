@@ -9,7 +9,7 @@
 \usage{
   sampleSizeSignificance(po = NULL, to = p2t(po, alternative = alternative),
   power, level = 0.05, designPrior = "conditional", alternative = "two.sided",
-  d=0, shrinkage=1, EB=FALSE)
+  d=0, shrinkage=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,8 +27,8 @@
     Significance level.
   }
   \item{designPrior}{
-    Either \code{"conditional"} or \code{"predictive"}.  
-    Defaults to \code{"conditional"}.
+    Either \code{"conditional"}, \code{"predictive"}, or \code{"EB"}.  
+    Defaults to \code{"conditional"}. If \code{"EB"}, the power is computed under a predictive distribution where the contribution of the original study is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
   }
   \item{alternative}{
     Either \code{"less"}, \code{"greater"}, or \code{"two.sided"}.  
@@ -38,15 +38,13 @@
   }
   \item{d}{
   The relative between-study heterogeneity, i.e. the ratio of the heterogeneity variance to the variance of the original effect estimate.
-  Is only taken into account when \code{designPrior = "predictive"}.
+  Is only taken into account when \code{designPrior = "predictive"} or \code{designPrior = "EB"}.
   } 
   \item{shrinkage}{
   A number in [0,1]. 
   Defaults to \code{1}. 
   Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is halfed for \code{shrinkage = 0.5}). 
-  }
-  \item{EB}{
-  If \code{EB = TRUE}, the power is computed under a predictive distribution where the contribution of the original study is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
+  Recommended to set to 1 when designPrior is \code{"EB"}.
   }
 }
 \value{
@@ -58,7 +56,7 @@
   To appear in \emph{Journal of the Royal Statistical Society, Series A}. 
   \url{https://arxiv.org/abs/1811.10287}
   
-  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. doi:10.31234/osf.io/fhwb7
+  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 }
 \author{
   Leonhard Held, 
@@ -72,6 +70,6 @@ sampleSizeSignificance(po = 0.005, power = 0.8, designPrior = "predictive",
                        alternative = "greater", d = 1)
 sampleSizeSignificance(po = 0.005, power = 0.8, designPrior = "predictive", 
                        shrinkage = 0.5, d = 0.25)
-sampleSizeSignificance(to = 3, power = 0.8, designPrior = "predictive", 
-                       d = 0.5, EB = TRUE)
+sampleSizeSignificance(to = 3, power = 0.8, designPrior = "EB", 
+                       d = 0.5)
 }
