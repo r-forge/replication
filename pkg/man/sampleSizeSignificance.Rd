@@ -44,7 +44,7 @@
   A number in [0,1]. 
   Defaults to \code{1}. 
   Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is halfed for \code{shrinkage = 0.5}). 
-  Recommended to set to 1 when designPrior is \code{"EB"}.
+  Is only taken into account when \code{designPrior = "conditional"} or \code{designPrior = "predictive"}.
   }
 }
 \value{

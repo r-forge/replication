@@ -36,13 +36,13 @@ sampleSizeSignificance <- function(po = NULL,
                 stop(paste("power too large, power should not exceed",
                            power.limit.r))
             }
-            nstart <- sampleSizeSignificance(to = to[i], 
-                                             power = power,
-                                             level = level,
-                                             alternative = alternative,
-                                             d = d,
-                                             shrinkage = shrinkage,
-                                             designPrior = "conditional")
+            # nstart <- sampleSizeSignificance(to = to[i], 
+            #                                  power = power,
+            #                                  level = level,
+            #                                  alternative = alternative,
+            #                                  d = d,
+            #                                  shrinkage = shrinkage,
+            #                                  designPrior = "conditional")
             n.l <- 0
             n.u <- 100
             target.l <- ClassicalTarget(c = n.l, 

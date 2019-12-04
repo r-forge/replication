@@ -44,9 +44,9 @@ powerSignificance <- function(po = NULL, to = p2t(po, alternative = alternative)
                       lower.tail = lowertail)
     }
     if (designPrior == "EB"){
-        s <- pmax(1 - (1 + d)/to^2, 0)
-        pSig <- pnorm(q = v, mean = s*shrinkage*to*sqrt(c),
-                      sd = sqrt(s*c*(1 + d) + 1 + d*c),
+        shrinkage <- pmax(1 - (1 + d)/to^2, 0)
+        pSig <- pnorm(q = v, mean = shrinkage*to*sqrt(c),
+                      sd = sqrt(shrinkage*c*(1 + d) + 1 + d*c),
                       lower.tail = lowertail)
     }
     return(pSig)
