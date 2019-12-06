@@ -1,0 +1,167 @@
+
+R version 3.6.1 (2019-07-05) -- "Action of the Toes"
+Copyright (C) 2019 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(ReplicationSuccess)
+> 
+> po <- seq(0.01, 0.05, 0.01)
+> to <- seq(2, 4, 0.5)
+> apply_grid <- expand.grid(priors = c("conditional", "predictive", "EB"),
++                           d = c(0, 0.1),
++                           shrinkage = c(1, 0.75),
++                           alt = c("greater", "two.sided"),
++                           stringsAsFactors = FALSE)
+> for (i in seq(1, nrow(apply_grid))) {
++   print(apply_grid[i,])
++   c <- sampleSizeSignificance(po = po, 
++                               power = 0.8, 
++                               level = 0.05,
++                               designPrior = apply_grid$priors[i],
++                               alternative = apply_grid$alt[i],
++                               d = apply_grid$d[i],
++                               shrinkage = apply_grid$shrinkage[i])
++   print(round(c, digits = 5))
++   c <- sampleSizeSignificance(to = to, 
++                               power = 0.8, 
++                               level = 0.05,
++                               designPrior = apply_grid$priors[i],
++                               alternative = apply_grid$alt[i],
++                               d = apply_grid$d[i])
++   print(round(c, digits = 5))
++ }
+       priors d shrinkage     alt
+1 conditional 0         1 greater
+[1] 1.14240 1.46580 1.74778 2.01721 2.28514
+[1] 1.54564 0.98921 0.68695 0.50470 0.38641
+      priors d shrinkage     alt
+2 predictive 0         1 greater
+[1] 1.69153 2.43482 3.21626 4.10258 5.14605
+[1] 2.64240 1.38812 0.86812 0.59915 0.44057
+  priors d shrinkage     alt
+3     EB 0         1 greater
+[1]  2.79012  4.94140  8.11283 13.29401 22.64359
+[1] 5.68099 2.10173 1.13173 0.72138 0.50567
+       priors   d shrinkage     alt
+4 conditional 0.1         1 greater
+[1] 1.14240 1.46580 1.74778 2.01721 2.28514
+[1] 1.54564 0.98921 0.68695 0.50470 0.38641
+      priors   d shrinkage     alt
+5 predictive 0.1         1 greater
+[1] 1.83422 2.70844 3.66357 4.78788 6.16333
+[1] 2.95872 1.48792 0.91028 0.62023 0.45234
+  priors   d shrinkage     alt
+6     EB 0.1         1 greater
+[1]  3.32314  6.43920 11.80202 22.52118 48.58692
+[1] 7.60908 2.42045 1.23412 0.76560 0.52828
+       priors d shrinkage     alt
+7 conditional 0      0.75 greater
+[1] 2.03094 2.60586 3.10716 3.58616 4.06248
+[1] 1.54564 0.98921 0.68695 0.50470 0.38641
+      priors d shrinkage     alt
+8 predictive 0      0.75 greater
+[1]  4.15185  6.65391  9.74707 13.87443 19.66830
+[1] 2.64240 1.38812 0.86812 0.59915 0.44057
+  priors d shrinkage     alt
+9     EB 0      0.75 greater
+[1]  2.79012  4.94140  8.11283 13.29401 22.64359
+[1] 5.68099 2.10173 1.13173 0.72138 0.50567
+        priors   d shrinkage     alt
+10 conditional 0.1      0.75 greater
+[1] 2.03094 2.60586 3.10716 3.58616 4.06248
+[1] 1.54564 0.98921 0.68695 0.50470 0.38641
+       priors   d shrinkage     alt
+11 predictive 0.1      0.75 greater
+[1]  4.85159  8.24364 12.83187 19.58711 30.24752
+[1] 2.95872 1.48792 0.91028 0.62023 0.45234
+   priors   d shrinkage     alt
+12     EB 0.1      0.75 greater
+[1]  3.32314  6.43920 11.80202 22.52118 48.58692
+[1] 7.60908 2.42045 1.23412 0.76560 0.52828
+        priors d shrinkage       alt
+13 conditional 0         1 two.sided
+[1] 1.18297 1.45030 1.66668 1.86086 2.04320
+[1] 1.96222 1.25582 0.87210 0.64072 0.49055
+       priors d shrinkage       alt
+14 predictive 0         1 two.sided
+[1] 1.67881 2.22737 2.72958 3.22971 3.74608
+[1] 3.51087 1.82091 1.12931 0.77504 0.56768
+   priors d shrinkage       alt
+15     EB 0         1 two.sided
+[1] 2.47642 3.69584 5.03511 6.61307 8.53912
+[1] 7.62155 2.76987 1.47591 0.93451 0.65214
+        priors   d shrinkage       alt
+16 conditional 0.1         1 two.sided
+[1] 1.18297 1.45030 1.66668 1.86086 2.04320
+[1] 1.96222 1.25582 0.87210 0.64072 0.49055
+       priors   d shrinkage       alt
+17 predictive 0.1         1 two.sided
+[1] 1.80036 2.42801 3.01623 3.61383 4.24279
+[1] 3.95489 1.96137 1.18883 0.80487 0.58434
+   priors   d shrinkage       alt
+18     EB 0.1         1 two.sided
+[1]  2.83697  4.43385  6.31513  8.69310 11.82342
+[1] 10.30127  3.21068  1.61726  0.99548  0.68326
+        priors d shrinkage       alt
+19 conditional 0      0.75 two.sided
+[1] 2.10306 2.57831 2.96299 3.30819 3.63236
+[1] 1.96222 1.25582 0.87210 0.64072 0.49055
+       priors d shrinkage       alt
+20 predictive 0      0.75 two.sided
+[1]  3.92626  5.56719  7.21778  9.00379 11.00077
+[1] 3.51087 1.82091 1.12931 0.77504 0.56768
+   priors d shrinkage       alt
+21     EB 0      0.75 two.sided
+[1] 2.47642 3.69584 5.03511 6.61307 8.53912
+[1] 7.62155 2.76987 1.47591 0.93451 0.65214
+        priors   d shrinkage       alt
+22 conditional 0.1      0.75 two.sided
+[1] 2.10306 2.57831 2.96299 3.30819 3.63236
+[1] 1.96222 1.25582 0.87210 0.64072 0.49055
+       priors   d shrinkage       alt
+23 predictive 0.1      0.75 two.sided
+[1]  4.46487  6.54857  8.74707 11.23348 14.13890
+[1] 3.95489 1.96137 1.18883 0.80487 0.58434
+   priors   d shrinkage       alt
+24     EB 0.1      0.75 two.sided
+[1]  2.83697  4.43385  6.31513  8.69310 11.82342
+[1] 10.30127  3.21068  1.61726  0.99548  0.68326
+> 
+> # par(mfrow = c(1, 1), las = 1)
+> # plot(po, sampleSizeSignificance(po = po, 
+> #                                 power = 0.8, 
+> #                                 level = 0.05,
+> #                                 designPrior = priors[2],
+> #                                 alternative = "two.sided"),
+> #      type = "l", log = "y", ylab = "c", lty = 2, ylim = c(0.25, 50))
+> # abline(h = 1, lty = 2, col = "lightgrey")
+> # lines(po, sampleSizeSignificance(po = po, 
+> #                                  power = 0.8, 
+> #                                  level = 0.05,
+> #                                  designPrior = priors[1],
+> #                                  alternative = "two.sided"),
+> #       lty = 1)
+> # lines(po, sampleSizeSignificance(po = po, 
+> #                                  power = 0.8, 
+> #                                  level = 0.05,
+> #                                  designPrior = priors[3],
+> #                                  alternative = "two.sided"),
+> #       lty = 3)
+> # legend("bottomleft", legend = priors, 
+> #        lty = c(1, 2, 3), bty = "n", cex = 0.5)
+> 
+> proc.time()
+   user  system elapsed 
+  0.240   0.163   0.193 

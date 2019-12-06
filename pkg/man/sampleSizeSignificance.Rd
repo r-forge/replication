@@ -72,4 +72,15 @@ sampleSizeSignificance(po = 0.005, power = 0.8, designPrior = "predictive",
                        shrinkage = 0.5, d = 0.25)
 sampleSizeSignificance(to = 3, power = 0.8, designPrior = "EB", 
                        d = 0.5)
+                       
+# required relative sample size for 0.8 power as function of original p-value
+po <- seq(0.0001, 0.05, 0.0001)
+plot(po, sampleSizeSignificance(po = po, designPrior = "conditional", power = 0.8),
+     type = "l", ylim = c(0.5, 10), log = "y", lwd = 1.5, ylab = "Relative sample size")
+lines(po, sampleSizeSignificance(po = po, designPrior = "predictive", power = 0.8), 
+      lwd = 2, lty = 2)
+lines(po, sampleSizeSignificance(po = po, designPrior = "EB", power = 0.8),
+      lwd = 1.5, lty = 3)
+legend("topleft", legend = c("conditional", "predictive", "EB"), 
+       title = "Design prior", lty = c(1, 2, 3), lwd = 1.5, bty = "n")
 }

@@ -75,16 +75,25 @@ shrinkage=1)
     Samuel Pawel (shrinkage and heterogeneity options)
   }
   \examples{
-    powerSignificance(po=0.005, c=2)
-    powerSignificance(po=0.005, c=2, designPrior="predictive")
-    powerSignificance(po=0.005, c=2, alternative="greater")
-    powerSignificance(to=-3, c=2, designPrior="predictive", alternative="less")
-    powerSignificance(po=0.005, c=1/2)
-    powerSignificance(po=0.005, c=1/2, designPrior="predictive")
-    powerSignificance(po=0.005, c=1/2, alternative="greater")
-    powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater")
-    powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater", 
-                      d = 0.5, shrinkage=0.5)
-    powerSignificance(po=0.005, c=1/2, designPrior="EB", alternative="greater", 
-                      d = 0.5)
+powerSignificance(po=0.005, c=2)
+powerSignificance(po=0.005, c=2, designPrior="predictive")
+powerSignificance(po=0.005, c=2, alternative="greater")
+powerSignificance(to=-3, c=2, designPrior="predictive", alternative="less")
+powerSignificance(po=0.005, c=1/2)
+powerSignificance(po=0.005, c=1/2, designPrior="predictive")
+powerSignificance(po=0.005, c=1/2, alternative="greater")
+powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater")
+powerSignificance(po=0.005, c=1/2, designPrior="predictive", alternative="greater", 
+                  d = 0.5, shrinkage=0.5)
+powerSignificance(po=0.005, c=1/2, designPrior="EB", alternative="greater", 
+                  d = 0.5)
+                  
+# power as function of original p-value
+po <- seq(0.0001, 0.06, 0.0001)
+plot(po, powerSignificance(po = po, designPrior = "conditional"),
+     type = "l", ylim = c(0, 1), lwd = 1.5, ylab = "Power")
+lines(po, powerSignificance(po = po, designPrior = "predictive"), lwd = 2, lty = 2)
+lines(po, powerSignificance(po = po, designPrior = "EB"), lwd = 1.5, lty = 3)
+legend("topright", legend = c("conditional", "predictive", "EB"), 
+       title = "Design prior", lty = c(1, 2, 3), lwd = 1.5, bty = "n")
 }

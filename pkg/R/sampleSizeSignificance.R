@@ -27,22 +27,17 @@ sampleSizeSignificance <- function(po = NULL,
         if(designPrior == "conditional"){
             u <- qnorm(p = power)
             v <- p2t(level, alternative = alternative)
-            c <- (u + v)^2*(1/to)^2
+            c <- (u + v)^2*(1/(shrinkage*to))^2
         }
         if(designPrior %in% c("predictive", "EB")){
-            power.limit <- pnorm(abs(to[i]))
+            if (designPrior == "predictive") s <- shrinkage
+            if (designPrior == "EB") s <- pmax(1 - (1 + d)/to[i]^2, 0)
+            power.limit <- pnorm(sqrt(1/(s*(1 + d) + d))*s*abs(to[i]))
             if (power > power.limit) {
                 power.limit.r <- floor(power.limit * 1000)/1000
                 stop(paste("power too large, power should not exceed",
                            power.limit.r))
             }
-            # nstart <- sampleSizeSignificance(to = to[i], 
-            #                                  power = power,
-            #                                  level = level,
-            #                                  alternative = alternative,
-            #                                  d = d,
-            #                                  shrinkage = shrinkage,
-            #                                  designPrior = "conditional")
             n.l <- 0
             n.u <- 100
             target.l <- ClassicalTarget(c = n.l, 
