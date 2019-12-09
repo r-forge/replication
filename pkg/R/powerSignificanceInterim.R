@@ -19,40 +19,41 @@ powerSignificanceInterim <- function(to, ti, c = 1, f = 1 / 2,
     stop("shrinkage must be in [0, 1]")
   v <- p2t(level, alternative = alternative)
   to <- shrinkage * to
+  
   if (designPrior == "conditional")
-    if (analysisPrior == "original")
+    if (analysisPrior == "flat"){
+      pSig <-  pnorm(to * sqrt(c * (1 / f - 1)) + ti / (sqrt(1 / f - 1)) - 
+                       sqrt(1 / (1 - f)) * v)
+    } else if (analysisPrior == "original") {
       return(NA) ## For now, we are not interested in the case where the design prior is conditional and the analysis prior normal.
-  pSig <-
-    pnorm(to * sqrt(c * (1 / f - 1)) + ti / (sqrt(1 / f - 1)) - sqrt(1 / (1 -
-                                                                            f)) * v)
-  if (designPrior == "predictive") {
-    if (analysisPrior == "original") {
-      term1 <- sqrt(1 + (c * (1 - f)) / (f * (c + 1)))
-      term2 <- sqrt(f / (c * (1 - f))) * to
-      term3 <- sqrt(f / (1 - f)) * ti
-      term4 <- sqrt((f * (c + 1)) / (c * (1 - f))) * v
-      
-      pSig = pnorm(term1 * (term2 + term3) - term4)
     }
-    else if (analysisPrior == "flat") {
+  
+  if (designPrior == "predictive") {
+    if (analysisPrior == "flat") {
       term1 <- sqrt(((1 - f) * c) / ((c + 1) * (f + c))) * to
       term2 <- sqrt((f + c) / ((1 - f) * (c + 1))) * ti
       term3 <- sqrt((f * (c + 1)) / ((f + c) * (1 - f))) * v
       pSig <- pnorm(term1 + term2 - term3)
     }
+    else if (analysisPrior == "original") {
+      term1 <- sqrt(1 + (c * (1 - f)) / (f * (c + 1)))
+      term2 <- sqrt(f / (c * (1 - f))) * to
+      term3 <- sqrt(f / (1 - f)) * ti
+      term4 <- sqrt((f * (c + 1)) / (c * (1 - f))) * v
+      
+      pSig <-  pnorm(term1 * (term2 + term3) - term4)
+    }
   }
-  if (designPrior == "flat")
+  
+  if (designPrior == "flat"){
     if (analysisPrior == "flat") {
       pSig <- pnorm((ti - sqrt(f) * v) / sqrt(1 - f))
-    } else if (analysisPrior == "original")
+    } else if (analysisPrior == "original"){
       return(NA)
-  if (designPrior == "conditional") {
-    if (analysisPrior == "original")
-      return(NA)
-    pSig <-
-      pnorm(ti * sqrt(c * (1 / f - 1)) + ti / (sqrt(1 / f - 1))
-            - sqrt(1 / (1 - f)) * v)
+    }
   }
+  
+  
   
   return(pSig)
 }
