@@ -27,10 +27,9 @@ zSceptical(to, tr, c)
 The test statistic of the sceptical P-value. 
 }
 \references{
-Held, L. (2019). A new standard for the analysis and design of
-replication studies (with discussion). To appear in
-\emph{Journal of the Royal Statistical Society, Series A.} 
-\url{https://arxiv.org/abs/1811.10287}
+Held, L. (2019). A new standard for the analysis and design of replication studies (with discussion). 
+  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 
+  \url{https://doi.org/10.1111/rssa.12493}
 }
 \author{
 Leonhard Held
@@ -44,6 +43,9 @@ Leonhard Held
 %\seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 %}
+\seealso{
+  \code{\link{sampleSizeReplicationSuccess}}, \code{\link{powerReplicationSuccess}}, \code{\link{pSceptical}}
+}
 \examples{
 zSceptical(to=2, tr=3, c=2)
 zSceptical(to=3, tr=2, c=2)

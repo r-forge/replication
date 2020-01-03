@@ -26,25 +26,25 @@ for (i in seq(1, nrow(apply_grid))) {
   print(round(c, digits = 5))
 }
 
-# par(mfrow = c(1, 1), las = 1)
-# plot(po, sampleSizeSignificance(po = po, 
-#                                 power = 0.8, 
+# priors <- c("conditional", "predictive", "EB")
+# plot(po, sampleSizeSignificance(po = po,
+#                                 power = 0.8,
 #                                 level = 0.05,
 #                                 designPrior = priors[2],
 #                                 alternative = "two.sided"),
-#      type = "l", log = "y", ylab = "c", lty = 2, ylim = c(0.25, 50))
+#      type = "l", log = "y", ylab = "c", lty = 2, ylim = c(0.25, 50), las = 1)
 # abline(h = 1, lty = 2, col = "lightgrey")
-# lines(po, sampleSizeSignificance(po = po, 
-#                                  power = 0.8, 
+# lines(po, sampleSizeSignificance(po = po,
+#                                  power = 0.8,
 #                                  level = 0.05,
 #                                  designPrior = priors[1],
 #                                  alternative = "two.sided"),
 #       lty = 1)
-# lines(po, sampleSizeSignificance(po = po, 
-#                                  power = 0.8, 
+# lines(po, sampleSizeSignificance(po = po,
+#                                  power = 0.8,
 #                                  level = 0.05,
 #                                  designPrior = priors[3],
 #                                  alternative = "two.sided"),
 #       lty = 3)
-# legend("bottomleft", legend = priors, 
+# legend("bottomleft", legend = priors,
 #        lty = c(1, 2, 3), bty = "n", cex = 0.5)

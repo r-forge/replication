@@ -32,6 +32,9 @@ ci2se(lower, upper, conf.level=0.95, ratio=FALSE)
 }
 \value{A numeric vector of standard errors. 
 }
+\seealso{
+  \code{\link{ci2p}}, \code{\link{ci2t}}, \code{\link{ci2estimate}}, \code{\link{p2t}}, \code{\link{t2p}}
+}
 \examples{
 ci2se(lower=1, upper=3)
 ci2se(lower=1, upper=3, ratio=TRUE)

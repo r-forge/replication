@@ -6,6 +6,9 @@ Date: 2019-12-04
 Author: Leonhard Held [aut], Samuel Pawel [ctb], Charlotte Micheloud [ctb]
 Maintainer: Leonhard Held <leonhard.held@uzh.ch>
 Description: Implements the sceptical P-value for the analysis of replication studies. Also provides functions to compute the P-value for intrinsic credibility as well as the threshold for intrinsic credibility. Provides also functions to compute the power and the required replication sample size to achieve replication success or significance. 
+VignetteBuilder: knitr
+Suggests: knitr
 License: GPL (>=2)
 NeedsCompilation: no
 Packaged: 2019-05-19 08:49:22 UTC; leo
+Depends: R (>= 3.5.0)

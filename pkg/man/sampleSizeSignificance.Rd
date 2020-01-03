@@ -38,6 +38,7 @@
   }
   \item{d}{
   The relative between-study heterogeneity, i.e. the ratio of the heterogeneity variance to the variance of the original effect estimate.
+  Default is \code{0} (no heterogeneity).
   Is only taken into account when \code{designPrior = "predictive"} or \code{designPrior = "EB"}.
   } 
   \item{shrinkage}{
@@ -53,14 +54,17 @@
 }
 \references{
   Held, L. (2019). A new standard for the analysis and design of replication studies (with discussion). 
-  To appear in \emph{Journal of the Royal Statistical Society, Series A}. 
-  \url{https://arxiv.org/abs/1811.10287}
+  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 
+  \url{https://doi.org/10.1111/rssa.12493},
   
   Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 }
 \author{
   Leonhard Held, 
-  Samuel Pawel (shrinkage and heterogeneity options)
+  Samuel Pawel
+}
+\seealso{
+  \code{\link{powerSignificance}}
 }
 \examples{
 sampleSizeSignificance(po = 0.005, power = 0.8)
@@ -76,7 +80,8 @@ sampleSizeSignificance(to = 3, power = 0.8, designPrior = "EB",
 # required relative sample size for 0.8 power as function of original p-value
 po <- seq(0.0001, 0.05, 0.0001)
 plot(po, sampleSizeSignificance(po = po, designPrior = "conditional", power = 0.8),
-     type = "l", ylim = c(0.5, 10), log = "y", lwd = 1.5, ylab = "Relative sample size")
+     type = "l", ylim = c(0.5, 10), log = "y", lwd = 1.5, ylab = "Relative sample size",
+     xlab = expression(italic(p)[o]), las = 1)
 lines(po, sampleSizeSignificance(po = po, designPrior = "predictive", power = 0.8), 
       lwd = 2, lty = 2)
 lines(po, sampleSizeSignificance(po = po, designPrior = "EB", power = 0.8),

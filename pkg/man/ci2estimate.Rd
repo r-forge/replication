@@ -31,6 +31,9 @@ ci2estimate(lower, upper, ratio=FALSE, antilog=FALSE)
   }
 }
 \value{A numeric vector of parameter estimates.}
+\seealso{
+  \code{\link{ci2p}}, \code{\link{ci2se}}, \code{\link{ci2t}}, \code{\link{p2t}}, \code{\link{t2p}}
+}
 \examples{
 ci2estimate(lower=1, upper=3)
 ci2estimate(lower=1, upper=3, ratio=TRUE)

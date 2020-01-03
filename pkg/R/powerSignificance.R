@@ -18,12 +18,15 @@
 #     return(pSig)
 # }
 
-powerSignificance <- function(po = NULL, to = p2t(po, alternative = alternative),
-                              c = 1, level = 0.05,
+powerSignificance <- function(po = NULL, 
+                              to = p2t(po, alternative = alternative),
+                              c = 1, 
+                              level = 0.05,
                               designPrior = "conditional",
                               alternative = "two.sided",
                               d = 0,
                               shrinkage = 1){
+    # sanity checks
     if (!(designPrior %in% c("conditional", "predictive", "EB")))
         stop('designPrior must be either "conditional", "predictive", or "EB"')
     if (min(c, na.rm = TRUE) < 0)
@@ -32,22 +35,27 @@ powerSignificance <- function(po = NULL, to = p2t(po, alternative = alternative)
         stop("d cannot be negative")
     if ((min(shrinkage, na.rm = TRUE) < 0 || max(shrinkage, na.rm = TRUE) > 1)) 
         stop("shrinkage must be in [0, 1]")
+    
+    # determine direction of alternative and critical value of tr
     v <- p2t(level, alternative = alternative)
     lowertail <- ifelse(alternative == "less", TRUE, FALSE)
-    # to <- abs(to)
-    if(designPrior == "conditional")
-        pSig <- pnorm(q = v, mean = shrinkage*to*sqrt(c), 
-                      lower.tail = lowertail)
+    
+    # determine parameters of predictive distribution of tr
+    if(designPrior == "conditional"){
+        mu <- shrinkage*to*sqrt(c)
+        sigma <- 1
+    }
     if(designPrior == "predictive"){
-        pSig <- pnorm(q = v, mean = shrinkage*to*sqrt(c),
-                      sd = sqrt(c + 1 + 2*d*c),
-                      lower.tail = lowertail)
+        mu <- shrinkage*to*sqrt(c)
+        sigma <- sqrt(c + 1 + 2*d*c)
     }
     if (designPrior == "EB"){
         shrinkage <- pmax(1 - (1 + d)/to^2, 0)
-        pSig <- pnorm(q = v, mean = shrinkage*to*sqrt(c),
-                      sd = sqrt(shrinkage*c*(1 + d) + 1 + d*c),
-                      lower.tail = lowertail)
+        mu <- shrinkage*to*sqrt(c)
+        sigma <- sqrt(shrinkage*c*(1 + d) + 1 + d*c)
     }
+    
+    # compute replication probability
+    pSig <- pnorm(q = v, mean = mu, sd = sigma, lower.tail = lowertail)
     return(pSig)
 }

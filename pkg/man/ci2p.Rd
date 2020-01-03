@@ -36,6 +36,9 @@ ci2p(lower, upper, conf.level=0.95, ratio=FALSE, alternative="two.sided")
 }
 \value{A numeric vector of p-values
 }
+\seealso{
+  \code{\link{ci2se}}, \code{\link{ci2t}}, \code{\link{ci2estimate}}, \code{\link{p2t}}, \code{\link{t2p}}
+}
 \examples{
 ci2p(1, 3)
 ci2p(1, 3, alternative="one.sided")

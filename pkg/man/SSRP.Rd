@@ -83,7 +83,9 @@
   
 Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 }
-
+\seealso{
+  \code{\link{ReplicationProjects}}
+}
   
 \examples{
 data("SSRP", package = "ReplicationSuccess")

@@ -40,7 +40,8 @@ shrinkage=1)
     If the alternative is one-sided, then sample size calculations are based on a one-sided assessment of significance.
   }
   \item{d}{
-  The relative between-study heterogeneity, i.e. the ratio of the heterogeneity variance to the variance of the original effect estimate.
+  The relative between-study heterogeneity, i.e. the ratio of the heterogeneity variance to the variance of the original effect estimate. 
+  Default is \code{0} (no heterogeneity).
   Is only taken into account when \code{designPrior = "predictive"} or \code{designPrior = "EB"}.
   } 
   \item{shrinkage}{
@@ -64,8 +65,8 @@ shrinkage=1)
     Senn, S. (2002). Letter to the Editor, \emph{Statistics in Medicine}, \bold{21}, 2437--2444. 
 
     Held, L. (2019). A new standard for the analysis and design of replication studies (with discussion). 
-  To appear in \emph{Journal of the Royal Statistical Society, Series A}. 
-  \url{https://arxiv.org/abs/1811.10287}
+  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 
+  \url{https://doi.org/10.1111/rssa.12493}
   
   Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 
@@ -74,6 +75,9 @@ shrinkage=1)
     Leonhard Held,
     Samuel Pawel (shrinkage and heterogeneity options)
   }
+  \seealso{
+  \code{\link{sampleSizeSignificance}}, \code{\link{powerSignificanceInterim}}
+}
   \examples{
 powerSignificance(po=0.005, c=2)
 powerSignificance(po=0.005, c=2, designPrior="predictive")
@@ -91,7 +95,8 @@ powerSignificance(po=0.005, c=1/2, designPrior="EB", alternative="greater",
 # power as function of original p-value
 po <- seq(0.0001, 0.06, 0.0001)
 plot(po, powerSignificance(po = po, designPrior = "conditional"),
-     type = "l", ylim = c(0, 1), lwd = 1.5, ylab = "Power")
+     type = "l", ylim = c(0, 1), lwd = 1.5, las = 1, ylab = "Power", 
+     xlab = expression(italic(p)[o]))
 lines(po, powerSignificance(po = po, designPrior = "predictive"), lwd = 2, lty = 2)
 lines(po, powerSignificance(po = po, designPrior = "EB"), lwd = 1.5, lty = 3)
 legend("topright", legend = c("conditional", "predictive", "EB"), 

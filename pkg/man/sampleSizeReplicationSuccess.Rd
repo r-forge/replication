@@ -35,13 +35,15 @@ The relative sample size for replication success. If larger that 1000
 then \code{Inf} is returned. 
 }
 \references{
-Held, L. (2019). A new standard for the analysis and design of
-replication studies (with discussion). To appear in
-\emph{Journal of the Royal Statistical Society, Series A.}
-\url{https://arxiv.org/abs/1811.10287}
+Held, L. (2019). A new standard for the analysis and design of replication studies (with discussion). 
+  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 
+  \url{https://doi.org/10.1111/rssa.12493}
 }
 \author{
 Leonhard Held
+}
+\seealso{
+  \code{\link{pSceptical}}, \code{\link{powerReplicationSuccess}}, \code{\link{zSceptical}}
 }
 \examples{
 sampleSizeReplicationSuccess(po=0.005, power=0.8)

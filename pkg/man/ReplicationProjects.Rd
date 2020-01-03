@@ -37,12 +37,6 @@
     \item{\code{z_se_R}}{
     Standard error of Fisher-z transformed effect estimate of replication study
     }
-    \item{\code{n_O}}{
-    Sample size in original study
-    }
-    \item{\code{n_R}}{
-    Sample size in replication study
-    }
     \item{\code{pval_O}}{
     Two-sided P-value from significance test of effect estimate from original study
     }
@@ -81,13 +75,15 @@ Cova,  F.,  Strickland,  B.,  Abatista,  A.,  Allard,  A.,  Andow,  J., Attie, M
   
   Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 }
-
+\seealso{
+  \code{\link{SSRP}}
+}
   
 \examples{
 data("ReplicationProjects", package = "ReplicationSuccess")
 
 ## Plots of effect estimates
-par(mfrow = c(2, 2), las = 1)
+par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(ReplicationProjects$project)) {
   data_project <- subset(ReplicationProjects, project == p)
   plot(r_R ~ r_O, data = data_project, ylim = c(-0.5, 1), 
@@ -101,12 +97,13 @@ for (p in unique(ReplicationProjects$project)) {
 ReplicationProjects$significant <- factor(ReplicationProjects$pval_R < 0.05,
                                           levels = c(FALSE, TRUE),
                                           labels = c("no", "yes"))
-par(mfrow = c(1, 2), las = 1)
+par(mfrow = c(1, 2), las = 1, mai = rep(0.9, 4))
 for (p in c("Experimental Economics", "Social Sciences")) {
   data_project <- subset(ReplicationProjects, project == p)
   boxplot(pm_belief ~ significant, data = data_project, ylim = c(0, 1), 
           main = p, xlab = "Replication effect significant", ylab = "Peer belief")
-  points(pm_belief ~ significant, data = data_project)
+  stripchart(pm_belief ~ significant, data = data_project, vertical = TRUE, 
+             add = TRUE, pch = 1, method = "jitter")
 }
 
 

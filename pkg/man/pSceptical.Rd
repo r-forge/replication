@@ -38,13 +38,15 @@ tr=p2t(pr, alternative=alternative), c, alternative="two.sided")
 The sceptical P-value. 
 }
 \references{
-Held, L. (2019). A new standard for the analysis and design of
-replication studies (with discussion). To appear in
-\emph{Journal of the Royal Statistical Society, Series A}. 
-\url{https://arxiv.org/abs/1811.10287}
+Held, L. (2019). A new standard for the analysis and design of replication studies (with discussion). 
+  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 
+  \url{https://doi.org/10.1111/rssa.12493}
 }
 \author{
 Leonhard Held
+}
+\seealso{
+  \code{\link{sampleSizeReplicationSuccess}}, \code{\link{powerReplicationSuccess}}, \code{\link{zSceptical}}
 }
 %\note{
 %%  ~~further notes~~

@@ -8,6 +8,12 @@ tr2.quantile <- function(to, c, p, designPrior){
         lambda <- c*to^2
         factor <- 1
     }
+    # if (designPrior == "EB") {
+    #     d <- 0 # heterogeneity, implement later
+    #     s <- pmax(1 - (1 + d)/to^2, 0)
+    #     lambda <- to^2*s^2*c/(s*c*(1 + d) + 1 + d*c)
+    #     factor <- s*c*(1 + d) + 1 + d*c
+    # }
     if(lambda < 100)
         res <- qchisq(p, df=1, ncp=lambda)
     else

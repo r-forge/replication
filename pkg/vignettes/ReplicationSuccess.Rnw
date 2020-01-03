@@ -1,0 +1,670 @@
+% \VignetteEngine{knitr::knitr}
+% \VignetteEncoding{UTF-8}
+% \VignetteIndexEntry{Introduction to ReplicationSuccess}
+% \VignetteDepends{knitr}
+
+\documentclass[a4paper, 11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphics}
+\usepackage{amsmath, amssymb}
+\usepackage[round]{natbib}
+\bibliographystyle{plainnat}
+\input{newCommands.tex} 
+
+% margins %
+\usepackage[a4paper, total={6.5in, 10in}]{geometry}
+
+% title, author, date, etc.
+\title{\textbf{Design and Analysis of Replication Studies with \texttt{ReplicationSuccess}}}
+\author{\textbf{Leonhard Held, Charlotte Micheloud, Samuel Pawel} \\
+Epidemiology, Biostatistics and Prevention Institute (EBPI) \\
+Center for Reproducible Science (CRS) \\
+University of Zurich, Switzerland}
+\date{}%\today}
+
+% hyperref options
+\usepackage{hyperref}  
+\hypersetup{
+  bookmarksopen=true, 
+  breaklinks=true,
+  pdftitle={ReplicationSuccess}, 
+  pdfauthor={Leonhard Held, Charlotte Micheloud, Samuel Pawel},
+  colorlinks=true,
+  linkcolor=red,
+  anchorcolor=black,
+  citecolor=blue,
+  urlcolor=magenta,
+}
+
+\begin{document}
+<< "knitr-options", echo = FALSE >>=
+library(knitr)
+opts_chunk$set(size = "small",
+               fig.height = 4,
+               fig.align = "center",
+               cache = FALSE,
+               message = FALSE,
+               warning = FALSE)
+@
+
+\maketitle
+
+
+\begin{center}
+\begin{minipage}{0.65\textwidth}
+  \rule{\textwidth}{0.4pt}
+  {\small
+  \centering \textbf{Abstract} \\
+  This vignette provides an introduction to the \textsf{R} package
+  \texttt{ReplicationSuccess}. The package contains utilities for planning and
+  analysing replication studies. Traditional methods based on statistical 
+  signficance and confidence intervals, as well as more recently developed methods 
+  such as the sceptical $p$-value \citep{Held2019} are included.
+  The functionality of the package is illustrated using data sets from four 
+  large-scale replication projects which come also with the package.
+  }
+  \rule{\textwidth}{0.4pt}
+\end{minipage}
+\end{center}
+
+\section{Introduction}
+Over the course of the last decade, the conduct of replication studies
+has increased substantially. These developments were mainly caused by
+the so-called ``replication crisis'' in the social and life-sciences.
+However, there is no consensus which statistical analysis approach
+should be used to assess whether a replication study successfully 
+replicated an original discovery. Moreover, depending on the chosen
+analysis approach, the statistical considerations in the design
+of the replication study differ. 
+
+The \textsf{R} package \texttt{ReplicationSuccess} provides 
+functionality to analyse and plan replication studies in several different ways.
+In this vignette the usage of the package is illustrated on several data sets
+from large-scale replication projects.
+% This vignette illustrates the usage of \texttt{ReplicationSuccess} on data sets
+% from large-scale replication projects.
+
+\subsection{Statistical framework}
+\texttt{ReplicationSuccess} assumes a simple but general and practically relevant 
+statistical framework for 
+effect sizes. Specifically, after a suitable transformation the effect estimates are 
+assumed to be approximately normally distributed with known variances
+which do not depend on the effect anymore. %, but are usually only inversely proportional to the sample size of the studies.
+This framework is also common to many meta-analysis methods and
+can for example be applied to mean differences, hazard ratios
+(log transformation), odds ratios (log transformation), or correlation coefficients
+(Fisher $z$-transformation). 
+WRITE MORE DETAILS.
+
+Moreover, most functions in \texttt{ReplicationSuccess} take unitless quantities 
+as inputs. In particular, the test statistics 
+$t_o = \hat{\theta}_o/\sigma_o$, $t_r = \hat{\theta}_r/\sigma_r$, and the variance
+ratio $c = \sigma^2_o/\sigma^2_r$ ($\hat{\theta}$ denotes an effect estimate
+and $\sigma^2$ the corresponding variance, the subscripts indicate original
+or replication).
+WRITE ABOUT ADVANTAGE OF THIS APPROACH
+
+
+\section{Data sets}
+\texttt{ReplicationSuccess} includes data from four replication projects, all with 
+a ``one-to-one'' design (\ie one replication for one original study).
+They come from the following projects:
+
+\begin{itemize}
+\item \textbf{Reproducibility Project: Psychology:}
+In the \emph{Reproducibility Project: Psychology} 100 replications of studies from the field of psychology were conducted \citep{Opensc2015}.
+The original studies were published in three major Psychology journals in the year 2008.
+Only the study pairs of the ``meta-analytic subset'' are included here, which consists of 73 studies where the standard error of the Fisher $z$-transformed effect estimates can be computed \citep{Johnson2016}.
+
+\item \textbf{Experimental Economics Replication Project:}
+This project attempted to replicate 18 experimental economics studies published between 2011 and 2015 in two high impact economics journals \citep{Camerer2016}.
+For this project a \emph{prediction market} was also conducted in order to estimate the peer beliefs about whether a replication will result in a statistically significant result.
+Prediction markets are a tool to aggregate beliefs of market participants regarding the possibility of an investigated outcome and they have been used successfully in numerous domains, \eg sports and politics \citep{Dreber2015}.
+The estimated peer beliefs are also included for each study pair.
+
+\item \textbf{Social Sciences Replication Project:}
+This project involved 21 replications of studies on the social sciences published in the journals \emph{Nature} and \emph{Science} between 2010 and 2015 \citep{Camerer2018}.
+As in the experimental economics replication project, a prediction market to estimate peer beliefs about the replicability of the original studies was conducted and the resulting belief estimates are also provided in the package.
+
+\item \textbf{Experimental Philosophy Replicability Project:}
+In this project, 40 replications of experimental philosophy studies were carried out.
+The original studies had to be  published between 2003 and 2015 in one of 35 journals in which experimental philosophy research is usually published (a list defined by the coordinators of this project) and they had to be listed on the experimental philosophy page of the Yale university \citep{Cova2018}.
+The data from the subset of 31 study pairs where effect estimates on correlation scale
+as well as effective sample size for both the original and replication were available
+are included in the package.
+\end{itemize}
+
+In all data sets, effect estimates are provided as correlation coefficients 
+($r$), as well as Fisher $z$-transformed correlation coefficients
+($\hat{\theta} = \text{tanh}^{-1}(r)$). 
+In the descriptive analysis of data from replication projects it has become common
+practice to transform effect sizes to the correlation scale, because correlations 
+are bounded to the interval between minus one and one and 
+thus easy to compare and interpret. Design and statistical analysis, on the other hand,
+is then usually carried out on a scale where the estimates are approximately normally 
+distributed. For correlation coefficients this is the case after applying the Fisher $z$-transformation, which leads to their variance asymptotically being only a function 
+of the study sample size $n$, \ie $\Var(\hat{\theta}) = 1/(n - 3)$ \citep{Fisher1921}.
+% For details about how the data were obtained and pre-processed, see the
+% supplementary materials of \citet{Pawel2019}.
+
+The data can be loaded with the command \texttt{data("ReplicationProjects")}. For a
+description of the variables see the documentation with \texttt{?ReplicationProjects}.
+It is a good idea to first compute the unitless quantities $t_o$, $t_r$ and $c$, since 
+all functions of the package usem them as input.
+<< "data-loading" >>=
+library(ReplicationSuccess)
+data("ReplicationProjects")
+str(ReplicationProjects)
+
+# computing to, tr, c
+ReplicationProjects$to <- with(ReplicationProjects, z_O/z_se_O)
+ReplicationProjects$tr <- with(ReplicationProjects, z_R/z_se_R)
+ReplicationProjects$c <- with(ReplicationProjects, z_se_O^2/z_se_R^2)
+@
+Note that each variable ending with an \texttt{\_O} is associated with the original,
+while each variable ending with an \texttt{\_R} is associated with the replication.
+Plotting the original versus the replication effect estimate on the correlation scale
+gives a good overview of the data.
+<< "plot-projects", fig.height = 5 >>=
+# plots of effect estimates
+par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
+for (p in unique(ReplicationProjects$project)) {
+  data_project <- subset(ReplicationProjects, project == p)
+  significant <- factor(data_project$pval_R < 0.05)
+  plot(r_R ~ r_O, data = data_project, ylim = c(-0.5, 1), col = significant,
+       xlim = c(-0.1, 1), main = p, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]))
+  legend("topleft", legend = "significant", pch = 20, col = 2, bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
+}
+@
+In most cases the replication estimate is smaller than the corresponding 
+original estimate. Furthermore, a substantial number of the replication estimates
+do not achieve statistical significance at the 5\% level, while almost all original
+estimates did. 
+
+\section{Design and analysis of replication studies}
+Although a replication study needs to be planned and conducted before the results
+can be analysed, we will first discuss the particular analysis approach. 
+We do this because the chosen analysis strategy substantially 
+influences the design of a replication study. 
+In the design phase of a replication study, we focus only on the 
+sample size determination.
+
+\subsection{Statistical significance}
+\paragraph{Analysis}
+One of the most commonly used approaches to analyse the result of a replication study
+is to declare a replication study successful if the replication estimate achieves 
+the same statistical signficance status as the original estimate and also goes
+in the same direction. 
+There are some variations of this approach, for example,
+\citet{Camerer2016} only assessed whether the replication effect is significant in
+the same direction, but not whether the original effect shows the same significance 
+status. 
+WRITE MORE HERE
+
+For the four data sets, we can simply check whether the $p$-values of original and
+replication are both below the conventional threshold 0.05 and whether the directions
+of the effects are the same.
+
+<< >>=
+for (p in unique(ReplicationProjects$project)) {
+  data_project <- subset(ReplicationProjects, project == p)
+    significant_O <- data_project$pval_O < 0.05
+  significant_R <- data_project$pval_R < 0.05
+  success <- (significant_O == significant_R) & 
+             (sign(data_project$z_O) == sign(data_project$z_R))
+  cat(paste0(p, ": \n"))
+  cat(paste0(round(mean(significant_O)*100, 2), "% orginal studies significant (", 
+             sum(significant_O), "/", length(significant_O), ")\n"))
+  cat(paste0(round(mean(significant_R)*100, 2), "% replications significant (", 
+             sum(significant_R), "/", length(significant_R), ")\n"))
+  cat(paste0(round(mean(success)*100, 2), "% same significance status, same direction \n \n"))
+}
+@
+
+Despite its appealing simplicity, assessing replication success with statistical
+significance is often criticized. 
+For example, non-significant replication results are expected if the original finding
+was a false positive (\eg with 95\% probability if the significance level is 5\%), 
+on the other hand they are also expected with non-negligible probability if the
+underlying effect is present \citep{Goodman1992}.
+Conversely, when the effect estimate of the replication is much smaller than the
+estimate from the original study, statistical significance can still be achieved 
+by just increasing the sample size.
+
+\paragraph{Design}
+Selecting the same sample size in the replication study as in the original study may
+lead to a severely underpowered design and as a result, true effects may not be 
+detected. 
+To assure that the replication study reliably detects true effects, 
+the studies should be well-powered. In classical sample size planning,
+usually a clinically relevant effect is specified and the sample size is then 
+determined so that it can be detected with a certain power. Luckily, in the
+replication setting the clinically relevant effect does not need to be specified but
+can be replaced with the effect estimate from the original study. 
+However, using the standard sample size calculation approach is not well suited,
+because the uncertainty of the original effect estimate is ignored.
+
+One way of tackling this issue is to use a Bayesian approach, incorporating
+the original estimate and its precision into a design prior that is used for power
+calculations. This corresponds to the concept of ``predictive power'' and generally 
+leads to larger sample sizes than the standard method. 
+In practice, however, often more ad hoc approaches are used. For instance, the
+original estimate is just shrunken by an (arbitrary) constant, \eg it was halved in the 
+sociel sciences replication project, and standard sample size calculations are
+then carried out. A more principled approach is to use a design prior which induces
+shrinkage and then estimate the prior variance by empirical Bayes. This leads to
+``data-driven'' shrinkage that is larger when there was only weak evidence for the
+effect, and smaller when there was strong evidence for the effect.
+
+
+Using the function \texttt{sampleSizeSignificance},
+it is straightforward to plan the sample size of the replication study with the
+just mentioned approaches. The argument \texttt{designPrior} allowes to carry out 
+sample size planning based on classical power ignoring the uncertainty 
+(\texttt{"conditional"}), based on predictive power (\texttt{"predictive"}), and 
+using the empirical Bayes shrinkage approach (\texttt{"EB"}). Moreover, ad hoc
+shrinkage can be specified with the argument \texttt{shrinkage} for the predictive
+and conditional design prior.
+
+The following code shows a few examples. Note that the function returns the required
+relative sample size $c = n_r/n_o$, \ie how much the sample size of the replication 
+needs to be changed compared to the original study.
+<< >>=
+sampleSizeSignificance(to = 2.5, power = 0.8, level = 0.05, designPrior = "conditional")
+sampleSizeSignificance(to = 2.5, power = 0.8, level = 0.05, designPrior = "predictive")
+sampleSizeSignificance(to = 2.5, power = 0.8, level = 0.05, designPrior = "conditional",
+                       shrinkage = 0.75)
+sampleSizeSignificance(to = 2.5, power = 0.8, level = 0.05, designPrior = "EB")
+@
+
+Figure \ref{fig:powerSignificance} shows the power to achieve significance in the
+replication as a function of either the (two-sided) $p$-value or the test statistic
+of the original study. If the original estimate was just significant at the 0.05 level,
+the probability for significance in the replication is just about 0.5 for conditional
+and predictive power.
+This result was first mentioned by \citet{Goodman1992} already two decades ago, 
+yet many practitioners of statistics still find it counterintuitive, because they 
+confuse type I error rates with replication probabilities. Thus, for the replication
+to achieve significance with high probability, the sample size needs to be
+increased compared to the original if the the evidence for the original discovery 
+was only weak or moderate (Figure \ref{fig:sampleSizeSignificance}).
+
+
+
+\begin{figure}[!h]
+<< "plot-powerSignificance", echo = FALSE, fig.height = 4 >>=
+po <- seq(0.0001, 0.05, 0.0001)
+
+# plot power
+plot(po, powerSignificance(po = po, designPrior = "conditional")*100,
+     type = "l", ylim = c(0, 100), lwd = 1.5, ylab = "Power (%)", 
+     xlab = expression(italic(p)[o]), las = 1)
+axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
+     labels = c("", round(p2t(p = seq(0.01, 0.05, by = 0.01)), 2)))
+mtext(text = expression(paste("|", italic(t)[o], "|")), side = 3, line = 2)
+# abline(h = seq(0, 100, 25), col = "#333333B3", lty = 3)
+lines(po, powerSignificance(po = po, designPrior = "predictive")*100, lwd = 2, lty = 2)
+lines(po, powerSignificance(po = po, designPrior = "EB")*100, lwd = 1.5, lty = 4)
+legend("topright", legend = c("conditional", "predictive", "EB"), 
+       title = "Design prior", lty = c(1, 2, 4), lwd = 1.5, bty = "n")
+@
+\caption{Power to achieve significance at 5\% level in replication as a function of (two-sided) $p$-value or test statistic of original study using the same sample size
+as in the original study.}
+\label{fig:powerSignificance}
+\end{figure}
+
+\begin{figure}[!h]
+<< "plot-sampleSizeSignificance", echo = FALSE, fig.height = 4 >>=
+# plot sample size 
+plot(po, sampleSizeSignificance(po = po, designPrior = "conditional", power = 0.8),
+     type = "l", ylim = c(0.5, 10), log = "y", lwd = 1.5, 
+     ylab = expression(paste("Relative sample size ", n[r]/n[o])),
+     xlab = expression(italic(p)[o]), las = 1)
+axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
+     labels = c("", round(p2t(p = seq(0.01, 0.05, by = 0.01)), 2)))
+mtext(text = expression(paste("|", italic(t)[o], "|")), side = 3, line = 2)
+abline(h = 1, col = "#333333B3", lty = 3)
+lines(po, sampleSizeSignificance(po = po, designPrior = "predictive", power = 0.8), 
+      lwd = 2, lty = 2)
+lines(po, sampleSizeSignificance(po = po, designPrior = "EB", power = 0.8),
+      lwd = 1.5, lty = 4)
+legend("topleft", legend = c("conditional", "predictive", "EB"), 
+       title = "Design prior", lty = c(1, 2, 4), lwd = 1.5, bty = "n")
+@
+\caption{Relative sample size to achieve significance at 5\% level with 80\% power as
+a function of (two-sided) $p$-value or test statistic of original study.}
+\label{fig:sampleSizeSignificance}
+\end{figure}
+
+
+
+
+\subsection{Compatibility of effect size}
+\paragraph{Analysis}
+Another analysis approach that has been used is to compare the effect estimates 
+from original
+and replication study. A reasonable way to assess whether the observed estimates are
+compatible is to check whether the replication
+estimate is contained within its prediction interval based on the original
+estimate \citep{Patil2016}. With the function \texttt{predictionInterval}, a prediction
+interval of the replication test statistic can be computed under different predictive
+distributions which depend on the design prior. The default design prior
+\texttt{"predictive"} is likely the choice most people would want to use as it takes
+into account the uncertainty of the original estimate without shrinking it.
+
+For the four data sets, we can easily compute the prediction intervals and then check 
+whether the replication estimates are contained within them. For easier visual 
+assessment we transform the intervals and estimates back to the correlation scale.
+
+<< "plot-predictionInterval", fig.height = 6 >>=
+# compute prediction intervals for replication projects
+par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
+for (p in unique(ReplicationProjects$project)) {
+  data_project <- subset(ReplicationProjects, project == p)
+  PI <- predictionInterval(to = data_project$to, c = data_project$c)*
+        data_project$z_se_R # multiplying by standard error to transform to z-scale
+  PI <- tanh(PI) # transforming back to correlation scale
+  within <- (data_project$r_R < PI$upper) & (data_project$r_R > PI$lower)
+  coverage <- mean(within)
+  color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
+  study <- seq(1, nrow(data_project))
+  plot(data_project$r_R, study, col = color, pch = 20, 
+       xlim = c(-0.5, 1), xlab = expression(italic(r)[r]), 
+       main = paste0(p, ": ", round(coverage*100, 1), "% coverage"))
+  arrows(PI$lower, study, PI$upper, study, length = 0.02, angle = 90, code = 3, col = color)
+  abline(v = 0, lty = 3)
+}
+@
+The criticism that this approach receives is that for studies which are underpowered,
+the prediction intervals will become very wide.
+This in turn can lead to the very different effect estimates being compatible, 
+\eg even ones that go in the opposite direction, ultimately providing 
+no information about the effect itself (which actually happens in some 
+cases in the economics and philosophy data sets).
+
+\paragraph{Design}
+There are different possibilities for specifying the sample size in the prediction
+interval analysis approach. 
+
+First, in order to avoid the situation that the estimates
+are deemed compatible, although they show a different sign, we can determine the
+required sample size such that the prediction interval of the replication estimate 
+does not include zero. This can be done with the function \texttt{sampleSizePI}. 
+The following code shows a few examples. Note that the function returns again the required
+relative sample size $c = n_r/n_o$, \ie how much the sample size of the replication 
+needs to be changed compared to the original study.
+<< >>=
+sampleSizePI(to = 2.5, conf.level = 0.95, designPrior = "predictive")
+sampleSizePI(to = 2.1, conf.level = 0.95, designPrior = "predictive")
+@
+However, note that the original estimate needs
+to be at least significant at level $1 - \gamma$ such that it is even possible
+for a $\gamma \cdot 100\%$  prediction interval not to include zero (Figure 
+\ref{fig:sampleSizePI}). 
+\begin{figure}[!h]
+<< "plot-sampleSizePI", echo = FALSE, fig.height = 4 >>=
+# required relative sample size for 0.95 PI not to include 0 as function of 
+# test statistic
+to <- seq(0, 5, 0.01)
+plot(to, sampleSizePI(to = to), type = "l", log = "y", lwd = 1.5,
+     ylab = expression(paste("Relative sample size ", n[r]/n[o])),
+     xlab = expression(italic(t)[o]), ylim = c(0.15, 1000), yaxt = "n")
+axis(side = 2, las = 1, at = c(0.1, 1, 10, 100, 1000), 
+     labels = c("1/10", "1", "10", "100", "1000"))
+abline(h = 1, lty = 3)
+# lines(to, sampleSizePI(to = to, designPrior = "EB"), lty = 2, lwd = 1.5)
+# legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5,
+#        legend = c("predictive", "EB"), bty = "n")
+@
+\caption{Relative sample size for the 95\% prediction interval of the replication effect estimate not to include zero as a function of the test statistic of original study.}
+\label{fig:sampleSizePI}
+\end{figure}
+
+Second, we can also determine the required sample size of
+the replication such that the prediction interval has a certain width. This can 
+be done with the function \texttt{sampleSizePIwidth}. 
+Specifically, the function
+takes as an argument the desired relative width \texttt{w} of the
+$\gamma \cdot 100\%$ prediction interval compared to the $\gamma \cdot 100\%$ 
+confidence interval of the original effect. 
+Below are again two examples. Also in this case the function returns the required
+relative sample size $c = n_r/n_o$, \ie how much the sample size of the replication 
+needs to be changed compared to the original study.
+<< >>=
+sampleSizePIwidth(w = 2, conf.level = 0.95, designPrior = "predictive")
+sampleSizePIwidth(w = 1.2, conf.level = 0.95, designPrior = "predictive")
+@
+Note that if the design prior incorporates
+the uncertainty of the original estimate, the prediction interval cannot be narrower
+than the original confidence interval, \ie the relative width needs to be at least one
+(Figure \ref{fig:sampleSizePIwidth}).
+\begin{figure}[!h]
+<< "plot-sampleSizePIwidth", echo = FALSE, fig.height = 4 >>=
+# required relative sample size for 0.95 PI to have certain width
+w <- seq(0.5, 3, 0.01)
+plot(w, sampleSizePIwidth(to = NULL, w = w), type = "l", log = "y", lwd = 1.5,
+     ylab = expression(paste("Relative sample size ", n[r]/n[o])),
+     xlab = "Relative width w", ylim = c(0.1, 50), yaxt = "n")
+axis(side = 2, las = 1, at = c(0.1, 1, 10, 50), 
+     labels = c("1/10", "1", "10", "50"))
+abline(h = 1, lty = 3)
+# lines(w, sampleSizePIwidth(to = 2, w = w, designPrior = "EB"),
+#       lty = 2, lwd = 1.5)
+# legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5, bty = "n",
+#        legend = c("predictive", expression(paste("EB, ", italic(t)[o] == 2))))
+@
+\caption{Relative sample size for the prediction interval of the replication effect estimate to have a specific relative width (relative to the width of the confidence
+interval of the original effect estimate).}
+\label{fig:sampleSizePIwidth}
+\end{figure}
+
+
+\subsection{The sceptical $p\,$-value}
+EXPAND THIS SECTION
+\paragraph{Analysis}
+The \emph{sceptical $p$-value}, a new quantitative measure of replication success was recently proposed by \citet{Held2019}. The \emph{sceptical $p$-value} arises from 
+combining the intrinsic credibility method \citep{Matthews2001a} with the
+prior-predictive check \citep{Box1980}. Specifically, using Bayes theorem in reverse, 
+the prior distribution of the effect 
+size can be determined such that conditional on the original study, the $(1 - \alpha)$
+credible interval of the posterior distribution of the effect just includes zero.
+This prior corresponds to the objection of a scpetic who argues
+that the original finding is no longer significant if combined with a sufficiently
+sceptical prior. 
+Replication success at level $\alpha$ is then achieved if the tail probability of 
+the replication estimate under its prior predictive distribution 
+is smaller than $\alpha$, rendering the objection of the sceptic unrealistic.
+\begin{figure}[!h]
+<< "plot-pSceptical", echo = FALSE, fig.height = 4 >>=
+# Functions
+ssv <- function(t_o, s_o, a) {
+  tau2 <- s_o^2/(t_o^2/qnorm(p = a/2, lower.tail = FALSE)^2 - 1)
+  return(tau2)
+}
+
+# Parameters and computations
+options(scipen = 5)
+theta_o <- 0.57
+theta_r <- 0.33
+s_o <- 0.165
+s_r <- 0.165
+c <- s_o^2/s_r^2
+t_o <- theta_o/s_o
+t_r <- theta_r/s_r
+alpha <- 0.05
+za <- qnorm(p = alpha/2, lower.tail = FALSE)
+tau <- sqrt(ssv(t_o, s_o, alpha))
+s2_p <- 1/(1/s_o^2 + 1/tau^2)
+mu_p <- s2_p*theta_o/s_o^2
+ps <- signif(pSceptical(to = t_o, tr = t_r, c = c), 2)
+ps_tilde <- signif(pSceptical(to = t_o, tr = t_r, c = c, 
+                              alternative = "one.sided"), 2)
+
+
+# Plot
+df <- data.frame(estimate = factor(c("Original Study", "Posterior", "Sceptical Prior", 
+                                     "Replication Study"),
+                                   levels = c("Original Study", "Posterior", 
+                                              "Sceptical Prior", "Replication Study")),
+                 theta = c(theta_o, mu_p, 0, theta_r),
+                 lower = c(theta_o - za*s_o, mu_p - za*sqrt(s2_p), 0 - za*tau, theta_r - za*s_r),
+                 upper = c(theta_o + za*s_o, mu_p + za*sqrt(s2_p), 0 + za*tau,
+                           theta_r + za*s_r),
+                 p = c(signif(2*pnorm(q = t_o, lower.tail = FALSE), 1), 
+                       NA, NA, signif(2*pnorm(q = t_r, lower.tail = FALSE), 2)))
+plot.default(x = df$estimate, y = df$theta, type = "p", ylim = c(-0.3, 1), 
+             xlim = c(0.4, 4.5), xaxt = "n", pch = 20, xlab = "", cex = 1.5,
+             ylab = "Effect size", las = 1)
+axis(side = 1, at = df$estimate, labels = levels(df$estimate), cex.axis = 0.8)
+abline(h = 0, lty = 2)
+arrows(x0 = as.numeric(df$estimate), y0 = df$lower, y1 = df$upper,
+       length = 0.05, angle = 90, code = 3)
+text(x = 4 + 0.3, y = 0.9, labels = bquote(italic(p)[S] == .(ps)), col = 2)
+# text(x = 4 + 0.3, y = 0.75, labels = bquote(tilde(italic(p))[S] == .(ps_tilde)))
+text(x = 0.6, y = theta_o + 0.05, labels = bquote(hat(theta)[o] == .(theta_o)))
+text(x = 3.65, y = theta_r + 0.05, labels = bquote(hat(theta)[r] == .(theta_r)))
+text(x = 0.65, y = theta_o - 0.1, labels = bquote(italic(p)[o] == .(df$p[1])))
+text(x = 3.7, y = theta_r - 0.1, labels = bquote(italic(p)[r] == .(df$p[4])))
+points(x = 2, y = 0, col = 2)
+arrows(x0 = 1.8, x1 = 1.97, y0 = -0.2, y1 = -0.03, col = 2, length = 0.1)
+text(x = 1.7, y = -0.25, labels = "fixed at zero", col = 2, cex = 0.8)
+@
+\caption{Example of assessment of replication success with sceptical $p$-value.}
+\end{figure}
+The smallest level $\alpha$ at which replication success can be declared corresponds
+to the sceptical $p$-value, analogous to the duality of ordinary $p$-values and 
+confidence intervals (for technical details, see the \href{https://doi.org/10.1111/rssa.12493}{article}).
+
+This method provides a theoretically sound approach to quantify 
+replication success and it has attractive properties. In particular, the sceptical $p$-value is never smaller than 
+the ordinary $p$-values from both studies and it also takes into account the size of 
+the effect estimates, \ie it becomes larger if the replication estimate is smaller than
+the original estimate. 
+\citet{Held2019b} further expanded on the calibration of the sceptical $p$-value,
+identifying $p_S = 0.065$ (one.sided) as threshold for type I error control at 5\% 
+if replication and original estimate have equal variances. 
+
+The sceptical $p$-value can be easily computed with the function \texttt{pSceptical}.
+For the analysis of replication studies, it usually only makes sense to compute the 
+one-sided version.
+<< "plot-pSceptical-projects", fig.height = 4 >>=
+# computing one.sided sceptical p-value for replication projects
+ReplicationProjects$ps <- with(ReplicationProjects, 
+                               pSceptical(to = to, tr = tr, c = c, alternative = "one.sided"))
+boxplot(ps ~ project, data = ReplicationProjects, las = 1, cex.axis = 0.7, ylim = c(0, 1),
+        xlab = "Project", ylab = expression(italic(p)[S]), outline = FALSE)
+abline(h = 0.065, lty = 3)
+stripchart(ps ~ project, data = ReplicationProjects, vertical = TRUE, add = TRUE,
+           pch = 1, method = "jitter", jitter = 0.2)
+
+for (p in unique(ReplicationProjects$project)) {
+  data_project <- subset(ReplicationProjects, project == p)
+  cat(paste0(p, ": \n"))
+  cat(paste0(round(mean(data_project$ps < 0.065)*100, 2), 
+             "% smaller than 0.065 (one-sided sceptical p-value) \n"))
+  cat(paste0(round(mean(data_project$pval_R/2 < 0.05)*100, 2), 
+             "% smaller than 0.05 (one-sided traditional p-value) \n \n"))
+}
+@
+Thresholding the one-sided traditional $p$-values and the one-sided sceptical $p$-values
+at the appropriate thresholds for type I error control,
+we can see that the latter is more stringent than the former.
+
+\paragraph{Design}
+Design works similarly as for the statistical significance analysis strategy;
+Using the function \texttt{sampleSizeReplicationSuccess}, one needs to choose a design 
+prior, a sceptical $p$-value level, and the desired power to obain the required
+relative sample size $c = n_r/n_o$.
+The following code shows a few examples. 
+
+<< >>=
+sampleSizeReplicationSuccess(to = 2.5, power = 0.8, level = 0.065, alternative = "one.sided",
+                             designPrior = "conditional")
+sampleSizeReplicationSuccess(to = 2.5, power = 0.8, level = 0.065, alternative = "one.sided",
+                             designPrior = "predictive")
+@
+
+Figure \ref{fig:powerReplicationSuccess} shows the power to achieve a one-sided 
+sceptical $p$-value smaller or equal 0.065 as a function of the $p$-value or test statistic
+of original study.
+\begin{figure}[!h]
+<< "plot-powerReplicationSuccess", echo = FALSE, fig.height = 4 >>=
+# plot power
+plot(po, powerReplicationSuccess(po = po, designPrior = "conditional",
+                                 level = 0.065, alternative = "one.sided")*100,
+     type = "l", ylim = c(0, 100), lwd = 1.5, ylab = "Power (%)", las = 1,
+     xlab = expression(italic(p)[o]))
+axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
+     labels = c("", round(p2t(p = seq(0.01, 0.05, by = 0.01)), 2)))
+mtext(text = expression(paste("|", italic(t)[o], "|")), side = 3, line = 2)
+lines(po, powerReplicationSuccess(po = po, designPrior = "predictive",
+                                  level = 0.065, alternative = "one.sided")*100, 
+      lwd = 2, lty = 2)
+legend("topright", legend = c("conditional", "predictive"), 
+       title = "Design prior", lty = c(1, 2), lwd = 1.5, bty = "n")
+@
+\caption{Power to achieve replication success 
+(at the one-sided 0.065 level) as a function of (two-sided) $p$-value or test statistic of original study.}
+\label{fig:powerReplicationSuccess}
+\end{figure}
+
+Figure \ref{fig:sampleSizeReplicationSuccess} shows the required sample size to achieve
+a one-sided sceptical $p$-value with 80\% power. 
+\begin{figure}[!h]
+<< "plot-sampleSizeReplicationSuccess", echo = FALSE, fig.height = 4 >>=
+po <- seq(0.0001, 0.05, 0.0001)
+
+# plot sample size 
+plot(po, sampleSizeReplicationSuccess(po = po, designPrior = "conditional",
+                                      level = 0.065, alternative = "one.sided", 
+                                      power = 0.8),
+     type = "l", log = "y", lwd = 1.5, las = 1, ylim = c(0.5, 50),
+     ylab = expression(paste("Relative sample size ", n[r]/n[o])),
+     xlab = expression(italic(p)[o]), yaxt = "n")
+axis(side = 2, las = 1, at = c(0.5, 1, 2, 5, 10, 20, 50), 
+     labels = c("1/2", "1", "2", "5", "10", "20", "50"))
+abline(h = 1, lty = 3)
+axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
+     labels = c("", round(p2t(p = seq(0.01, 0.05, by = 0.01)), 2)))
+mtext(text = expression(paste("|", italic(t)[o], "|")), side = 3, line = 2)
+lines(po, sampleSizeReplicationSuccess(po = po, designPrior = "predictive", 
+                                       level = 0.065, alternative = "one.sided", 
+                                       power = 0.8), 
+      lwd = 2, lty = 2)
+legend("topright", legend = c("conditional", "predictive"), 
+       title = "Design prior", lty = c(1, 2), lwd = 1.5, bty = "n")
+@
+\caption{Relative sample size to achieve replication success 
+(at the one-sided 0.065 level) with 80\% power as
+a function of (two-sided) $p$-value or test statistic of original study.}
+\label{fig:sampleSizeReplicationSuccess}
+\end{figure}
+
+
+\section{Special topics}
+
+\subsection{Interim analysis}
+TODO
+
+\subsection{Between-study heterogeneity}
+It is  likely that the effect estimates from original and replication studies 
+are not realizations of the exact same underlying effect size, but that there is 
+between-study heterogeneity of effects. This can be caused, for example, if the replication
+study is conducted in a different laboratory with different equipment. For this reason, 
+many functions in \texttt{ReplicationSuccess} allow to incorporate additionally
+uncertainty due to between-study heterogeneity into the predictive model. For example,
+\texttt{sampleSizeSignificance} or \texttt{predictionInterval} allow to specify 
+\texttt{d}, the relative between-study heterogeneity variance $d = \tau^2/\sigma^2$, 
+\ie the ratio of the heterogeneity variance to the variance of the original effect estimate.
+By default, \texttt{d} is set to zero, however, if between-study heterogeneity is
+expected, \eg a different population of study participants is used, this should
+be considered in the design. For details, see \citet{Pawel2019}.
+
+\bibliography{bibliography}
+
+\end{document}

@@ -65,6 +65,9 @@ shrinkage=1)
     Leonhard Held,
     Samuel Pawel 
   }
+\seealso{
+  \code{\link{sampleSizeSignificance}}, \code{\link{powerSignificance}}
+}
   \examples{
   powerSignificanceInterim(to = 2, ti = 2, c = 1, f = 1/2, 
   designPrior = "conditional", analysisPrior = "flat")
