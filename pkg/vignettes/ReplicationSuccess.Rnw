@@ -11,6 +11,7 @@
 \usepackage{amsmath, amssymb}
 \usepackage[round]{natbib}
 \bibliographystyle{plainnat}
+\usepackage{todonotes}
 \input{newCommands.tex} 
 
 % margins %
@@ -152,29 +153,30 @@ of the study sample size $n$, \ie $\Var(\hat{\theta}) = 1/(n - 3)$ \citep{Fisher
 The data can be loaded with the command \texttt{data("ReplicationProjects")}. For a
 description of the variables see the documentation with \texttt{?ReplicationProjects}.
 It is a good idea to first compute the unitless quantities $t_o$, $t_r$ and $c$, since 
-all functions of the package usem them as input.
+all functions of the package use them as input.
 << "data-loading" >>=
 library(ReplicationSuccess)
 data("ReplicationProjects")
 str(ReplicationProjects)
 
-# computing to, tr, c
+## computing to, tr, c
 ReplicationProjects$to <- with(ReplicationProjects, z_O/z_se_O)
 ReplicationProjects$tr <- with(ReplicationProjects, z_R/z_se_R)
 ReplicationProjects$c <- with(ReplicationProjects, z_se_O^2/z_se_R^2)
 @
+\todo{unify suffix notation for original/replication}
 Note that each variable ending with an \texttt{\_O} is associated with the original,
 while each variable ending with an \texttt{\_R} is associated with the replication.
 Plotting the original versus the replication effect estimate on the correlation scale
 gives a good overview of the data.
 << "plot-projects", fig.height = 5 >>=
-# plots of effect estimates
+## plots of effect estimates
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(ReplicationProjects$project)) {
   data_project <- subset(ReplicationProjects, project == p)
   significant <- factor(data_project$pval_R < 0.05)
   plot(r_R ~ r_O, data = data_project, ylim = c(-0.5, 1), col = significant,
-       xlim = c(-0.1, 1), main = p, xlab = expression(italic(r)[o]),
+       xlim = c(-0.1, 1), main = p, xlab = expression(italic(r)[o]), cex=0.7, pch=19, 
        ylab = expression(italic(r)[r]))
   legend("topleft", legend = "significant", pch = 20, col = 2, bty = "n")
   abline(h = 0, lty = 2)
@@ -213,12 +215,12 @@ of the effects are the same.
 << >>=
 for (p in unique(ReplicationProjects$project)) {
   data_project <- subset(ReplicationProjects, project == p)
-    significant_O <- data_project$pval_O < 0.05
+  significant_O <- data_project$pval_O < 0.05
   significant_R <- data_project$pval_R < 0.05
   success <- (significant_O == significant_R) & 
-             (sign(data_project$z_O) == sign(data_project$z_R))
+      (sign(data_project$z_O) == sign(data_project$z_R))
   cat(paste0(p, ": \n"))
-  cat(paste0(round(mean(significant_O)*100, 2), "% orginal studies significant (", 
+  cat(paste0(round(mean(significant_O)*100, 2), "% original studies significant (", 
              sum(significant_O), "/", length(significant_O), ")\n"))
   cat(paste0(round(mean(significant_R)*100, 2), "% replications significant (", 
              sum(significant_R), "/", length(significant_R), ")\n"))
@@ -300,14 +302,14 @@ was only weak or moderate (Figure \ref{fig:sampleSizeSignificance}).
 << "plot-powerSignificance", echo = FALSE, fig.height = 4 >>=
 po <- seq(0.0001, 0.05, 0.0001)
 
-# plot power
+## plot power
 plot(po, powerSignificance(po = po, designPrior = "conditional")*100,
      type = "l", ylim = c(0, 100), lwd = 1.5, ylab = "Power (%)", 
      xlab = expression(italic(p)[o]), las = 1)
 axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
      labels = c("", round(p2t(p = seq(0.01, 0.05, by = 0.01)), 2)))
 mtext(text = expression(paste("|", italic(t)[o], "|")), side = 3, line = 2)
-# abline(h = seq(0, 100, 25), col = "#333333B3", lty = 3)
+## abline(h = seq(0, 100, 25), col = "#333333B3", lty = 3)
 lines(po, powerSignificance(po = po, designPrior = "predictive")*100, lwd = 2, lty = 2)
 lines(po, powerSignificance(po = po, designPrior = "EB")*100, lwd = 1.5, lty = 4)
 legend("topright", legend = c("conditional", "predictive", "EB"), 
@@ -320,7 +322,7 @@ as in the original study.}
 
 \begin{figure}[!h]
 << "plot-sampleSizeSignificance", echo = FALSE, fig.height = 4 >>=
-# plot sample size 
+## plot sample size 
 plot(po, sampleSizeSignificance(po = po, designPrior = "conditional", power = 0.8),
      type = "l", ylim = c(0.5, 10), log = "y", lwd = 1.5, 
      ylab = expression(paste("Relative sample size ", n[r]/n[o])),
@@ -362,13 +364,13 @@ whether the replication estimates are contained within them. For easier visual
 assessment we transform the intervals and estimates back to the correlation scale.
 
 << "plot-predictionInterval", fig.height = 6 >>=
-# compute prediction intervals for replication projects
+## compute prediction intervals for replication projects
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(ReplicationProjects$project)) {
   data_project <- subset(ReplicationProjects, project == p)
   PI <- predictionInterval(to = data_project$to, c = data_project$c)*
-        data_project$z_se_R # multiplying by standard error to transform to z-scale
-  PI <- tanh(PI) # transforming back to correlation scale
+        data_project$z_se_R ## multiplying by standard error to transform to z-scale
+  PI <- tanh(PI) ## transforming back to correlation scale
   within <- (data_project$r_R < PI$upper) & (data_project$r_R > PI$lower)
   coverage <- mean(within)
   color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
@@ -408,8 +410,8 @@ for a $\gamma \cdot 100\%$  prediction interval not to include zero (Figure
 \ref{fig:sampleSizePI}). 
 \begin{figure}[!h]
 << "plot-sampleSizePI", echo = FALSE, fig.height = 4 >>=
-# required relative sample size for 0.95 PI not to include 0 as function of 
-# test statistic
+## required relative sample size for 0.95 PI not to include 0 as function of 
+## test statistic
 to <- seq(0, 5, 0.01)
 plot(to, sampleSizePI(to = to), type = "l", log = "y", lwd = 1.5,
      ylab = expression(paste("Relative sample size ", n[r]/n[o])),
@@ -417,9 +419,9 @@ plot(to, sampleSizePI(to = to), type = "l", log = "y", lwd = 1.5,
 axis(side = 2, las = 1, at = c(0.1, 1, 10, 100, 1000), 
      labels = c("1/10", "1", "10", "100", "1000"))
 abline(h = 1, lty = 3)
-# lines(to, sampleSizePI(to = to, designPrior = "EB"), lty = 2, lwd = 1.5)
-# legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5,
-#        legend = c("predictive", "EB"), bty = "n")
+## lines(to, sampleSizePI(to = to, designPrior = "EB"), lty = 2, lwd = 1.5)
+## legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5,
+##        legend = c("predictive", "EB"), bty = "n")
 @
 \caption{Relative sample size for the 95\% prediction interval of the replication effect estimate not to include zero as a function of the test statistic of original study.}
 \label{fig:sampleSizePI}
@@ -445,7 +447,7 @@ than the original confidence interval, \ie the relative width needs to be at lea
 (Figure \ref{fig:sampleSizePIwidth}).
 \begin{figure}[!h]
 << "plot-sampleSizePIwidth", echo = FALSE, fig.height = 4 >>=
-# required relative sample size for 0.95 PI to have certain width
+## required relative sample size for 0.95 PI to have certain width
 w <- seq(0.5, 3, 0.01)
 plot(w, sampleSizePIwidth(to = NULL, w = w), type = "l", log = "y", lwd = 1.5,
      ylab = expression(paste("Relative sample size ", n[r]/n[o])),
@@ -453,10 +455,10 @@ plot(w, sampleSizePIwidth(to = NULL, w = w), type = "l", log = "y", lwd = 1.5,
 axis(side = 2, las = 1, at = c(0.1, 1, 10, 50), 
      labels = c("1/10", "1", "10", "50"))
 abline(h = 1, lty = 3)
-# lines(w, sampleSizePIwidth(to = 2, w = w, designPrior = "EB"),
-#       lty = 2, lwd = 1.5)
-# legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5, bty = "n",
-#        legend = c("predictive", expression(paste("EB, ", italic(t)[o] == 2))))
+## lines(w, sampleSizePIwidth(to = 2, w = w, designPrior = "EB"),
+##       lty = 2, lwd = 1.5)
+## legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5, bty = "n",
+##        legend = c("predictive", expression(paste("EB, ", italic(t)[o] == 2))))
 @
 \caption{Relative sample size for the prediction interval of the replication effect estimate to have a specific relative width (relative to the width of the confidence
 interval of the original effect estimate).}
@@ -481,13 +483,13 @@ the replication estimate under its prior predictive distribution
 is smaller than $\alpha$, rendering the objection of the sceptic unrealistic.
 \begin{figure}[!h]
 << "plot-pSceptical", echo = FALSE, fig.height = 4 >>=
-# Functions
+## Functions
 ssv <- function(t_o, s_o, a) {
   tau2 <- s_o^2/(t_o^2/qnorm(p = a/2, lower.tail = FALSE)^2 - 1)
   return(tau2)
 }
 
-# Parameters and computations
+## Parameters and computations
 options(scipen = 5)
 theta_o <- 0.57
 theta_r <- 0.33
@@ -506,7 +508,7 @@ ps_tilde <- signif(pSceptical(to = t_o, tr = t_r, c = c,
                               alternative = "one.sided"), 2)
 
 
-# Plot
+## Plot
 df <- data.frame(estimate = factor(c("Original Study", "Posterior", "Sceptical Prior", 
                                      "Replication Study"),
                                    levels = c("Original Study", "Posterior", 
@@ -524,8 +526,8 @@ axis(side = 1, at = df$estimate, labels = levels(df$estimate), cex.axis = 0.8)
 abline(h = 0, lty = 2)
 arrows(x0 = as.numeric(df$estimate), y0 = df$lower, y1 = df$upper,
        length = 0.05, angle = 90, code = 3)
-text(x = 4 + 0.3, y = 0.9, labels = bquote(italic(p)[S] == .(ps)), col = 2)
-# text(x = 4 + 0.3, y = 0.75, labels = bquote(tilde(italic(p))[S] == .(ps_tilde)))
+text(x = 4 + 0.3, y = 0.9, labels = bquote(italic(p)[S] == .(ps_tilde)), col = 2)
+## text(x = 4 + 0.3, y = 0.75, labels = bquote(tilde(italic(p))[S] == .(ps_tilde)))
 text(x = 0.6, y = theta_o + 0.05, labels = bquote(hat(theta)[o] == .(theta_o)))
 text(x = 3.65, y = theta_r + 0.05, labels = bquote(hat(theta)[r] == .(theta_r)))
 text(x = 0.65, y = theta_o - 0.1, labels = bquote(italic(p)[o] == .(df$p[1])))
@@ -534,46 +536,60 @@ points(x = 2, y = 0, col = 2)
 arrows(x0 = 1.8, x1 = 1.97, y0 = -0.2, y1 = -0.03, col = 2, length = 0.1)
 text(x = 1.7, y = -0.25, labels = "fixed at zero", col = 2, cex = 0.8)
 @
-\caption{Example of assessment of replication success with sceptical $p$-value.}
+\caption{Example of assessment of replication success with one-sided sceptical $p$-value $p_S$.}
 \end{figure}
 The smallest level $\alpha$ at which replication success can be declared corresponds
 to the sceptical $p$-value, analogous to the duality of ordinary $p$-values and 
 confidence intervals (for technical details, see the \href{https://doi.org/10.1111/rssa.12493}{article}).
-
+<<>>=
+sqrt.cH <- qnorm(1-2*(0.025^2))
+(threshS <- t2p(sqrt.cH/2, alternative="one.sided"))
+@ 
 This method provides a theoretically sound approach to quantify 
 replication success and it has attractive properties. In particular, the sceptical $p$-value is never smaller than 
 the ordinary $p$-values from both studies and it also takes into account the size of 
 the effect estimates, \ie it becomes larger if the replication estimate is smaller than
 the original estimate. 
 \citet{Held2019b} further expanded on the calibration of the sceptical $p$-value,
-identifying $p_S = 0.065$ (one.sided) as threshold for type I error control at 5\% 
+identifying $p_S = \Sexpr{signif(threshS,3)}$ (one.sided) as threshold for one-sided type I error control at $(1/40)^2=1/1600$
 if replication and original estimate have equal variances. 
 
 The sceptical $p$-value can be easily computed with the function \texttt{pSceptical}.
-For the analysis of replication studies, it usually only makes sense to compute the 
-one-sided version.
+For the analysis of replication studies, it is recommended to report the one-sided sceptical $p$-value. 
 << "plot-pSceptical-projects", fig.height = 4 >>=
-# computing one.sided sceptical p-value for replication projects
+
+
+## computing one.sided sceptical p-value for replication projects
 ReplicationProjects$ps <- with(ReplicationProjects, 
                                pSceptical(to = to, tr = tr, c = c, alternative = "one.sided"))
 boxplot(ps ~ project, data = ReplicationProjects, las = 1, cex.axis = 0.7, ylim = c(0, 1),
         xlab = "Project", ylab = expression(italic(p)[S]), outline = FALSE)
-abline(h = 0.065, lty = 3)
+abline(h = threshS, lty = 3)
 stripchart(ps ~ project, data = ReplicationProjects, vertical = TRUE, add = TRUE,
-           pch = 1, method = "jitter", jitter = 0.2)
+           pch = 19, method = "jitter", jitter = 0.2, cex=.6)
 
 for (p in unique(ReplicationProjects$project)) {
   data_project <- subset(ReplicationProjects, project == p)
   cat(paste0(p, ": \n"))
-  cat(paste0(round(mean(data_project$ps < 0.065)*100, 2), 
-             "% smaller than 0.065 (one-sided sceptical p-value) \n"))
-  cat(paste0(round(mean(data_project$pval_R/2 < 0.05)*100, 2), 
-             "% smaller than 0.05 (one-sided traditional p-value) \n \n"))
+  sel1 <- (data_project$ps < threshS)
+  cat(paste0(round(mean(sel1)*100, 2), 
+             "% smaller than 0.0653 (one-sided sceptical p-value) \n"))
+  sel2 <- (data_project$pval_O/2 < 0.025)&(data_project$pval_R/2 < 0.025)
+  cat(paste0(round(mean(sel2)*100, 2), 
+             "% smaller than 0.025 (both one-sided traditional p-values) \n \n"))
+  if(sum(sel1!=sel2)>0)
+      print(data_project[(sel1!=sel2),])
 }
-@
-Thresholding the one-sided traditional $p$-values and the one-sided sceptical $p$-values
-at the appropriate thresholds for type I error control,
-we can see that the latter is more stringent than the former.
+@ 
+
+Thresholding the one-sided traditional $p$-values and the one-sided
+sceptical $p$-values at the appropriate thresholds for type I error
+control, we can see some discrepencies between the two. In particular,
+the sceptical $p$-value may not indicate replication success 
+even if both studies are significant, but with substantial shrinkage of the replication 
+effect estimate relative to the original one. 
+
+
 
 \paragraph{Design}
 Design works similarly as for the statistical significance analysis strategy;
@@ -583,33 +599,35 @@ relative sample size $c = n_r/n_o$.
 The following code shows a few examples. 
 
 << >>=
-sampleSizeReplicationSuccess(to = 2.5, power = 0.8, level = 0.065, alternative = "one.sided",
+sampleSizeReplicationSuccess(to = 2.5, power = 0.8, level = threshS, alternative = "one.sided",
                              designPrior = "conditional")
-sampleSizeReplicationSuccess(to = 2.5, power = 0.8, level = 0.065, alternative = "one.sided",
+sampleSizeReplicationSuccess(to = 2.5, power = 0.8, level = threshS, alternative = "one.sided",
                              designPrior = "predictive")
 @
 
 Figure \ref{fig:powerReplicationSuccess} shows the power to achieve a one-sided 
-sceptical $p$-value smaller or equal 0.065 as a function of the $p$-value or test statistic
+sceptical $p$-value smaller or equal 0.0653 as a function of the $p$-value or test statistic
 of original study.
 \begin{figure}[!h]
 << "plot-powerReplicationSuccess", echo = FALSE, fig.height = 4 >>=
-# plot power
-plot(po, powerReplicationSuccess(po = po, designPrior = "conditional",
-                                 level = 0.065, alternative = "one.sided")*100,
+## plot power
+plot(po, powerReplicationSuccess(po = po/2, designPrior = "conditional",
+                                 level = threshS, alternative = "one.sided")*100,
      type = "l", ylim = c(0, 100), lwd = 1.5, ylab = "Power (%)", las = 1,
      xlab = expression(italic(p)[o]))
 axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
      labels = c("", round(p2t(p = seq(0.01, 0.05, by = 0.01)), 2)))
 mtext(text = expression(paste("|", italic(t)[o], "|")), side = 3, line = 2)
-lines(po, powerReplicationSuccess(po = po, designPrior = "predictive",
-                                  level = 0.065, alternative = "one.sided")*100, 
+lines(po, powerReplicationSuccess(po = po/2, designPrior = "predictive",
+                                  level = threshS, alternative = "one.sided")*100, 
       lwd = 2, lty = 2)
 legend("topright", legend = c("conditional", "predictive"), 
        title = "Design prior", lty = c(1, 2), lwd = 1.5, bty = "n")
+abline(h = 50, lty = 3)
+
 @
 \caption{Power to achieve replication success 
-(at the one-sided 0.065 level) as a function of (two-sided) $p$-value or test statistic of original study.}
+(at the one-sided 0.0653 level) as a function of the two-sided $p$-value or test statistic of original study.}
 \label{fig:powerReplicationSuccess}
 \end{figure}
 
@@ -619,9 +637,9 @@ a one-sided sceptical $p$-value with 80\% power.
 << "plot-sampleSizeReplicationSuccess", echo = FALSE, fig.height = 4 >>=
 po <- seq(0.0001, 0.05, 0.0001)
 
-# plot sample size 
-plot(po, sampleSizeReplicationSuccess(po = po, designPrior = "conditional",
-                                      level = 0.065, alternative = "one.sided", 
+## plot sample size 
+plot(po, sampleSizeReplicationSuccess(po = po/2, designPrior = "conditional",
+                                      level = threshS, alternative = "one.sided", 
                                       power = 0.8),
      type = "l", log = "y", lwd = 1.5, las = 1, ylim = c(0.5, 50),
      ylab = expression(paste("Relative sample size ", n[r]/n[o])),
@@ -632,15 +650,15 @@ abline(h = 1, lty = 3)
 axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
      labels = c("", round(p2t(p = seq(0.01, 0.05, by = 0.01)), 2)))
 mtext(text = expression(paste("|", italic(t)[o], "|")), side = 3, line = 2)
-lines(po, sampleSizeReplicationSuccess(po = po, designPrior = "predictive", 
-                                       level = 0.065, alternative = "one.sided", 
+lines(po, sampleSizeReplicationSuccess(po = po/2, designPrior = "predictive", 
+                                       level = threshS, alternative = "one.sided", 
                                        power = 0.8), 
       lwd = 2, lty = 2)
-legend("topright", legend = c("conditional", "predictive"), 
+legend("topleft", legend = c("conditional", "predictive"), 
        title = "Design prior", lty = c(1, 2), lwd = 1.5, bty = "n")
 @
 \caption{Relative sample size to achieve replication success 
-(at the one-sided 0.065 level) with 80\% power as
+(at the one-sided 0.0653 level) with 80\% power as
 a function of (two-sided) $p$-value or test statistic of original study.}
 \label{fig:sampleSizeReplicationSuccess}
 \end{figure}
