@@ -30,7 +30,7 @@
 % \subtitle{Design of Replication Experiments}
 \author{Leonhard Held, Charlotte Micheloud, Samuel Pawel}
 \institute{Department of Biostatistics, Center for Reproducible Science}
-\titlegraphic{\includegraphics[width=0.5\textwidth]{images_presentation/uzhlogo.png}}
+\titlegraphic{\flushright\includegraphics[width=0.4\textwidth]{images_presentation/CRS_Hexasticker7.pdf}}
 \date{22.01.2020}
 
 % ----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{document}
 \maketitle
 
-% ============================================================================
+
 \begin{frame}[fragile]{Installation}
 << eval = FALSE, size = "normalsize" >>=
 install.packages("ReplicationSuccess", 
@@ -61,15 +61,62 @@ install.packages("ReplicationSuccess",
 \end{frame}
 
 
-% ============================================================================
-\begin{frame}[fragile]{Example}
-<< >>=
-library(ReplicationSuccess)
-powerSignificance(po = 0.05)
-@
+\begin{frame}{Replication studies}
+General things about replication studies / Replication crisis
 \end{frame}
 
 
+\begin{frame}{Data sets / examples}
+Show examples
+\end{frame}
+
+
+\begin{frame}{Criteria for replication success}
+-- Discuss different criteria for replication success 
+-- Discuss problems: Inflation, shrinkage, heterogeneity
+\end{frame}
+
+
+\begin{frame}{Design of replication studies}
+-- Discuss sample size calculation important and depends on analysis strategy
+-- Discuss what was done in projects
+-- Ad hoc shrinkage
+\end{frame}
+
+
+\begin{frame}{Statistical framework of package}
+-- normality assumption
+-- relative quantities
+-- DesignPrior: Predictive and conditional
+\end{frame}
+
+
+\begin{frame}{Significance}
+-- powerSignficance + arguments
+-- sampleSizeSignificance + arguments
+-- exercises
+\end{frame}
+
+
+\begin{frame}{Comparison of effect size}
+-- predictionInterval
+-- sampleSizePI
+-- sampleSizePIwidth
+\end{frame}
+
+
+\begin{frame}{Reverse Bayes}
+-- pSceptical
+-- powerReplicationSuccess
+-- sampleSizeReplicationSuccess
+\end{frame}
+
+
+\begin{frame}{Outlook}
+-- Interim
+-- Heterogeneity
+-- EB shrinkage
+\end{frame}
 
 
 % ============================================================================
