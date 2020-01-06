@@ -1,0 +1,21 @@
+### Tutorial - Wednesday, January 22 ###
+
+Structure: 
+
+1. Intro: general concepts 
+	- Replication studies / Projects 
+	- Significance vs Precision vs Reverse-Bayes 
+	- Inflation/shrinkage/heterogeneity
+	- Mention normality assumption 
+	- Conditional vs predictive power
+
+2. PowerSignificance() - sampleSizeSignificanceInterim()
+   Application 
+	1. Recycle exercises from Reproducibility Day and Scientifica
+	2. Application using the four replication projects
+
+3. sampleSizePI() 
+
+4. PowerReplicationSuccess() - sampleSizeReplicationSuccess() 
+
+5. Outlook: Interim analyses (if time permits) 
