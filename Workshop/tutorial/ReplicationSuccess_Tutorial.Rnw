@@ -1,0 +1,83 @@
+\documentclass[english]{beamer}
+
+% Leos shortcuts
+\input{newCommands.tex}
+
+% citing
+\usepackage[round]{natbib}
+
+% biostat beamer theme
+\usepackage{beamerthemebiostat}
+
+% hyperref options
+\usepackage{hyperref}  
+\hypersetup{
+  bookmarksopen=true, 
+  breaklinks=true,
+  pdftitle={Tutorial on the R package ReplicationSuccess}, 
+  pdfauthor={Leonhard Held, Charlotte Micheloud, Samuel Pawel},
+  colorlinks=false
+}
+
+% Installation of non-free fonts in ubuntu 18.04:
+% cd Downloads/
+% wget -q https://www.tug.org/fonts/getnonfreefonts/install-getnonfreefonts
+% sudo texlua ./install-getnonfreefonts
+% sudo getnonfreefonts --sys -a
+\def\uzhunit{}
+\def\uzhunitext{}
+\title{Tutorial on the R package ReplicationSuccess}
+% \subtitle{Design of Replication Experiments}
+\author{Leonhard Held, Charlotte Micheloud, Samuel Pawel}
+\institute{Department of Biostatistics, Center for Reproducible Science}
+\titlegraphic{\includegraphics[width=0.5\textwidth]{images_presentation/uzhlogo.png}}
+\date{22.01.2020}
+
+% ----------------------------------------------------------------------------
+<< include = FALSE, purl = FALSE >>=
+library(knitr)
+opts_chunk$set(fig.path = "figures/fig", 
+               cache = FALSE, 
+               fig.align = "center",
+               fig.height = 8,
+               fig.width = 10,
+               dpi = 1000,
+               echo = TRUE,
+               size = "scriptsize",
+               warning = FALSE,
+               message = FALSE)
+@
+% ----------------------------------------------------------------------------
+
+\begin{document}
+\maketitle
+
+% ============================================================================
+\begin{frame}[fragile]{Installation}
+<< eval = FALSE, size = "normalsize" >>=
+install.packages("ReplicationSuccess", 
+                 repos = "http://R-Forge.R-project.org")
+@
+\end{frame}
+
+
+% ============================================================================
+\begin{frame}[fragile]{Example}
+<< >>=
+library(ReplicationSuccess)
+powerSignificance(po = 0.05)
+@
+\end{frame}
+
+
+
+
+% ============================================================================
+\nocite{Pawel2019, Held2019, Opensc2015, Camerer2016, Camerer2018, Cova2018}
+\begin{frame}{References}
+  \tiny
+  \bibliographystyle{apalike}
+  \bibliography{bibliography}
+\end{frame}
+
+\end{document}
