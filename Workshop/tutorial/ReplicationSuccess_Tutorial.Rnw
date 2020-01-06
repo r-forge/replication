@@ -233,24 +233,92 @@ morewedge_plot
 
 
 \begin{frame}{Design of replication studies}
--- Discuss sample size calculation important and depends on analysis strategy
--- Discuss what was done in projects
--- Ad hoc shrinkage
+\begin{block}{Replication sample size}
+  \begin{itemize}
+  \item Direct replication $\rightarrow$ procedures of replication study as closely matched as possible to original study 
+\item But proper sample size calculation is essential and depends on analysis strategy
+  \end{itemize}
+\end{block}
 \end{frame}
 
+\begin{frame}{Design of replication studies}
+\begin{block}{What is used in practice}
+  \begin{itemize}
+  \item Standard power calculation
+  \item Depending on the projects, goal is to have between 80\%  and 95\% power in the replication study to detect the effect estimate from the original study
+  \item Shrinkage of the original effect estimate is sometimes used (e.g. in \citet{Camerer2018})
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Design of replication studies}
+\begin{block}{Issues with this method}
+  \begin{itemize}
+  \item Uncertainty of original effect estimate is ignored
+  \item Heterogeneity between original and replication study is not taken into account
+  \item Arbitrary shrinkage methods
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Package}
+\begin{block}{}
+To add: small intro to package (goal, structure etc)
+\end{block}
+\end{frame}
 
 \begin{frame}{Statistical framework of package}
--- normality assumption
--- relative quantities
--- DesignPrior: Predictive and conditional
+\begin{block}{}
+\begin{itemize}
+\item Effect estimates are assumed to be normally distributed
+\begin{itemize}
+\item[] $\rightarrow$ usually fulfilled after suitable transformation 
+\end{itemize}
+\item Relative quantities (as opposed to absolute quantities)
+\begin{itemize}
+\item[] $\rightarrow$ $p$-value or test statistic of original study
+\item[] $\rightarrow$ Relative sample size $n_r/n_o$
+\end{itemize}
+
+\item Design prior
+\begin{itemize}
+\item[] $\rightarrow$ Conditional: ignores uncertainty of original study
+\item[] $\rightarrow$ Predictive: reflects that there is still
+uncertainty about the true effect after the original experiment
+\end{itemize}
+\end{itemize}
+
+\end{block}
 \end{frame}
 
+\begin{frame}{Statistical framework of package}
+\begin{block}{}
+Suggestion: Use the example from Morewedge to illustrate relative quantities?
+\end{block}
+\end{frame}
 
-\begin{frame}{Significance}
+\begin{frame}{Approaches (title not optimal)}
+\begin{block}{1. Statistical significance}
+Two functions: 
+\begin{itemize}
+\item \texttt{powerSignificance()} and \texttt{sampleSizeSignificance()}
+\end{itemize}
+Main arguments
+\begin{itemize}
+\item \texttt{po} or \texttt{to}: $p$-value or test statistic of the original study
+\item \texttt{c}: relative sample size $n_r/n_o$ (only for \texttt{powerSignificance})
+\item \texttt{power}: desired level of replication power (only for \texttt{sampleSizeSignificance()})
+\item \texttt{designPrior}: conditional or predictive
+\item \texttt{shrinkage}
+\end{itemize}
 -- powerSignficance + arguments
 -- sampleSizeSignificance + arguments
 -- exercises
+\end{block}
 \end{frame}
+
+
+
 
 
 \begin{frame}{Comparison of effect size}
