@@ -30,7 +30,7 @@
 % \subtitle{Design of Replication Experiments}
 \author{Leonhard Held, Charlotte Micheloud, Samuel Pawel}
 \institute{Department of Biostatistics, Center for Reproducible Science}
-\titlegraphic{\flushright\includegraphics[width=0.4\textwidth]{images_presentation/CRS_Hexasticker7.pdf}}
+\titlegraphic{\vspace{-1em}\flushright\includegraphics[width=0.4\textwidth]{images_presentation/CRS_Hexasticker7.pdf}}
 \date{22.01.2020}
 
 % ----------------------------------------------------------------------------
@@ -54,26 +54,181 @@ opts_chunk$set(fig.path = "figures/fig",
 
 
 \begin{frame}[fragile]{Installation}
-<< eval = FALSE, size = "normalsize" >>=
-install.packages("ReplicationSuccess", 
-                 repos = "http://R-Forge.R-project.org")
+  \begin{block}{}
+    \begin{itemize}
+      \item Linux / Windows
+<< eval = FALSE, size = "small" >>=
+install.packages(pkgs = "ReplicationSuccess", 
+                 repos ="http://R-Forge.R-project.org")
 @
+      \item Mac 
+<< eval = FALSE, size = "small" >>=
+install.packages(pkgs = "ReplicationSuccess", 
+                 repos = "http://R-Forge.R-project.org",
+                 type = "source")
+@
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 
 \begin{frame}{Replication studies}
-General things about replication studies / Replication crisis
+\begin{block}{Direct replication}
+  \begin{itemize}
+    \item Repeating original study using the same methodology
+    \item[$\rightarrow$] Tool to assess credibility of scientific discoveries
+    \item[$\rightarrow$] Regulatory requirement
+  \end{itemize}
+\end{block}
+\pause
+\begin{block}{Replication crisis}
+  \begin{itemize}
+    \item Low replicability of many scientific discoveries
+    \item[$\rightarrow$] Increased interest in meta-science
+    \item[$\rightarrow$] Large-scale replication projects
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Large-scale replication projects}
+\begin{block}{}
+  \begin{itemize}
+    \item<1-> \color<5>{gray}{2015: Reproducibility project psychology}
+    \item<2-> \color<5>{gray}{2016: Experimental economics replication project}
+    \item<3-> \color<5>{gray}{2018: Experimental philosophy replicability project}
+    \item<4-> \color<5>{red}{2018: Social sciences replication project}
+  \end{itemize}
+\end{block}
+% \begin{block}{}
+%   \vspace{-2em}
+%   \centering
+%   \alt<1>{
+%   \includegraphics[width=0.7\textwidth]{images_presentation/osc2015.png}
+%   }
+%   \alt<2>{
+%   \includegraphics[width=0.6\textwidth]{images_presentation/camerer2016.png}
+%   }
+%   \alt<3>{
+%   \includegraphics[width=0.5\textwidth]{images_presentation/cova2018.png}
+%   }
+%   \alt<4,5>{
+%   \includegraphics[width=0.5\textwidth]{images_presentation/camerer2018.png}
+%   }
+% \end{block}
 \end{frame}
 
 
-\begin{frame}{Data sets / examples}
-Show examples
+\begin{frame}{Social sciences replication project}
+<< echo = FALSE >>=
+library(ReplicationSuccess)
+library(ggplot2)
+data("ReplicationProjects")
+SSRP <- subset(ReplicationProjects, project == "Social Sciences")
+
+ggplot(data = SSRP, aes(x = r_O, y = r_R)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.7, size = 7, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = expression(paste("Original effect estimate (", italic(r), ")")), 
+       y = expression(paste("Replication effect estimate (", italic(r), ")"))) +
+  lims(x = c(-0.15, 1), y = c(-0.15, 1)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{frame}
+
+\begin{frame}{Social sciences replication project}
+<< echo = FALSE >>=
+morewedge <- subset(SSRP,
+                    study == "Morewedge et al. (2010), Science")
+
+ggplot(data = SSRP, aes(x = r_O, y = r_R)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.2, size = 7, shape = 21, 
+             fill = "midnightblue") +
+  geom_point(data = morewedge,
+             alpha = 1, size = 7, shape = 21, 
+             fill = "red") +
+  
+  labs(x = expression(paste("Original effect estimate (", italic(r), ")")), 
+       y = expression(paste("Replication effect estimate (", italic(r), ")"))) +
+  lims(x = c(-0.15, 1), y = c(-0.15, 1)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{frame}
+
+\begin{frame}{Morewedge et al. (2010). Science}
+% \framesubtitle{Thought for Food: Imagined Consumption Reduces Actual Consumption}
+\begin{block}{Original discovery}
+\begin{itemize}
+  \item[] ``Repeatedly imagining eating a food subsequently reduces the actual consumption of that food''
+  % \item $r_o = 0.45, p_o = 0.009$
+  % \item $r_r = 0.35, p_r = 0.0006$
+\end{itemize}
+\end{block}
+\vspace{2em}
+<< fig.height = 4.5, echo = FALSE >>=
+library(biostatUZH)
+options(scipen = 5)
+plot_df <- data.frame(Study = c("Original study", 
+                                "Replication study"),
+                      z = c(morewedge$z_O, morewedge$z_R),
+                      r = c(morewedge$r_O, morewedge$r_R),
+                      p = formatPval(x = c(morewedge$pval_O,
+                                           morewedge$pval_R)),
+                      se = c(morewedge$z_se_O, morewedge$z_se_R)) 
+morewedge_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
+                      ymax = tanh(z + qnorm(0.975)*se)),
+                  size = 1.5) +
+  geom_text(aes(label = paste("italic(p) ==~", 
+                              p, sep = "")), parse = TRUE, 
+            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
+  geom_text(aes(label = paste("italic(r) ==~", 
+                              round(r, 2), 
+                              sep = "")), parse = TRUE, 
+            nudge_x = c(-0.35, 0.25), nudge_y = 0.1, size = 10) +
+  annotate("text", x = 1.5, y = morewedge$r_O, 
+           label = "?", size = 55, 
+           color = "red") + 
+  ylim(-0.05, 1) +
+  labs(x = " ", y = expression(italic(r))) + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+morewedge_plot
+@
+\end{frame}
+
+\begin{frame}{When is a replication successful?}
+\begin{block}{Some proposed criteria for replication success}
+  \begin{enumerate}
+    \item<1-> Statistical significance
+    \item<2-> Comparison of effect estimates
+    \item<3-> Reverse Bayes methods
+  \end{enumerate}
+\end{block}
+<< fig.height = 4.5, echo = FALSE >>=
+morewedge_plot
+@
 \end{frame}
 
 
-\begin{frame}{Criteria for replication success}
--- Discuss different criteria for replication success 
--- Discuss problems: Inflation, shrinkage, heterogeneity
+\begin{frame}{Drawbacks of approaches}
+\begin{block}{}
+  \begin{itemize}
+    \item Signficiance can always be achieved by increasing sample size
+    \item Estimates can be compatible but uninformative
+  \end{itemize}
+\end{block}
 \end{frame}
 
 
