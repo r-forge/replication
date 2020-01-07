@@ -48,6 +48,7 @@ opts_chunk$set(fig.path = "figures/fig",
                size = "scriptsize",
                warning = FALSE,
                message = FALSE)
+# Some hashes for Charlotte ######
 @
 % ----------------------------------------------------------------------------
 
@@ -91,22 +92,21 @@ opts_chunk$set(fig.path = "figures/fig",
     \item<4-> \color<5>{red}{2018: Social sciences replication project}
   \end{itemize}
 \end{block}
-% \begin{block}{}
-%   \vspace{-2em}
-%   \centering
-%   \alt<1>{
-%   \includegraphics[width=0.7\textwidth]{images_presentation/osc2015.png}
-%   }
-%   \alt<2>{
-%   \includegraphics[width=0.6\textwidth]{images_presentation/camerer2016.png}
-%   }
-%   \alt<3>{
-%   \includegraphics[width=0.5\textwidth]{images_presentation/cova2018.png}
-%   }
-%   \alt<4,5>{
-%   \includegraphics[width=0.5\textwidth]{images_presentation/camerer2018.png}
-%   }
-% \end{block}
+\begin{minipage}[t][5cm][t]{\textwidth}
+  \centering
+  \only<1>{
+  \includegraphics[width=0.8\textwidth]{images_presentation/osc2015.png}
+  }
+  \only<2>{
+  \includegraphics[width=0.9\textwidth]{images_presentation/camerer2016.png}
+  }
+  \only<3>{
+  \includegraphics[width=0.6\textwidth]{images_presentation/cova2018.png}
+  }
+  \only<4,5>{
+  \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
+  }
+\end{minipage}
 \end{frame}
 
 
@@ -210,6 +210,7 @@ study_plot
 \end{block}
 << fig.height = 4.5, echo = FALSE >>=
 study_plot
+#
 @
 \end{frame}
 
@@ -283,8 +284,8 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \begin{frame}{3. Sceptical $p$-value}
 \begin{block}{}
 \vspace{1em}
-\textit{?At which level can we convince a sceptic who argues that
-the original study is no longer signficant at that level?}    
+\textit{Can we convince a sceptic whose priof beliefs make
+the original study not significant?}    
 \vspace{1em}
 \end{block}
 << fig.height = 4.5, echo = FALSE >>=
@@ -292,11 +293,20 @@ ps <- pSceptical(to = study$z_O/study$z_se_O,
                  tr = study$z_R/study$z_se_R, 
                  c = study$z_se_O^2/study$z_se_R^2,
                  alternative = "one.sided")
+ssv <- study$z_se_O^2/((study$z_O/study$z_se_O)^2/qnorm(p = ps, 
+       lower.tail = FALSE)^2 - 1)
+sprior_df <- data.frame(x = 1.5, mu = 0,
+                        lower = qnorm(p = 0.975)*sqrt(ssv),
+                        upper = qnorm(p = 0.025)*sqrt(ssv))
 scept_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
                       ymax = tanh(z + qnorm(0.975)*se)),
                   size = 1.5) +
+  geom_pointrange(data = sprior_df,
+                  aes(x = x, y = mu,
+                      ymin = lower, ymax = upper), 
+                  color = "red") + 
   geom_text(data = data.frame(x = 1.5, y = 0.9, 
                               ps = formatPval(ps)),
             aes(x = x, y = y, 
@@ -309,7 +319,7 @@ scept_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
                               round(r, 2), 
                               sep = "")), parse = TRUE, 
             nudge_x = c(-0.35, 0.25), nudge_y = 0.1, size = 10) +
-  ylim(-0.05, 1) +
+  ylim(-0., 1) +
   labs(x = " ", y = expression(italic(r))) + 
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
@@ -427,6 +437,7 @@ c <- study$z_se_O^2/study$z_se_R^2
     \begin{itemize}
       \item Linux / Windows
 << eval = FALSE, size = "small" >>=
+# Hashes
 install.packages(pkgs = "ReplicationSuccess", 
                  repos ="http://R-Forge.R-project.org")
 @
