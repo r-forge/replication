@@ -227,7 +227,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             color = "red",
-            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 12) +
+            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
   geom_text(aes(label = paste("italic(r) ==~", 
                               round(r, 2), 
                               sep = "")), parse = TRUE, 
@@ -262,7 +262,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_text(data = pi_df, color = "red",
             aes(x = 1.9, y = mean,
                 label = "95% prediction interval"), 
-            nudge_y = 0.4, size = 12) +
+            nudge_y = 0.4, size = 10) +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
@@ -396,7 +396,7 @@ uncertainty about the true effect after the original experiment
 \end{frame}
 
 \begin{frame}{Statistical framework of package}
-<<echo = FALSE>>=
+<< echo = FALSE >>=
 po <- study$pval_O
 pr <- study$pval_R
 c <- study$z_se_O^2/study$z_se_R^2
@@ -554,7 +554,6 @@ reynolds <- subset(ReplicationProjects,
                 study == "M Reynolds, D Besner")
 
 @
-
 \end{frame}
 
 \begin{frame}{Compatibility of effect estimates}
@@ -595,7 +594,16 @@ sampleSizePIwidth(w = w)
 \begin{frame}{Compatibility of effect estimates}
   \begin{block}{Exercise 2}
     \begin{itemize}
-      \item Hi
+      \item Compute the required sample size for the replications from the economics project such that the 95\% prediction intervals do not include 0. Compare this with the actual relative sample size.
+<< echo = FALSE, eval = FALSE >>=
+EERP <- subset(ReplicationProjects, 
+               project == "Experimental Economics")
+c <- EERP$z_se_O^2/EERP$z_se_R^2
+to <- EERP$z_O/EERP$z_se_O
+c_required <- sampleSizePI(to = to, conf.level = 0.95, 
+                           designPrior = "predictive")
+plot(c, c_required)
+@
     \end{itemize}
   \end{block}
 \end{frame}
