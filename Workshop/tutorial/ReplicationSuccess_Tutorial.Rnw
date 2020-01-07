@@ -1,6 +1,5 @@
 \documentclass[english]{beamer}
-% \usepackage[T1]{fontenc}
- \usepackage[utf8]{inputenc}
+
 
 % Leos shortcuts
 \input{newCommands.tex}
@@ -480,7 +479,7 @@ Main arguments:
 \end{block}
 \end{frame}
 
-\begin{frame}{Statistical significance}
+\begin{frame}[fragile]{Statistical significance}
   \begin{block}{}
 Example: study from Morewedge et al. (2010)
     \begin{itemize}
@@ -491,8 +490,8 @@ Example: study from Morewedge et al. (2010)
   \end{block}
   
 <<eval = F>>=
-# power calculation 
 
+# power calculation
 powerSignificance(po = 0.009, c = 3, designPrior = "conditional")
 
 
