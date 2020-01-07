@@ -1,4 +1,6 @@
 \documentclass[english]{beamer}
+% \usepackage[T1]{fontenc}
+ \usepackage[utf8]{inputenc}
 
 % Leos shortcuts
 \input{newCommands.tex}
@@ -227,7 +229,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             color = "red",
-            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
+            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 12) +
   geom_text(aes(label = paste("italic(r) ==~", 
                               round(r, 2), 
                               sep = "")), parse = TRUE, 
@@ -262,7 +264,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_text(data = pi_df, color = "red",
             aes(x = 1.9, y = mean,
                 label = "95% prediction interval"), 
-            nudge_y = 0.4, size = 10) +
+            nudge_y = 0.4, size = 12) +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
@@ -350,9 +352,9 @@ scept_plot +
 \begin{frame}{Design of replication studies}
 \begin{block}{What is used in practice}
   \begin{itemize}
-  \item Standard power calculation
+  \item Standard sample size calculation
   \item Depending on the projects, goal is to have between 80\%  and 95\% power in the replication study to detect the effect estimate from the original study
-  \item Shrinkage of the original effect estimate is sometimes used (e.g. in \citet{Camerer2018})
+  \item Shrinkage of the original effect estimate is sometimes used
   \end{itemize}
 \end{block}
 \end{frame}
@@ -396,26 +398,16 @@ uncertainty about the true effect after the original experiment
 \end{frame}
 
 \begin{frame}{Statistical framework of package}
-<< echo = FALSE >>=
+<<echo = FALSE>>=
 po <- study$pval_O
 pr <- study$pval_R
 c <- study$z_se_O^2/study$z_se_R^2
 @
 
-\begin{block}{}
+\begin{block}{Key quantities}
 \begin{itemize}
-\item Relative quantities (as opposed to absolute quantities)
-\begin{itemize}
-\item[] $\rightarrow$ $p$-value or test statistic of original study
-\item[] $\rightarrow$ Relative sample size $n_r/n_o$
-\end{itemize}
-\item Example for Morewedge et al. (2010): 
-\begin{itemize}
-\item $p_o =$ \Sexpr{round(po,3)}
-\item $p_r =$ \Sexpr{round(pr,4)}
-\item $c=$ \Sexpr{round(c,1)}
-\end{itemize}
-
+\item relative sample size $c = n_r/n_o$
+\item $p$-value or test statistic of original study
 \end{itemize}
 \end{block}
 \end{frame}
@@ -458,12 +450,14 @@ install.packages(pkgs = "ReplicationSuccess",
 
 \begin{frame}{Statistical significance}
   \begin{block}{}
-  Two functions: 
+Two functions: 
     \begin{itemize}
     \item \texttt{powerSignificance()} and \texttt{sampleSizeSignificance()}
     \end{itemize}
+
 \pause
-Main arguments
+
+Main arguments:
 \begin{itemize}
 \item \texttt{po} or \texttt{to}
 \item \texttt{c}
@@ -471,8 +465,34 @@ Main arguments
 \item \texttt{designPrior}
 \item \texttt{shrinkage}
 \end{itemize}
+
 \end{block}
 \end{frame}
+
+\begin{frame}{Statistical significance}
+  \begin{block}{}
+Example: study from Morewedge et al. (2010)
+    \begin{itemize}
+      \item $p_o =$ \Sexpr{round(po,3)}
+      \item $p_r =$ \Sexpr{round(pr,4)}
+      \item $c=$ \Sexpr{round(c,1)}
+    \end{itemize}
+  \end{block}
+  
+<<eval = F>>=
+# power calculation 
+
+powerSignificance(po = 0.009, c = 3, designPrior = "conditional")
+
+
+# sample size calculation
+sampleSizeSignificance(po = 0.009, power = 0.9, designPrior = "predictive")
+@
+  
+\end{frame}
+
+
+
 
 \begin{frame}{Statistical significance}
   \begin{block}{Exercise 1}
@@ -554,6 +574,7 @@ reynolds <- subset(ReplicationProjects,
                 study == "M Reynolds, D Besner")
 
 @
+
 \end{frame}
 
 \begin{frame}{Compatibility of effect estimates}
@@ -594,16 +615,7 @@ sampleSizePIwidth(w = w)
 \begin{frame}{Compatibility of effect estimates}
   \begin{block}{Exercise 2}
     \begin{itemize}
-      \item Compute the required sample size for the replications from the economics project such that the 95\% prediction intervals do not include 0. Compare this with the actual relative sample size.
-<< echo = FALSE, eval = FALSE >>=
-EERP <- subset(ReplicationProjects, 
-               project == "Experimental Economics")
-c <- EERP$z_se_O^2/EERP$z_se_R^2
-to <- EERP$z_O/EERP$z_se_O
-c_required <- sampleSizePI(to = to, conf.level = 0.95, 
-                           designPrior = "predictive")
-plot(c, c_required)
-@
+      \item Hi
     \end{itemize}
   \end{block}
 \end{frame}
