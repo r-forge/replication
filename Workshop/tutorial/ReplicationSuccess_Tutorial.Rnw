@@ -544,9 +544,9 @@ eco <- subset(ReplicationProjects, project == "Experimental Economics")
 \begin{frame}{Statistical significance}
 
 \begin{block}{Exercise 4}
-Some original studies belonging to the psychology data set were not statisticall significant at the 5\%-level. This is the case for the study from Reynolds and Besner (2008), for example. 
+Some original studies belonging to the psychology data set were not statisticall significant at the two-sided 5\%-level. This is the case for the study from Reynolds and Besner (2008), for example. 
 \begin{itemize}
-\item Please compute the required replication sample size to reach a power of 95\% for this  =  with the conditional and the predictive design prior. 
+\item Please compute the required replication sample size to reach a power of 95\% for this study with the conditional and the predictive design prior. 
 \end{itemize}
   \end{block}
 <<echo = FALSE, eval = FALSE>>=
