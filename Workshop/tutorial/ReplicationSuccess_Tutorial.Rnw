@@ -142,15 +142,15 @@ ggplot(data = SSRP, aes(x = r_O, y = r_R)) +
 
 \begin{frame}{Social sciences replication project}
 << echo = FALSE >>=
-morewedge <- subset(SSRP,
-                    study == "Morewedge et al. (2010), Science")
+study <- subset(SSRP,
+                study == "Morewedge et al. (2010), Science")
 
 ggplot(data = SSRP, aes(x = r_O, y = r_R)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_abline(intercept = 0, slope = 1, col = "grey") +
   geom_point(alpha = 0.2, size = 7, shape = 21, 
              fill = "midnightblue") +
-  geom_point(data = morewedge,
+  geom_point(data = study,
              alpha = 1, size = 7, shape = 21, 
              fill = "red") +
   
@@ -179,12 +179,12 @@ library(biostatUZH)
 options(scipen = 5)
 plot_df <- data.frame(Study = c("Original study", 
                                 "Replication study"),
-                      z = c(morewedge$z_O, morewedge$z_R),
-                      r = c(morewedge$r_O, morewedge$r_R),
-                      p = formatPval(x = c(morewedge$pval_O,
-                                           morewedge$pval_R)),
-                      se = c(morewedge$z_se_O, morewedge$z_se_R)) 
-morewedge_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
+                      z = c(study$z_O, study$z_R),
+                      r = c(study$r_O, study$r_R),
+                      p = formatPval(x = c(study$pval_O,
+                                           study$pval_R)),
+                      se = c(study$z_se_O, study$z_se_R)) 
+study_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
                       ymax = tanh(z + qnorm(0.975)*se)),
@@ -196,7 +196,7 @@ morewedge_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
                               round(r, 2), 
                               sep = "")), parse = TRUE, 
             nudge_x = c(-0.35, 0.25), nudge_y = 0.1, size = 10) +
-  annotate("text", x = 1.5, y = morewedge$r_O, 
+  annotate("text", x = 1.5, y = study$r_O, 
            label = "?", size = 55, 
            color = "red") + 
   ylim(-0.05, 1) +
@@ -204,31 +204,147 @@ morewedge_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
         axis.title = element_text(size = 30)) 
-morewedge_plot
+study_plot
 @
 \end{frame}
 
 \begin{frame}{When is a replication successful?}
-\begin{block}{Some proposed criteria for replication success}
+\begin{block}{Some proposed criteria}
   \begin{enumerate}
     \item<1-> Statistical significance
-    \item<2-> Comparison of effect estimates
-    \item<3-> Reverse Bayes methods
+    \item<2-> Compatibility of effect estimates
+    \item<3-> Sceptical $p$-value
   \end{enumerate}
 \end{block}
 << fig.height = 4.5, echo = FALSE >>=
-morewedge_plot
+study_plot
 @
 \end{frame}
 
 
-\begin{frame}{Drawbacks of approaches}
+\begin{frame}{1. Statistical significance}
 \begin{block}{}
+\vspace{1em}
+\textit{Are original and replication estimates statistically significant?}
+  \vspace{1em}
+\end{block}
+<< fig.height = 4.5, echo = FALSE >>=
+ggplot(data = plot_df, aes(x = Study, y = r)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
+                      ymax = tanh(z + qnorm(0.975)*se)),
+                  size = 1.5) +
+  geom_text(aes(label = paste("italic(p) ==~", 
+                              p, sep = "")), parse = TRUE, 
+            color = "red",
+            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 12) +
+  geom_text(aes(label = paste("italic(r) ==~", 
+                              round(r, 2), 
+                              sep = "")), parse = TRUE, 
+            nudge_x = c(-0.35, 0.25), nudge_y = 0.1, size = 10) +
+  ylim(-0.05, 1) +
+  labs(x = " ", y = expression(italic(r))) + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{frame}
+
+\begin{frame}{2. Compatibility of effect estimates}
+\begin{block}{}
+\vspace{1em}
+\textit{Is the replication estimate contained in its prediction interval?}    
+\vspace{1em}
+\end{block}
+<< fig.height = 4.5, echo = FALSE >>=
+pi_df <- predictionInterval(to = study$z_O/study$z_se_O,
+                            c = study$z_se_O^2/study$z_se_R^2)*
+         study$z_se_R
+pi_df <- tanh(pi_df)
+ggplot(data = plot_df, aes(x = Study, y = r)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
+                      ymax = tanh(z + qnorm(0.975)*se)),
+                  size = 1.5) +
+  geom_pointrange(data = pi_df, size = 1.5, color = "red",
+                  aes(x = 1.9, y = mean, 
+                      ymin = lower, ymax = upper)) + 
+  geom_text(data = pi_df, color = "red",
+            aes(x = 1.9, y = mean,
+                label = "95% prediction interval"), 
+            nudge_y = 0.4, size = 12) +
+  geom_text(aes(label = paste("italic(p) ==~", 
+                              p, sep = "")), parse = TRUE, 
+            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
+  geom_text(aes(label = paste("italic(r) ==~", 
+                              round(r, 2), 
+                              sep = "")), parse = TRUE, 
+            nudge_x = c(-0.35, 0.25), nudge_y = 0.1, size = 10) +
+  ylim(-0.05, 1) +
+  labs(x = " ", y = expression(italic(r))) + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{frame}
+
+\begin{frame}{3. Sceptical $p$-value}
+\begin{block}{}
+\vspace{1em}
+\textit{?At which level can we convince a sceptic who argues that
+the original study is no longer signficant at that level?}    
+\vspace{1em}
+\end{block}
+<< fig.height = 4.5, echo = FALSE >>=
+ps <- pSceptical(to = study$z_O/study$z_se_O, 
+                 tr = study$z_R/study$z_se_R, 
+                 c = study$z_se_O^2/study$z_se_R^2,
+                 alternative = "one.sided")
+scept_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
+                      ymax = tanh(z + qnorm(0.975)*se)),
+                  size = 1.5) +
+  geom_text(data = data.frame(x = 1.5, y = 0.9, 
+                              ps = formatPval(ps)),
+            aes(x = x, y = y, 
+                label = paste("italic(p)[S] ==~", ps, sep = "")),
+            parse = TRUE, size = 15, color = "red") +
+  geom_text(aes(label = paste("italic(p) ==~", 
+                              p, sep = "")), parse = TRUE, 
+            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
+  geom_text(aes(label = paste("italic(r) ==~", 
+                              round(r, 2), 
+                              sep = "")), parse = TRUE, 
+            nudge_x = c(-0.35, 0.25), nudge_y = 0.1, size = 10) +
+  ylim(-0.05, 1) +
+  labs(x = " ", y = expression(italic(r))) + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+scept_plot
+@
+\end{frame}
+
+\begin{frame}{Drawbacks of classical approaches}
+\begin{block}{}
+\vspace{-1em}
   \begin{itemize}
     \item Signficiance can always be achieved by increasing sample size
-    \item Estimates can be compatible but uninformative
-  \end{itemize}
+    \item Estimates can be compatible but provide no information about true effect
+  \end{itemize} 
 \end{block}
+\vspace{-0.5em}
+<< fig.height = 4.5, echo = FALSE >>=
+scept_plot +
+  geom_pointrange(data = pi_df, size = 1.5, color = "red",
+                  aes(x = 1.9, y = mean, 
+                      ymin = lower, ymax = upper)) +
+  geom_text(aes(label = paste("italic(p) ==~", 
+                              p, sep = "")), parse = TRUE, 
+            nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10,
+            color = "red")
+@
 \end{frame}
 
 
