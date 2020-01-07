@@ -63,7 +63,7 @@ opts_chunk$set(fig.path = "figures/fig",
 \end{frame}
 
 \begin{frame}{Replication studies}
-\begin{block}{Direct replication}
+\begin{block}{Direct  replication}
   \begin{itemize}
     \item Repeating original study using the same methodology
     \item[$\rightarrow$] Tool to assess credibility of scientific discoveries
