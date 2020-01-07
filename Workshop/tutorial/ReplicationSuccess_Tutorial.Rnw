@@ -52,38 +52,15 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{document}
 \maketitle
 
-
 \begin{frame}
   \begin{center}
       \begin{minipage}{4cm}
-        \begin{block}{\Huge Theory}
+        \begin{block}{\Huge \textbf{Theory}}
                    
         \end{block}
       \end{minipage}
    \end{center}
 \end{frame}
-
-
-
-
-\begin{frame}[fragile]{Installation}
-  \begin{block}{}
-    \begin{itemize}
-      \item Linux / Windows
-<< eval = FALSE, size = "small" >>=
-install.packages(pkgs = "ReplicationSuccess", 
-                 repos ="http://R-Forge.R-project.org")
-@
-      \item Mac 
-<< eval = FALSE, size = "small" >>=
-install.packages(pkgs = "ReplicationSuccess", 
-                 repos = "http://R-Forge.R-project.org",
-                 type = "source")
-@
-    \end{itemize}
-  \end{block}
-\end{frame}
-
 
 \begin{frame}{Replication studies}
 \begin{block}{Direct replication}
@@ -445,18 +422,36 @@ c <- study$z_se_O^2/study$z_se_R^2
 \begin{frame}
   \begin{center}
       \begin{minipage}{4cm}
-        \begin{block}{\Huge Application}
+        \begin{block}{\Huge \textbf{Application}}
                    
         \end{block}
       \end{minipage}
    \end{center}
 \end{frame}
 
+\begin{frame}[fragile]{Installation}
+  \begin{block}{}
+    \begin{itemize}
+      \item Linux / Windows
+<< eval = FALSE, size = "small" >>=
+install.packages(pkgs = "ReplicationSuccess", 
+                 repos ="http://R-Forge.R-project.org")
+@
+      \item Mac 
+<< eval = FALSE, size = "small" >>=
+install.packages(pkgs = "ReplicationSuccess", 
+                 repos = "http://R-Forge.R-project.org",
+                 type = "source")
+@
+    \end{itemize}
+  \end{block}
+\end{frame}
+
 \begin{frame}{Application}
  \begin{enumerate}
     \item Statistical significance
-    \item Comparison of effect estimates
-    \item Reverse Bayes methods
+    \item Compatibility of effect estimates
+    \item Sceptical $p$-value
   \end{enumerate}
 \end{frame}
 
@@ -541,14 +536,51 @@ lines(pval.or, ss.pred, col = "blue")
   
 \end{frame}
 
-\begin{frame}{Comparison of effect size}
--- predictionInterval
--- sampleSizePI
--- sampleSizePIwidth
+\begin{frame}{Compatibility of effect estimates}
+\begin{block}{}
+  Two functions: 
+    \begin{itemize}
+    \item \texttt{sampleSizePI()} and \texttt{sampleSizePIwidth()}
+    \end{itemize}
+\pause
+Main arguments
+\begin{itemize}
+\item \texttt{to} or \texttt{po}
+\item \texttt{w}
+\item \texttt{conf.level}
+\item \texttt{designPrior}
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Compatibility of effect estimates}
+  \begin{block}{Exercise 1}
+    \begin{itemize}
+      \item You have five original studies for which you want to conduct replication studies. The test statistics are 2, 2.5, 3, and 4. How much do you need to change the sample size such that a 95\% prediction interval of the replication estimate does not include 0?
+      %(\texttt{designPrior = "predictive"})
+<< echo = FALSE, eval = FALSE >>=
+to <- c(2, 2.5, 3, 4)
+sampleSizePI(to = to)
+@
+      \item How much do you need to change the sample size such that a 95\% prediction interval of the replication estimate is only 25\% wider than the confidence interval from the original estimate?
+<< echo = FALSE, eval = FALSE >>=
+w <- 1.25
+sampleSizePIwidth(w = w)
+@
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Compatibility of effect estimates}
+  \begin{block}{Exercise 2}
+    \begin{itemize}
+      \item Hi
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 
-\begin{frame}{Reverse Bayes}
+\begin{frame}{Sceptical $p$-value}
 -- pSceptical
 -- powerReplicationSuccess
 -- sampleSizeReplicationSuccess
