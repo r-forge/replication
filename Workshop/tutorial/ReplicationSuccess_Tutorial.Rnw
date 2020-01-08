@@ -47,7 +47,6 @@ opts_chunk$set(fig.path = "figures/fig",
                size = "scriptsize",
                warning = FALSE,
                message = FALSE)
-# Some hashes for Charlotte ######
 @
 % ----------------------------------------------------------------------------
 
@@ -57,8 +56,7 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{frame}
   \begin{center}
       \begin{minipage}{4cm}
-        \begin{block}{\Huge \textbf{Theory}}
-                   
+        \begin{block}{\Huge \textbf{Background}}
         \end{block}
       \end{minipage}
    \end{center}
@@ -108,8 +106,16 @@ opts_chunk$set(fig.path = "figures/fig",
 \end{minipage}
 \end{frame}
 
+\begin{frame}[fragile]{Social sciences replication project}
+<< size = "normalsize" >>=
+library(ReplicationSuccess)
+data("ReplicationProjects")
+social <- subset(ReplicationProjects, 
+                 project == "Social Sciences")
+@
+\end{frame}
 
-\begin{frame}{Social sciences replication project}
+\begin{frame}[fragile]{Social sciences replication project}
 << echo = FALSE >>=
 library(ReplicationSuccess)
 library(ggplot2)
@@ -157,6 +163,7 @@ ggplot(data = SSRP, aes(x = r_O, y = r_R)) +
 
 \begin{frame}{Morewedge et al. (2010). Science}
 % \framesubtitle{Thought for Food: Imagined Consumption Reduces Actual Consumption}
+\begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{Original discovery}
 \begin{itemize}
   \item[] ``Repeatedly imagining eating a food subsequently reduces the actual consumption of that food''
@@ -164,7 +171,8 @@ ggplot(data = SSRP, aes(x = r_O, y = r_R)) +
   % \item $r_r = 0.35, p_r = 0.0006$
 \end{itemize}
 \end{block}
-\vspace{2em}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
 library(biostatUZH)
 options(scipen = 5)
@@ -197,9 +205,11 @@ study_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
         axis.title = element_text(size = 30)) 
 study_plot
 @
+\end{minipage}
 \end{frame}
 
 \begin{frame}{When is a replication successful?}
+\begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{Some proposed criteria}
   \begin{enumerate}
     \item<1-> Statistical significance
@@ -207,19 +217,22 @@ study_plot
     \item<3-> Sceptical $p$-value
   \end{enumerate}
 \end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
 study_plot
-#
 @
+\end{minipage}
 \end{frame}
 
 
 \begin{frame}{1. Statistical significance}
+\begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-\vspace{1em}
 \textit{Are original and replication estimates statistically significant?}
-  \vspace{1em}
 \end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
 ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_hline(yintercept = 0, lty = 2) +
@@ -240,14 +253,18 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   theme(axis.text = element_text(size = 25), 
         axis.title = element_text(size = 30)) 
 @
+\end{minipage}
 \end{frame}
 
 \begin{frame}{2. Compatibility of effect estimates}
+\begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-\vspace{1em}
-\textit{Is the replication estimate contained in its prediction interval?}    
-\vspace{1em}
+\textit{Is the replication estimate contained in its prediction interval?} 
+
+$\rightarrow$ function: \texttt{predictionInterval()}
 \end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
 pi_df <- predictionInterval(to = study$z_O/study$z_se_O,
                             c = study$z_se_O^2/study$z_se_R^2)*
@@ -258,10 +275,10 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
                       ymax = tanh(z + qnorm(0.975)*se)),
                   size = 1.5) +
-  geom_pointrange(data = pi_df, size = 1.5, color = "red",
+  geom_pointrange(data = pi_df, size = 1.5, color = "springgreen4",
                   aes(x = 1.9, y = mean, 
                       ymin = lower, ymax = upper)) + 
-  geom_text(data = pi_df, color = "red",
+  geom_text(data = pi_df, color = "springgreen4",
             aes(x = 1.9, y = mean,
                 label = "95% prediction interval"), 
             nudge_y = 0.4, size = 12) +
@@ -278,39 +295,39 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   theme(axis.text = element_text(size = 25), 
         axis.title = element_text(size = 30)) 
 @
+\end{minipage}
 \end{frame}
 
 \begin{frame}{3. Sceptical $p$-value}
+\begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-\vspace{1em}
 \textit{Can we convince a sceptic whose priof beliefs make
-the original study not significant?}    
-\vspace{1em}
+the original study not significant?} 
+
+$\rightarrow$ function: \texttt{pSceptical()}
 \end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
 ps <- pSceptical(to = study$z_O/study$z_se_O, 
                  tr = study$z_R/study$z_se_R, 
                  c = study$z_se_O^2/study$z_se_R^2,
                  alternative = "one.sided")
-ssv <- study$z_se_O^2/((study$z_O/study$z_se_O)^2/qnorm(p = ps, 
-       lower.tail = FALSE)^2 - 1)
-sprior_df <- data.frame(x = 1.5, mu = 0,
-                        lower = qnorm(p = 0.975)*sqrt(ssv),
-                        upper = qnorm(p = 0.025)*sqrt(ssv))
-scept_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
+# ssv <- study$z_se_O^2/((study$z_O/study$z_se_O)^2/qnorm(p = ps, 
+#        lower.tail = FALSE)^2 - 1)
+# sprior_df <- data.frame(x = 1.5, mu = 0,
+#                         lower = qnorm(p = 0.975)*sqrt(ssv),
+#                         upper = qnorm(p = 0.025)*sqrt(ssv))
+ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
                       ymax = tanh(z + qnorm(0.975)*se)),
                   size = 1.5) +
-  geom_pointrange(data = sprior_df,
-                  aes(x = x, y = mu,
-                      ymin = lower, ymax = upper), 
-                  color = "red") + 
   geom_text(data = data.frame(x = 1.5, y = 0.9, 
                               ps = formatPval(ps)),
             aes(x = x, y = y, 
                 label = paste("italic(p)[S] ==~", ps, sep = "")),
-            parse = TRUE, size = 15, color = "red") +
+            parse = TRUE, size = 15, color = "purple3") +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
@@ -318,34 +335,53 @@ scept_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
                               round(r, 2), 
                               sep = "")), parse = TRUE, 
             nudge_x = c(-0.35, 0.25), nudge_y = 0.1, size = 10) +
-  ylim(-0., 1) +
   labs(x = " ", y = expression(italic(r))) + 
+  ylim(-0.05, 1) +
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
         axis.title = element_text(size = 30)) 
-scept_plot
 @
+\end{minipage}
 \end{frame}
 
 \begin{frame}{Drawbacks of classical approaches}
+\begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-\vspace{-1em}
   \begin{itemize}
     \item Signficiance can always be achieved by increasing sample size
     \item Estimates can be compatible but provide no information about true effect
   \end{itemize} 
 \end{block}
-\vspace{-0.5em}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
-scept_plot +
-  geom_pointrange(data = pi_df, size = 1.5, color = "red",
-                  aes(x = 1.9, y = mean, 
-                      ymin = lower, ymax = upper)) +
+ggplot(data = plot_df, aes(x = Study, y = r)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
+                      ymax = tanh(z + qnorm(0.975)*se)),
+                  size = 1.5) +
+  geom_text(data = data.frame(x = 1.5, y = 0.9, 
+                              ps = formatPval(ps)),
+            aes(x = x, y = y, 
+                label = paste("italic(p)[S] ==~", ps, sep = "")),
+            parse = TRUE, size = 15, color = "purple3") +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10,
-            color = "red")
+            color = "red") +
+  geom_text(aes(label = paste("italic(r) ==~", 
+                              round(r, 2), 
+                              sep = "")), parse = TRUE, 
+            nudge_x = c(-0.35, 0.25), nudge_y = 0.1, size = 10) +
+  geom_pointrange(data = pi_df, size = 1.5, color = "springgreen4",
+                  aes(x = 1.9, y = mean, ymin = lower, ymax = upper)) +
+  labs(x = " ", y = expression(italic(r))) + 
+  ylim(-0.05, 1) +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30))
 @
+\end{minipage}
 \end{frame}
 
 
@@ -407,9 +443,11 @@ uncertainty about the true effect after the original experiment
 \end{frame}
 
 \begin{frame}{Statistical framework of package}
-<<echo = FALSE>>=
+<< echo = FALSE >>=
 po <- study$pval_O
 pr <- study$pval_R
+to <- study$z_O/study$z_se_O
+tr <- study$z_R/study$z_se_R
 c <- study$z_se_O^2/study$z_se_R^2
 @
 
@@ -436,7 +474,6 @@ c <- study$z_se_O^2/study$z_se_R^2
     \begin{itemize}
       \item Linux / Windows
 << eval = FALSE, size = "small" >>=
-# Hashes
 install.packages(pkgs = "ReplicationSuccess", 
                  repos ="http://R-Forge.R-project.org")
 @
@@ -603,6 +640,24 @@ Main arguments
 \item \texttt{designPrior}
 \end{itemize}
 \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Compatibility of effect estimates}
+  \begin{block}{}
+    Example from Morewedge et al. (2010)
+    \begin{itemize}
+      \item $t_o =$ \Sexpr{round(to, 2)}
+      \item $p_o =$ \Sexpr{round(po, 3)}
+    \end{itemize}
+  \end{block}
+  
+<< size = "small" >>=
+# fix prediction interval limit to 0
+sampleSizePI(to = 2.63, designPrior = "predictive")
+
+# fix relative width of prediction interval
+sampleSizePIwidth(w = 1.25, designPrior = "predictive")
+@
 \end{frame}
 
 \begin{frame}{Compatibility of effect estimates}
