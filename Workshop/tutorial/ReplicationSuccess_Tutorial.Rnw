@@ -74,7 +74,6 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{block}{Replication crisis}
   \begin{itemize}
     \item Low replicability of many scientific discoveries
-    \item[$\rightarrow$] Increased interest in meta-science
     \item[$\rightarrow$] Large-scale replication projects
   \end{itemize}
 \end{block}
@@ -279,9 +278,9 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
                   aes(x = 1.9, y = mean, 
                       ymin = lower, ymax = upper)) + 
   geom_text(data = pi_df, color = "springgreen4",
-            aes(x = 1.9, y = mean,
+            aes(x = 1.8, y = mean,
                 label = "95% prediction interval"), 
-            nudge_y = 0.4, size = 12) +
+            nudge_y = 0.4, size = 14) +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
@@ -364,7 +363,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
                               ps = formatPval(ps)),
             aes(x = x, y = y, 
                 label = paste("italic(p)[S] ==~", ps, sep = "")),
-            parse = TRUE, size = 15, color = "purple3") +
+            parse = TRUE, size = 10, color = "purple3") +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10,
@@ -636,7 +635,7 @@ reynolds <- subset(ReplicationProjects,
 
 \end{frame}
 
-\begin{frame}{Compatibility of effect estimates}
+\begin{frame}{2. Compatibility of effect estimates}
 \begin{block}{}
   Two functions: 
     \begin{itemize}
@@ -653,7 +652,7 @@ Main arguments
 \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Compatibility of effect estimates}
+\begin{frame}[fragile]{2. Compatibility of effect estimates}
   \begin{block}{}
     Example from Morewedge et al. (2010)
     \begin{itemize}
@@ -671,32 +670,103 @@ sampleSizePIwidth(w = 1.25, designPrior = "predictive")
 @
 \end{frame}
 
-\begin{frame}{Compatibility of effect estimates}
-  \begin{block}{Exercise 1}
+\begin{frame}{2. Compatibility of effect estimates}
+  \begin{block}{Exercise 2.1}
     \begin{itemize}
-      \item You have five original studies for which you want to conduct replication studies. The test statistics are 2, 2.5, 3, and 4. How much do you need to change the sample size such that a 95\% prediction interval of the replication estimate does not include 0?
-      %(\texttt{designPrior = "predictive"})
-<< echo = FALSE, eval = FALSE >>=
-to <- c(2, 2.5, 3, 4)
-sampleSizePI(to = to)
+    
+      \item[a)] You have five original studies for which you want to conduct replication studies. The test statistics are 2, 2.5, and 3. How much do you need to change the sample size such that a 95\% prediction interval of the replication estimate does not include 0?
+      
+      \item[b)] How much do you need to change the sample size such that a 95\% prediction interval of the replication estimate is only 25\% wider than the confidence interval from the original estimate?
+      
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{2. Compatibility of effect estimates}
+  \begin{block}{Exercise 2.1}
+    \begin{itemize}
+      \item[a)] 
+<< size = "small" >>=
+to <- c(1.5, 2, 2.5, 3)
+sampleSizePI(to = to, designPrior = "predictive")
 @
-      \item How much do you need to change the sample size such that a 95\% prediction interval of the replication estimate is only 25\% wider than the confidence interval from the original estimate?
-<< echo = FALSE, eval = FALSE >>=
+      \item[b)]
+<< size = "small" >>=
 w <- 1.25
-sampleSizePIwidth(w = w)
+sampleSizePIwidth(w = w, designPrior = "predictive")
 @
     \end{itemize}
   \end{block}
 \end{frame}
 
-\begin{frame}{Compatibility of effect estimates}
-  \begin{block}{Exercise 2}
+\begin{frame}{2. Compatibility of effect estimates}
+  \begin{block}{Exercise 2.2}
     \begin{itemize}
-      \item Hi
+      \item For the replications from experimental economics project compute the required relative sample size for the 95\% prediction intervals of the replication estimates not to contain zero. Compare them to the actually used relative sample sizes.
     \end{itemize}
   \end{block}
 \end{frame}
 
+\begin{frame}[fragile]{2. Compatibility of effect estimates}
+<< echo = FALSE>>=
+ReplicationProjects$c <- with(ReplicationProjects, 
+                              z_se_O^2/z_se_R^2)
+
+ReplicationProjects$to <- with(ReplicationProjects, z_O/z_se_O)
+ReplicationProjects$tr <- with(ReplicationProjects, z_R/z_se_R)
+eco <- subset(ReplicationProjects, 
+              project == "Experimental Economics")
+@
+<< fig.height = 5, size = "scriptsize" >>=
+required_c <- sampleSizePI(to = eco$to, designPrior = "predictive")
+plot(required_c, eco$c, pch = 19, ylim = c(0, 4), xlim = c(0, 25),
+     xlab = "required", ylab = "actual", cex = 1.2)
+abline(a = 0, b = 1, lty = 2)
+@
+\end{frame}
+
+\begin{frame}{Compatibility of effect estimates}
+  \begin{block}{Exercise 2.3}
+    \begin{itemize}
+      \item[a)] Look at the documentation of the function \texttt{predictionInteval()} with \texttt{?predictionInteval}. Run the example code at the bottom to compute and plot the 95\% prediction intervals for all four replication projects. Interpret the results.
+      \item[b)] Which situations could have been avoided by more careful design of the replication studies?
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{2. Compatibility of effect estimates}
+<< echo = FALSE, fig.height = 8 >>=
+# compute prediction intervals for replication projects
+data("ReplicationProjects", package = "ReplicationSuccess")
+ReplicationProjects$to <- with(ReplicationProjects, z_O/z_se_O)
+ReplicationProjects$tr <- with(ReplicationProjects, z_R/z_se_R)
+ReplicationProjects$c <- with(ReplicationProjects, z_se_O^2/z_se_R^2)
+par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
+for (p in unique(ReplicationProjects$project)) {
+  data_project <- subset(ReplicationProjects, project == p)
+  PI <- predictionInterval(to = data_project$to, c = data_project$c)*
+        data_project$z_se_R # multiplying by standard error to go to z-scale
+  PI <- tanh(PI) # converting back to correlation scale
+  within <- (data_project$r_R < PI$upper) & (data_project$r_R > PI$lower)
+  coverage <- mean(within)
+  color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
+  paradox <- within & (sign(data_project$r_O) != sign(data_project$r_R))
+  study <- seq(1, nrow(data_project))
+  plot(data_project$r_R, study, col = color, pch = 20, 
+       xlim = c(-0.5, 1), xlab = expression(italic(r)[r]), 
+       main = paste0(p, ": ", round(coverage*100, 1), "% coverage"),
+       cex.main = 1.5)
+  arrows(PI$lower, study, PI$upper, study, length = 0.02, angle = 90, code = 3, col = color)
+  points(data_project$r_R[paradox], study[paradox],
+         col = "purple3", cex = 1.5)
+  arrows(x0 = data_project$r_R[paradox] - 0.1, 
+         x1 = data_project$r_R[paradox] - 0.03,
+         y0 = study[paradox] + 2, y1 = study[paradox] + 0.5,
+         length = 0.05, lwd = 2, col = "purple3")
+  abline(v = 0, lty = 3)
+}
+@
+\end{frame}
 
 \begin{frame}{3. Sceptical $p$-value}
 \begin{block}{}
@@ -746,7 +816,7 @@ sampleSizeReplicationSuccess(to = 2.63, power = 0.9,
 
 
 % ============================================================================
-\nocite{Pawel2019, Held2019, Opensc2015, Camerer2016, Camerer2018, Cova2018}
+\nocite{Pawel2019, Held2019, Opensc2015, Camerer2016, Camerer2018, Cova2018, Morewedge2010, Reynolds2008}
 \begin{frame}{References}
   \tiny
   \bibliographystyle{apalike}
