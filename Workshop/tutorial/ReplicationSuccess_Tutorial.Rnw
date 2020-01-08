@@ -393,10 +393,20 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \end{block}
 \end{frame}
 
-\begin{frame}{Design of replication studies}
+\begin{frame}[fragile]{Design of replication studies}
 \begin{block}{What is used in practice}
   \begin{itemize}
   \item Standard sample size calculation
+<<>>=
+sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
+u <- qnorm(p = power)
+v <- qnorm(p = 1-sig.level/2)
+n <- 2*(u+v)^2*sd^2/delta^2
+return(n)
+}
+sampleSizeZtest(delta=0.25, sd=0.4, sig.level=0.01, power=.95)
+@
+  
   \item Goal is to have between 80\%  and 95\% power in the replication study to detect the effect estimate from the original study
   \item Shrinkage of the original effect estimate is sometimes used
   \end{itemize}
@@ -459,9 +469,14 @@ ReplicationProjects$c <- with(ReplicationProjects, z_se_O^2/z_se_R^2)
 \item $p$-value or test statistic of original study
 <<>>=
 ReplicationProjects$to <- with(ReplicationProjects, z_O/z_se_O)
-# or
-ReplicationProjects$to <- p2t(ReplicationProjects$pval_O)
+ReplicationProjects$po <- t2p(ReplicationProjects$to)
+ReplicationProjects$to <- p2t(ReplicationProjects$po)
+@
+
+\item $p$-value or test statistic of original study
+<<>>=
 ReplicationProjects$tr <- with(ReplicationProjects, z_R/z_se_R)
+ReplicationProjects$pr <- t2p(ReplicationProjects$tr)
 @
 
 \end{itemize}
@@ -521,6 +536,7 @@ Main arguments:
 \item \texttt{designPrior}
 \item \texttt{shrinkage}
 \item \texttt{level}
+\item \texttt{alternative}
 \end{itemize}
 
 \end{block}
@@ -553,7 +569,7 @@ sampleSizeSignificance(to = 2.63, power = 0.9, designPrior = "predictive")
 
 
 \begin{frame}{1. Statistical significance}
-  \begin{block}{Exercise 1}
+  \begin{block}{Exercise 1.1}
 We have six original studies that we want to replicate. Their $p$-values are $0.0001$, $0.001$, $0.005$, $0.01$, $0.03$ and $0.05$, respectively. We decide to simply use the same sample size as in the original study. 
 \begin{itemize}
 \item Compute the conditional and predictive power of the six replication studies and plot it.
@@ -561,7 +577,7 @@ We have six original studies that we want to replicate. Their $p$-values are $0.
 \item What happens if we decide to take less subjects in the replication study as compared to the original study? % Goal: if conditional power lower than 50% -> predictive power larger than conditional power. 
 \end{itemize}
   \end{block}
-<<echo = FALSE, eval = FALSE>>=
+<<echo = FALSE, eval = F>>=
 
 pval.or <- c(0.0001, 0.001, 0.005, 0.01, 0.03, 0.05)
 pow.cond <- powerSignificance(po = pval.or, c = 0.6, designPrior = "conditional")
@@ -572,21 +588,125 @@ lines(pval.or, pow.pred, col = "blue")
   
 \end{frame}
 
+\begin{frame}[fragile]{1. Statistical significance}
+  \begin{block}{Exercise 1.1 - \color{red}{Solutions}}
+\begin{itemize}
+\item Compute the conditional and predictive power of the six replication studies and plot it.
+\item What do you notice? % Goal: bordeline significant original study: very low power with both methods
+<<echo = FALSE, eval = T, fig.height = 5>>=
+par(las = 1)
+
+pval.or <- c(0.0001, 0.001, 0.005, 0.01, 0.03, 0.05)
+pow.cond <- powerSignificance(po = pval.or, c = 1, designPrior = "conditional")
+pow.pred <- powerSignificance(po = pval.or, c = 1, designPrior = "predictive")
+plot(pval.or, pow.cond, type = "p", col = "red", ylim = c(0,1), 
+     xlab = "Original p-value",
+     ylab = "Power", pch = 20, cex = 1.5)
+points(pval.or, pow.pred, col = "blue", pch = 20, cex = 1.5)
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       pch = 20, bty = "n", 
+       cex = 1.5)
+  @
+   
+\end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{1. Statistical significance}
+  \begin{block}{Exercise 1.1 - \color{red}{Solutions}}
+\begin{itemize}
+\item Compute the conditional and predictive power of the six replication studies and plot it.
+\item What do you notice? % Goal: bordeline significant original study: very low power with both methods
+<<echo = FALSE, eval = T, fig.height = 5>>=
+par(las = 1)
+
+po.plot <- seq(0.000001, 0.05, by = 0.0001)
+pow.cond <- powerSignificance(po = po.plot, c = 1, designPrior = "conditional")
+pow.pred <- powerSignificance(po = po.plot, c = 1, designPrior = "predictive")
+plot(po.plot, pow.cond, col = "red", ylim = c(0,1), type = "l", 
+           xlab = "Original p-value",
+     ylab = "Power", lwd = 1.5)
+lines(po.plot, pow.pred, col = "blue", lwd = 1.5)
+abline( h = 0.5, lty = 2)
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1, bty = "n", 
+       cex = 1.5, lwd = 1.5)
+
+  @
+   
+\end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{1. Statistical significance}
+  \begin{block}{Exercise 1.1 - \color{red}{Solutions}}
+\begin{itemize}
+\item What happens if we decide to take less subjects in the replication study as compared to the original study? \color{red}{c = 0.6} % Goal: if conditional power lower than 50% -> predictive power larger than conditional power. 
+
+<<echo = FALSE, eval = T, fig.height = 5>>=
+par(las = 1)
+
+pow.cond <- powerSignificance(po = po.plot, c = 0.6, designPrior = "conditional")
+pow.pred <- powerSignificance(po = po.plot, c = 0.6, designPrior = "predictive")
+plot(po.plot, pow.cond, col = "red", ylim = c(0,1), type = "l", 
+      xlab = "Original p-value",
+     ylab = "Power", 
+     lwd = 1.5)
+lines(po.plot, pow.pred, col = "blue", 
+      lwd = 1.5)
+abline( h = 0.5, lty = 2)
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1, bty = "n", 
+       cex = 1.5, 
+       lwd = 1.5)
+
+  @
+   
+\end{itemize}
+  \end{block}
+\end{frame}
+
 \begin{frame}{1. Statistical significance}
-  \begin{block}{Exercise 2}
+  \begin{block}{Exercise 1.2}
 We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
 \begin{itemize}
 \item Compute and plot the relative replication sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
 \item What happens if the desired power is now 90\%? % Goal: predictive curve explodes
 \end{itemize}
   \end{block}
-<<echo = FALSE, eval = FALSE>>=
 
-ss.cond <- sampleSizeSignificance(po = pval.or, power = 0.8, designPrior = "conditional")
-ss.pred <- sampleSizeSignificance(po = pval.or, power = 0.8, designPrior = "predictive" )
+\end{frame}
 
-plot(pval.or, ss.cond, type = "l", ylim = c(0,10), col = "red")
-lines(pval.or, ss.pred, col = "blue")
+\begin{frame}{1. Statistical significance}
+  \begin{block}{Exercise 1.2- \color{red}{Solutions}}
+\begin{itemize}
+\item Compute and plot the relative replication sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
+\end{itemize}
+  \end{block}
+<<echo = FALSE, fig.height = 5>>=
+par(las = 1)
+
+ss.cond <- sampleSizeSignificance(po = po.plot, power = 0.8, designPrior = "conditional")
+ss.pred <- sampleSizeSignificance(po = po.plot, power = 0.8, designPrior = "predictive" )
+
+plot(po.plot, ss.cond, type = "l", ylim = c(0,10), col = "red", 
+     xlab = "Original p-value", 
+     ylab = "Relative sample size", 
+     lwd = 1.5)
+lines(po.plot, ss.pred, col = "blue", 
+      lwd = 1.5)
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1, bty = "n", 
+       cex = 1.5, 
+       lwd = 1.5)
 
 
 @
@@ -595,23 +715,47 @@ lines(pval.or, ss.pred, col = "blue")
 
 
 \begin{frame}{1. Statistical significance}
+  \begin{block}{Exercise 1.2- \color{red}{Solutions}}
+\begin{itemize}
+\item What happens if the desired power is now 90\%? % Goal: predictive curve explodes 
+\end{itemize}
+  \end{block}
+<<echo = FALSE, fig.height = 5>>=
+par(las = 1)
 
-\begin{block}{Exercise 3}
-We are now interested in the Experimental economics projects.
+ss.cond <- sampleSizeSignificance(po = po.plot, power = 0.9, designPrior = "conditional")
+ss.pred <- sampleSizeSignificance(po = po.plot, power = 0.9, designPrior = "predictive" )
+
+plot(po.plot, ss.cond, type = "l", ylim = c(0,10), col = "red", 
+     xlab = "Original p-value", 
+     ylab = "Relative sample size", 
+     lwd = 1.5)
+lines(po.plot, ss.pred, col = "blue", 
+      lwd = 1.5)
+legend("topleft", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1, bty = "n", 
+       cex = 1.5, 
+       lwd = 1.5)
+
+
+@
+  
+\end{frame}
+
+
+
+\begin{frame}{1. Statistical significance}
+
+\begin{block}{Exercise 1.3}
+= We are now interested in the Experimental economics projects.
 \begin{itemize}
 \item Compute the required replication sample size to reach a power of 90\% for each study of the project and with the conditional and the predictive design prior. 
 \item What do you notice? % Goal: most of the studies have a sample size (largely) above 1 and even larger for predictive design prior
 \end{itemize}
   \end{block}
-<<echo = FALSE, eval = FALSE>>=
 
-ss.cond <- sampleSizeSignificance(po = pval.or, power = 0.8, designPrior = "conditional")
-ss.pred <- sampleSizeSignificance(po = pval.or, power = 0.8, designPrior = "predictive" )
-
-plot(pval.or, ss.cond, type = "l", ylim = c(0,10), col = "red")
-lines(pval.or, ss.pred, col = "blue")
-@
-  
 <<size = "scriptsize">>=
 data("ReplicationProjects")
 
@@ -621,18 +765,58 @@ eco <- subset(ReplicationProjects, project == "Experimental Economics")
 
 \begin{frame}{1. Statistical significance}
 
-\begin{block}{Exercise 4}
+\begin{block}{Exercise 1.3 - \color{red}{Solutions}}
+\begin{itemize}
+\item Compute the required replication sample size to reach a power of 90\% for each study of the project and with the conditional and the predictive design prior. 
+\item What do you notice? % Goal: most of the studies have a sample size (largely) above 1 and even larger for predictive design prior
+\end{itemize}
+  \end{block}
+<<echo = FALSE, fig.height = 5>>=
+library("beeswarm")
+ss.ecoC <- sampleSizeSignificance(po = eco$pval_O, power = 0.9, designPrior = "conditional")
+ss.ecoP <- sampleSizeSignificance(po = eco$pval_O, power = 0.9, designPrior = "predictive")
+@
+
+todo
+\end{frame}
+
+\begin{frame}{1. Statistical significance}
+
+\begin{block}{Exercise 1.4}
 Some original studies belonging to the psychology data set were not statistically significant at the two-sided 5\%-level. This is the case for the study from Reynolds and Besner (2008), for example. 
 \begin{itemize}
 \item Compute the required replication sample size to reach a power of 95\% for this study with the conditional and the predictive design prior. 
 \end{itemize}
   \end{block}
-<<eval = FALSE>>=
+<<>>=
 reynolds <- subset(ReplicationProjects,
                 study == "M Reynolds, D Besner")
 
 @
 
+\end{frame}
+
+\begin{frame}[fragile]
+<<echo = FALSE>>=
+po.reynolds <- reynolds$pval_O
+@
+
+ \begin{block}{Exercise 1.4 - \color{red}{Solutions}}
+  \begin{itemize}
+  \item Compute the required replication sample size to reach a power of 95\% for this study with the conditional and the predictive design prior.
+\item $p_o =$ \Sexpr{round(po.reynolds,2)}
+<<>>=
+sampleSizeSignificance(po = reynolds$pval_O, 
+                                    power = 0.95, 
+                                    designPrior = "conditional")
+sampleSizeSignificance(po = reynolds$pval_O, 
+                                    power = 0.95, 
+                                    designPrior = "predictive")
+@
+
+  \item[] $\rightarrow$ predictive power is bounded by (1- one-sided $p$-value of original study)
+  \end{itemize}
+ \end{block}
 \end{frame}
 
 \begin{frame}{2. Compatibility of effect estimates}
@@ -784,6 +968,7 @@ Main arguments:
 \item \texttt{power}
 \item \texttt{designPrior}
 \item \texttt{level}
+\item \texttt{alternative}
 \end{itemize}
 
 \end{block}
@@ -807,11 +992,71 @@ sampleSizeReplicationSuccess(to = 2.63, power = 0.9,
 % Explain here why we use alpha level of 0.065 and one-sided test
 \end{frame}
 
+\begin{frame}[fragile]{3. Sceptical $p$-value}
+  \begin{block}{Exercise 3.1}
+    \begin{itemize}
+    \item Compute and plot the conditional and predictive power for Replication Success of the 6 studies from exercise 1.1, using an alpha level of 0.065 and a one-sided alternative
+    \item How does the plot compare with the one from exercise 1.1?
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{3. Sceptical $p$-value}
+  \begin{block}{Exercise 3.1 - \color{red}{Solutions}}
+    \begin{itemize}
+    \item Compute and plot the conditional and predictive power for Replication Success of the 6 studies from exercise 1.1, using an alpha level of 0.065 and a one-sided alternative
+    \end{itemize}
+<<echo = F, fig.height = 5>>=
+par(las = 1)
+
+pow.cond2 <- powerReplicationSuccess(po = po.plot, c = 1, designPrior = "conditional", level  = 0.065, alternative = "one.sided")
+pow.pred2 <- powerReplicationSuccess(po = po.plot, c = 1, designPrior = "predictive", level = 0.065, alternative = "one.sided")
+plot(po.plot, pow.cond2, type = "l", col = "red", ylim = c(0,1), 
+     lwd = 1.5, 
+     xlab = "Original p-value", 
+     ylab = "Power")
+lines(po.plot, pow.pred2, col = "blue", 
+      lwd = 1.5)
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1.5, bty = "n", 
+       cex = 1.5)
+  @
+  \end{block}
+\end{frame}
+
+\begin{frame}{3. Sceptical $p$-value}
+  \begin{block}{Exercise 3.2}
+  \begin{itemize}
+  \item For the replications from experimental economics project compute the required relative sample size to reach a power for Replication Success of 90\%. Use the conditional and the predictive design prior, a level of 0.065 and a one-sided alternative.
+  \item Compare them to the actually used relative sample sizes.
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{3. Sceptical $p$-value}
+  \begin{block}{Exercise 3.2 - \color{red}{Solutions}}
+<<fig.height = 5>>=
+par(mfrow = c(1,2), las = 1)
+sampleSizeReplicationSuccess(po = eco$pval_O, power = 0.90, level = 0.065, 
+                                            alternative = "one.sided", 
+                                            designPrior = "conditional")
+sampleSizeReplicationSuccess(po = eco$pval_O, power = 0.90, level = 0.065, 
+                                            alternative = "one.sided",
+                                            designPrior = "predictive")
+
+@
+
+  \end{block}
+\end{frame}
 
 \begin{frame}{Outlook}
--- Interim
 -- Heterogeneity
 -- EB shrinkage
+-- Interim
 \end{frame}
 
 
