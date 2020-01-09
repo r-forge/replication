@@ -936,7 +936,7 @@ abline(a = 0, b = 1, lty = 2)
 @
 \end{frame}
 
-\begin{frame}{Compatibility of effect estimates}
+\begin{frame}{2. Compatibility of effect estimates}
   \begin{block}{Exercise 2.3}
     \begin{itemize}
       \item[a)] Look at the documentation of the function \texttt{predictionInteval()} with \texttt{?predictionInteval}. Run the example code at the bottom to compute and plot the 95\% prediction intervals for all four replication projects. Interpret the results.
