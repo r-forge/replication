@@ -397,14 +397,14 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \begin{block}{What is used in practice}
   \begin{itemize}
   \item Standard sample size calculation
-<<>>=
+<< >>=
 sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
-u <- qnorm(p = power)
-v <- qnorm(p = 1-sig.level/2)
-n <- 2*(u+v)^2*sd^2/delta^2
-return(n)
+  u <- qnorm(p = power)
+  v <- qnorm(p = 1 - sig.level/2)
+  n <- 2*(u + v)^2*sd^2/delta^2
+  return(n)
 }
-sampleSizeZtest(delta=0.25, sd=0.4, sig.level=0.01, power=.95)
+sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
 @
   
   \item Goal is to have between 80\%  and 95\% power in the replication study to detect the effect estimate from the original study
@@ -772,7 +772,6 @@ eco <- subset(ReplicationProjects, project == "Experimental Economics")
 \end{itemize}
   \end{block}
 <<echo = FALSE, fig.height = 5>>=
-library("beeswarm")
 ss.ecoC <- sampleSizeSignificance(po = eco$pval_O, power = 0.9, designPrior = "conditional")
 ss.ecoP <- sampleSizeSignificance(po = eco$pval_O, power = 0.9, designPrior = "predictive")
 @
@@ -790,7 +789,7 @@ Some original studies belonging to the psychology data set were not statisticall
   \end{block}
 <<>>=
 reynolds <- subset(ReplicationProjects,
-                study == "M Reynolds, D Besner")
+                   study == "M Reynolds, D Besner")
 
 @
 
@@ -807,11 +806,11 @@ po.reynolds <- reynolds$pval_O
 \item $p_o =$ \Sexpr{round(po.reynolds,2)}
 <<>>=
 sampleSizeSignificance(po = reynolds$pval_O, 
-                                    power = 0.95, 
-                                    designPrior = "conditional")
+                       power = 0.95, 
+                       designPrior = "conditional")
 sampleSizeSignificance(po = reynolds$pval_O, 
-                                    power = 0.95, 
-                                    designPrior = "predictive")
+                       power = 0.95, 
+                       designPrior = "predictive")
 @
 
   \item[] $\rightarrow$ predictive power is bounded by (1- one-sided $p$-value of original study)
@@ -892,7 +891,7 @@ sampleSizePIwidth(w = w, designPrior = "predictive")
 \end{frame}
 
 \begin{frame}[fragile]{2. Compatibility of effect estimates}
-<< echo = FALSE>>=
+<< echo = FALSE >>=
 ReplicationProjects$c <- with(ReplicationProjects, 
                               z_se_O^2/z_se_R^2)
 
@@ -901,15 +900,18 @@ ReplicationProjects$tr <- with(ReplicationProjects, z_R/z_se_R)
 eco <- subset(ReplicationProjects, 
               project == "Experimental Economics")
 @
-<< fig.height = 5, size = "scriptsize" >>=
+<< >>=
 required_c <- sampleSizePI(to = eco$to, designPrior = "predictive")
+@
+<< fig.height = 6, size = "scriptsize", echo = FALSE >>=
 plot(required_c, eco$c, pch = 19, ylim = c(0, 4), xlim = c(0, 25),
-     xlab = "required", ylab = "actual", cex = 1.2)
+     xlab = "required c", ylab = "actual c", cex = 1.2, 
+     cex.axis = 1.5, cex.lab = 1.5)
 abline(a = 0, b = 1, lty = 2)
 @
 \end{frame}
 
-\begin{frame}{Compatibility of effect estimates}
+\begin{frame}{2. Compatibility of effect estimates}
   \begin{block}{Exercise 2.3}
     \begin{itemize}
       \item[a)] Look at the documentation of the function \texttt{predictionInteval()} with \texttt{?predictionInteval}. Run the example code at the bottom to compute and plot the 95\% prediction intervals for all four replication projects. Interpret the results.
@@ -1040,13 +1042,12 @@ legend("topright",
 \begin{frame}[fragile]{3. Sceptical $p$-value}
   \begin{block}{Exercise 3.2 - \color{red}{Solutions}}
 <<fig.height = 5>>=
-par(mfrow = c(1,2), las = 1)
 sampleSizeReplicationSuccess(po = eco$pval_O, power = 0.90, level = 0.065, 
-                                            alternative = "one.sided", 
-                                            designPrior = "conditional")
+                             alternative = "one.sided", 
+                             designPrior = "conditional")
 sampleSizeReplicationSuccess(po = eco$pval_O, power = 0.90, level = 0.065, 
-                                            alternative = "one.sided",
-                                            designPrior = "predictive")
+                             alternative = "one.sided",
+                             designPrior = "predictive")
 
 @
 
@@ -1054,9 +1055,19 @@ sampleSizeReplicationSuccess(po = eco$pval_O, power = 0.90, level = 0.065,
 \end{frame}
 
 \begin{frame}{Outlook}
--- Heterogeneity
--- EB shrinkage
--- Interim
+\begin{itemize}
+  
+  \item Between-study heterogeneity \\
+  $\rightarrow$ argument in most function \texttt{d} 
+  $= \tau^2/\sigma^2_o$
+  
+  \item Data-driven shrinkage with empirical Bayes \\
+  $\rightarrow$ \texttt{designPrior = "EB"}
+  
+  \item Interim analysis \\
+  $\rightarrow$ \texttt{powerSignificanceInterim()}
+  
+\end{itemize}
 \end{frame}
 
 
