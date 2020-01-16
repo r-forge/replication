@@ -10,7 +10,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-ci2p(lower, upper, conf.level=0.95, ratio=FALSE, alternative="two.sided")
+ci2p(lower, upper, conf.level = 0.95, ratio = FALSE, alternative = "two.sided")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,27 +20,26 @@ ci2p(lower, upper, conf.level=0.95, ratio=FALSE, alternative="two.sided")
   \item{upper}{
    a vector of upper confidence interval bounds
 }
-    \item{conf.level}{
-      The confidence level of the confidence intervals. Default is 0.95.
-    }
-   \item{ratio}{
-     Indicates whether the confidence interval is for a ratio, e.g. an
-     odds ratio, relative risk or hazard ratio. 
-    Defaults to \code{FALSE}.
+  \item{conf.level}{
+    The confidence level of the confidence intervals. Default is 0.95.
+  }
+ \item{ratio}{
+   Indicates whether the confidence interval is for a ratio, e.g. an
+   odds ratio, relative risk or hazard ratio. Defaults to \code{FALSE}.
 }
-   \item{alternative}{
-    type of p-value. Either "two.sided" or "one.sided". 
-    Defaults to "two.sided". Specifies if the P-values are one-sided or
-    two-sided. 
+ \item{alternative}{
+  type of p-value. Either "two.sided" or "one.sided". 
+  Defaults to "two.sided". Specifies if the p-values are one-sided or
+  two-sided. 
 }
 }
 \value{A numeric vector of p-values
 }
 \seealso{
-  \code{\link{ci2se}}, \code{\link{ci2t}}, \code{\link{ci2estimate}}, \code{\link{p2t}}, \code{\link{t2p}}
+  \code{\link{ci2se}}, \code{\link{ci2z}}, \code{\link{ci2estimate}}, \code{\link{p2z}}, \code{\link{z2p}}
 }
 \examples{
-ci2p(1, 3)
-ci2p(1, 3, alternative="one.sided")
+ci2p(lower = 1, upper = 3)
+ci2p(lower = 1, upper = 3, alternative = "one.sided")
 }
 

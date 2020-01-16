@@ -1,24 +1,24 @@
-\name{t2p}
-\alias{t2p}
+\name{z2p}
+\alias{z2p}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-    Transforms t-values to p-values
+    Transforms z-values to p-values
 %%  ~~function to do ... ~~
 }
 \description{
-    Transforms the t-value(s) to the corresponding one- or two-sided p-value(s).
+  Transforms z-values to the corresponding one- or two-sided p-values.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-t2p(t, alternative="two.sided")
+z2p(z, alternative = "two.sided")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{t}{
-   a vector of t-values
+  \item{z}{
+   a vector of z-values
 %%     ~~Describe \code{bf} here~~
 }
-   \item{alternative}{Underlying
+   \item{alternative}{
     Specifies direction of the alternative of p-value. 
     Either \code{"less"}, \code{"greater"}, \code{"one.sided"}, \code{"two.sided"}.  
     Defaults to \code{"two.sided"}.  
@@ -28,7 +28,8 @@ t2p(t, alternative="two.sided")
 %\details{
 %%  ~~ If necessary, more details than the description above ~~
 %}
-\value{A numeric vector of p-values
+\value{
+  A numeric vector of p-values
 %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}
@@ -47,13 +48,21 @@ t2p(t, alternative="two.sided")
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
-%\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-%}
+\seealso{
+  \code{\link{p2z}}
+}
+
 \examples{
-t2p(t=c(1,2,5))
-t2p(t=c(1,2,5), alternative="less")
-t2p(t=c(1,2,5), alternative="greater")
+z2p(z = c(1, 2, 5))
+z2p(z = c(1, 2, 5), alternative = "less")
+z2p(z = c(1, 2, 5), alternative = "greater")
+
+z <- seq(-3, 3, by = 0.01)
+plot(z, z2p(z), type = "l", 
+      xlab = "z", ylab = "p", 
+      ylim = c(0, 1))
+lines(z, z2p(z, alternative = "greater"), lty = 2)
+legend("topright", c("two-sided", "greater"), lty = c(1, 2), bty = "n")
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

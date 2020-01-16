@@ -1,8 +1,11 @@
-powerSignificanceInterim <- function(to, ti, c = 1, f = 1 / 2,
-                                     level = 0.05,
+powerSignificanceInterim <- function(zo, 
+                                     zi, 
+                                     c = 1, 
+                                     f = 1/2,
+                                     level = 0.025,
                                      designPrior = "conditional",
                                      analysisPrior = "flat",
-                                     alternative = "two.sided",
+                                     alternative = "greater",
                                      shrinkage = 1) 
 {
   if (!(designPrior %in% c("conditional", "predictive", "flat"))) 
@@ -17,12 +20,13 @@ powerSignificanceInterim <- function(to, ti, c = 1, f = 1 / 2,
   if ((min(shrinkage, na.rm = TRUE) < 0 || max(shrinkage, na.rm = TRUE) > 
        1)) 
     stop("shrinkage must be in [0, 1]")
-  v <- p2t(level, alternative = alternative)
-  to <- shrinkage * to
+  
+  v <- p2z(p = level, alternative = alternative)
+  zo <- shrinkage * zo
   
   if (designPrior == "conditional")
     if (analysisPrior == "flat"){
-      pSig <-  pnorm(to * sqrt(c * (1 / f - 1)) + ti / (sqrt(1 / f - 1)) - 
+      pSig <-  pnorm(zo * sqrt(c * (1 / f - 1)) + zi / (sqrt(1 / f - 1)) - 
                        sqrt(1 / (1 - f)) * v)
     } else if (analysisPrior == "original") {
       return(NA) ## For now, we are not interested in the case where the design prior is conditional and the analysis prior normal.
@@ -30,15 +34,15 @@ powerSignificanceInterim <- function(to, ti, c = 1, f = 1 / 2,
   
   if (designPrior == "predictive") {
     if (analysisPrior == "flat") {
-      term1 <- sqrt(((1 - f) * c) / ((c + 1) * (f + c))) * to
-      term2 <- sqrt((f + c) / ((1 - f) * (c + 1))) * ti
+      term1 <- sqrt(((1 - f) * c) / ((c + 1) * (f + c))) * zo
+      term2 <- sqrt((f + c) / ((1 - f) * (c + 1))) * zi
       term3 <- sqrt((f * (c + 1)) / ((f + c) * (1 - f))) * v
       pSig <- pnorm(term1 + term2 - term3)
     }
     else if (analysisPrior == "original") {
       term1 <- sqrt(1 + (c * (1 - f)) / (f * (c + 1)))
-      term2 <- sqrt(f / (c * (1 - f))) * to
-      term3 <- sqrt(f / (1 - f)) * ti
+      term2 <- sqrt(f / (c * (1 - f))) * zo
+      term3 <- sqrt(f / (1 - f)) * zi
       term4 <- sqrt((f * (c + 1)) / (c * (1 - f))) * v
       
       pSig <-  pnorm(term1 * (term2 + term3) - term4)
@@ -47,13 +51,10 @@ powerSignificanceInterim <- function(to, ti, c = 1, f = 1 / 2,
   
   if (designPrior == "flat"){
     if (analysisPrior == "flat") {
-      pSig <- pnorm((ti - sqrt(f) * v) / sqrt(1 - f))
+      pSig <- pnorm((zi - sqrt(f) * v) / sqrt(1 - f))
     } else if (analysisPrior == "original"){
       return(NA)
     }
   }
-  
-  
-  
   return(pSig)
 }

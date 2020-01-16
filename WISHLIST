@@ -1,2 +1,8 @@
-* Notation: change t to z? (z is usually the name for a normally distributed test-statistic while t usually refers to t-distributed test-statistic)
-* powerSignificanceInterim: also add the EB shrinkage?
+* powerSignificanceInterim: also add the EB shrinkage? -> maybe later
+* powerSignificanceInterim: Bounds for power error message?
+* one-sided vs. two-sided, alternative: greater vs. less -> maybe later
+* vectorization issues, multiple arguments which don't match in dimensions -> maybe later
+* include shrinkage and heterogeneity in powerReplicationSuccess sampleReplicationSuccess 
+* consistent and short names of studies in data set
+* write tests for functions which don't have tests
+* option "strict" for two.sided alternative in powerSignificance and sampleSizeSignificance

@@ -1,14 +1,13 @@
 Package: ReplicationSuccess
 Type: Package
 Title: Design and Analysis of Replication Studies
-Version: 0.1-1
-Date: 2019-12-04
+Version: 0.1-2
+Date: 2020-01-13
 Author: Leonhard Held [aut], Samuel Pawel [ctb], Charlotte Micheloud [ctb]
 Maintainer: Leonhard Held <leonhard.held@uzh.ch>
-Description: Implements the sceptical P-value for the analysis of replication studies. Also provides functions to compute the P-value for intrinsic credibility as well as the threshold for intrinsic credibility. Provides also functions to compute the power and the required replication sample size to achieve replication success or significance. 
+Description: Contains utilities for planning and analysing replication studies. Traditional methods based on statistical signficance and confidence intervals, as well as more recently developed methods such as the sceptical p-value are included.  Also provides functions to compute the p-value for intrinsic credibility as well as the threshold for intrinsic credibility. Contains data sets from four large-scale replication projects.
 VignetteBuilder: knitr
 Suggests: knitr
 License: GPL (>=2)
 NeedsCompilation: no
 Packaged: 2019-05-19 08:49:22 UTC; leo
-Depends: R (>= 3.5.0)

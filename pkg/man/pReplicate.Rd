@@ -1,7 +1,7 @@
 \name{pReplicate}
 \alias{pReplicate}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Replication probabilities for P-values}
+\title{Probability of replicating an effect of Killeen (2005)}
 %%  ~~function to do ... ~~
 \description{
   Computes the probability that a replication study yields an effect
@@ -9,24 +9,26 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-pReplicate(p=NULL, t=p2t(p, alternative=alternative), c=1, alternative="two.sided")
+pReplicate(po, zo = p2z(p = po, alternative = alternative), c = 1,
+           alternative = "two.sided")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{p}{
-  a vector of P-values, default is \code{NULL}
+  \item{po}{
+  A vector of p-values from the original study, default is \code{NULL}
 }
-  \item{t}{
-  a vector of test statistics. Is calculated from \code{p}, if necessary. 
+  \item{zo}{
+  A vector of z-values from the original study. 
+  Is calculated from \code{po}, if necessary. 
 }
-    \item{c}{
-      The ratio of the variances of the original and replication effect
-      estimates. This is usually the ratio of the sample size of the
-      replication study to the sample size of the original study. 
+  \item{c}{
+    The ratio of the variances of the original and replication effect
+    estimates. This is usually the ratio of the sample size of the
+    replication study to the sample size of the original study. 
 }
-  \item{alternative}{either \code{"one.sided"} or \code{"two.sided"}.  Defaults to
-          \code{"two.sided"}.  Specifies if the P-value is one-sided or
-two-sided.}
+  \item{alternative}{Either \code{"one.sided"} or \code{"two.sided"}. 
+  Defaults to \code{"two.sided"}. 
+  Specifies if the p-value is one-sided or two-sided.}
 }
 \details{
   This extends the statistic p_rep
@@ -54,10 +56,8 @@ Science}, 6:181534. \url{https://dx.doi.org/10.1098/rsos.181534}
 Leonhard Held
 }
 \examples{
-
-pReplicate(p=c(0.05, 0.01, 0.001))
-pReplicate(p=c(0.05, 0.01, 0.001), c=2)
-pReplicate(p=c(0.05, 0.01, 0.001), c=2, alternative="one.sided")
-pReplicate(t=c(2,3,4))
-
+pReplicate(po = c(0.05, 0.01, 0.001))
+pReplicate(po = c(0.05, 0.01, 0.001), c = 2)
+pReplicate(po = c(0.05, 0.01, 0.001), c = 2, alternative = "one.sided")
+pReplicate(zo = c(2, 3, 4))
 }

@@ -1,20 +1,8 @@
-# Target function for calculating required sample size using uniroot
-ClassicalTarget <- function(c, to, level = 0.05, power, alternative = alternative,
-                            d = 0, shrinkage = 1, designPrior){
-    term <- powerSignificance(to = to, c = c, level = level,
-                              designPrior = designPrior,
-                              alternative = alternative,
-                              d = d,
-                              shrinkage = shrinkage)
-    return(term - power)
-}
-
-sampleSizeSignificance <- function(po = NULL,
-                                   to = p2t(po, alternative = alternative),
+sampleSizeSignificance <- function(zo,
                                    power,
-                                   level = 0.05,
+                                   level = 0.025,
                                    designPrior = "conditional",
-                                   alternative = "two.sided",
+                                   alternative = "one.sided",
                                    d = 0,
                                    shrinkage = 1){
     # sanity checks
@@ -29,34 +17,52 @@ sampleSizeSignificance <- function(po = NULL,
     if ((min(shrinkage, na.rm = TRUE) < 0 || max(shrinkage, na.rm = TRUE) > 1)) 
         stop("shrinkage must be in [0, 1]")
     
-    c <- numeric()
-    for(i in seq_len(length(to))){
-        
-        # for conditional designPrior use analytical solution
-        if(designPrior == "conditional"){
-            u <- qnorm(p = power)
-            v <- p2t(level, alternative = alternative)
-            c <- (u + v)^2*(1/(shrinkage*to))^2
-        }
-        
-        # for predictive and EB designPrior use uniroot
-        if(designPrior %in% c("predictive", "EB")){
-            
+    # for conditional designPrior use analytical solution
+    if(designPrior == "conditional"){
+        u <- qnorm(p = power)
+        v <- p2z(p = level, alternative = alternative)
+        c <- (u + v)^2*(1/(shrinkage*zo))^2
+    }
+    
+    # Target function for calculating required sample size using uniroot
+    ClassicalTarget <- function(c, 
+                                zo, 
+                                level, 
+                                power, 
+                                alternative,
+                                d, 
+                                shrinkage, 
+                                designPrior){
+        term <- powerSignificance(zo = zo, 
+                                  c = c, 
+                                  level = level,
+                                  designPrior = designPrior,
+                                  alternative = alternative,
+                                  d = d,
+                                  shrinkage = shrinkage)
+        return(term - power)
+    }
+    
+    # for predictive and EB designPrior use uniroot
+    if(designPrior %in% c("predictive", "EB")){
+        c <- numeric()
+        for(i in seq_len(length(zo))){
+
             # compute upper bound of power
             if (designPrior == "predictive") s <- shrinkage
-            if (designPrior == "EB") s <- pmax(1 - (1 + d)/to[i]^2, 0)
-            power.limit <- pnorm(sqrt(1/(s*(1 + d) + d))*s*abs(to[i]))
+            if (designPrior == "EB") s <- pmax(1 - (1 + d)/zo[i]^2, 0)
+            power.limit <- pnorm(sqrt(1/(s*(1 + d) + d))*s*abs(zo[i]))
             if (power > power.limit) {
                 power.limit.r <- floor(power.limit * 1000)/1000
                 stop(paste("power too large, power should not exceed",
                            power.limit.r))
             }
             
-            # check whether desired power can be achieved for max c = 100
+            # check whether desired power can be achieved for max c = 1000
             n.l <- 0
-            n.u <- 100
+            n.u <- 1000
             target.l <- ClassicalTarget(c = n.l, 
-                                        to = to[i],
+                                        zo = zo[i],
                                         level = level,
                                         power = power,
                                         alternative = alternative,
@@ -64,7 +70,7 @@ sampleSizeSignificance <- function(po = NULL,
                                         shrinkage = shrinkage,
                                         designPrior = designPrior)
             target.u <- ClassicalTarget(c = n.u, 
-                                        to = to[i],
+                                        zo = zo[i],
                                         level = level,
                                         power = power,
                                         alternative = alternative,
@@ -75,10 +81,10 @@ sampleSizeSignificance <- function(po = NULL,
                 c[i] <- NA
             
             # determine c to achieve desired power
-            else c[i] <- uniroot(ClassicalTarget, 
+            else c[i] <- uniroot(f = ClassicalTarget, 
                                  lower = n.l, 
                                  upper = n.u,
-                                 to = to[i],
+                                 zo = zo[i],
                                  level = level,
                                  power = power, 
                                  alternative = alternative,

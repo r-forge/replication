@@ -1,5 +1,5 @@
-\name{ReplicationProjects}
-\alias{ReplicationProjects}
+\name{RProjects}
+\alias{RProjects}
 \docType{data}
 \title{
   Data from four large-scale replication projects.
@@ -9,7 +9,7 @@
   Data from \emph{Reproduciblity Project Psychology} (RPP), \emph{Experimental Economics Replication Project} (EERP), \emph{Social Sciences Replication Project} (SSRP), \emph{Experimental Philosophy Replicability Project} (EPRP).
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }
-\usage{data("ReplicationProjects")}
+\usage{data("RProjects")}
 \format{
   A data frame with 143 observations on the following 13 variables:
   \describe{
@@ -19,29 +19,29 @@
     \item{\code{project}}{
     Name of replication project
     }
-    \item{\code{r_O}}{
-    Effect estimate of original study transformed to correlation scale
+    \item{\code{ro}}{
+    Effect estimate of original study on correlation scale
     }
-    \item{\code{r_R}}{
-    Effect estimate of replication study transformed to correlation scale
+    \item{\code{rr}}{
+    Effect estimate of replication study on correlation scale
     }
-    \item{\code{z_O}}{
+    \item{\code{fiso}}{
     Effect estimate of original study transformed to Fisher-z scale
     }
-    \item{\code{z_R}}{
+    \item{\code{fisr}}{
     Effect estimate of replication study transformed to Fisher-z scale
     }
-    \item{\code{z_se_O}}{
+    \item{\code{se_fiso}}{
     Standard error of Fisher-z transformed effect estimate of original study
     }
-    \item{\code{z_se_R}}{
+    \item{\code{se_fisr}}{
     Standard error of Fisher-z transformed effect estimate of replication study
     }
-    \item{\code{pval_O}}{
-    Two-sided P-value from significance test of effect estimate from original study
+    \item{\code{po}}{
+    Two-sided p-value from significance test of effect estimate from original study
     }
-    \item{\code{pval_R}}{
-    Two-sided P-value from significance test of effect estimate from replication study
+    \item{\code{pr}}{
+    Two-sided p-value from significance test of effect estimate from replication study
     }
     \item{\code{pm_belief}}{
     Peer belief about whether replication effect estimate will achieve statistical significance elicited through prediction market (only available for EERP and SSRP)
@@ -50,7 +50,7 @@
 }
 \details{
 %%  ~~ If necessary, more details than the __description__ above ~~
-  Two-sided P-values were calculated assuming normality of Fisher-z transformed effect estimates.
+  Two-sided p-values were calculated assuming normality of Fisher-z transformed effect estimates.
   From the RPP only the \emph{meta-analytic subset} is included, which consists of 73 out of 100 study pairs for which the standard error of the z-transformed correlation coeffient can be computed. 
   From the EPRP only 31 out of 40 study pairs are included where effective sample size for original and replication study are available simultaneously.
   For details about how the the data was preprocessed see supplement S1 of Pawel and Held (2019).
@@ -80,13 +80,13 @@ Cova,  F.,  Strickland,  B.,  Abatista,  A.,  Allard,  A.,  Andow,  J., Attie, M
 }
   
 \examples{
-data("ReplicationProjects", package = "ReplicationSuccess")
+data("RProjects", package = "ReplicationSuccess")
 
 ## Plots of effect estimates
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
-for (p in unique(ReplicationProjects$project)) {
-  data_project <- subset(ReplicationProjects, project == p)
-  plot(r_R ~ r_O, data = data_project, ylim = c(-0.5, 1), 
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), 
        xlim = c(-0.5, 1), main = p, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]))
   abline(h = 0, lty = 2)
@@ -94,12 +94,12 @@ for (p in unique(ReplicationProjects$project)) {
 }
 
 ## Plots of peer beliefs
-ReplicationProjects$significant <- factor(ReplicationProjects$pval_R < 0.05,
-                                          levels = c(FALSE, TRUE),
-                                          labels = c("no", "yes"))
+RProjects$significant <- factor(RProjects$pr < 0.05,
+                                levels = c(FALSE, TRUE),
+                                labels = c("no", "yes"))
 par(mfrow = c(1, 2), las = 1, mai = rep(0.9, 4))
 for (p in c("Experimental Economics", "Social Sciences")) {
-  data_project <- subset(ReplicationProjects, project == p)
+  data_project <- subset(RProjects, project == p)
   boxplot(pm_belief ~ significant, data = data_project, ylim = c(0, 1), 
           main = p, xlab = "Replication effect significant", ylab = "Peer belief")
   stripchart(pm_belief ~ significant, data = data_project, vertical = TRUE, 
@@ -108,7 +108,8 @@ for (p in c("Experimental Economics", "Social Sciences")) {
 
 
 ## Computing the sceptical p-value
-ps <- with(ReplicationProjects,
-           pSceptical(to = z_O/z_se_O, tr = z_R/z_se_R, c = z_se_O^2/z_se_R^2))
+ps <- with(RProjects, pSceptical(zo = fiso/se_fiso, 
+                                 zr = fisr/se_fisr, 
+                                 c = se_fiso^2/se_fisr^2))
 }
 \keyword{datasets}

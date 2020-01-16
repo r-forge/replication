@@ -8,19 +8,15 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-  sampleSizePIwidth(po = NULL, to = p2t(po, alternative = alternative), w,
-  conf.level = 0.95, alternative = "two.sided", designPrior = "predictive",
-  d = 0)
+sampleSizePIwidth(zo, w, conf.level = 0.95, 
+                  designPrior = "predictive", d = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{po}{
-    A vector of P-values from original studies, default is \code{NULL}
-  }
-  \item{to}{
-    A vector of test statistics from original studies. 
+
+  \item{zo}{
+    A vector of z-values from original studies. 
     Only required if \code{designPrior = "EB"}.
-    Is calculated from \code{po}, if necessary. 
   }
   \item{w}{
     Desired relative width of prediction interval (relative to width of
@@ -28,12 +24,6 @@
   }
   \item{conf.level}{
     The confidence level of the prediction intervals. Default is 0.95.
-  }
-  \item{alternative}{
-    Either \code{"less"}, \code{"greater"}, or \code{"two.sided"}.  
-    Defaults to \code{"two.sided"}.  
-    Specifies direction of the alternative for the P-value. Only needed when
-    input is a P-value rather than a test statistic.
   }
   \item{designPrior}{
     Either \code{"conditional"}, \code{"predictive"}, or \code{"EB"}.  
@@ -63,15 +53,15 @@
 }
 \examples{
 sampleSizePIwidth(w = c(1.1, 1.5, 2), d = 0.5)
-sampleSizePIwidth(to = c(1, 2, 3), w = 1.5, designPrior = "EB")
+sampleSizePIwidth(zo = c(1, 2, 3), w = 1.5, designPrior = "EB")
 
 w <- seq(0.5, 3, 0.01)
-plot(w, sampleSizePIwidth(to = NULL, w = w), type = "l", log = "y", lwd = 1.5, las = 1,
+plot(w, sampleSizePIwidth(zo = NULL, w = w), type = "l", log = "y", lwd = 1.5, las = 1,
      ylab = expression(paste("Relative sample size ", n[r]/n[o])),
      xlab = expression(paste("Relative width ", tilde(italic(w)))))
 abline(h = 1, lty = 3)
-lines(w, sampleSizePIwidth(to = 2, w = w, designPrior = "EB"),
+lines(w, sampleSizePIwidth(zo = 2, w = w, designPrior = "EB"),
       lty = 2, lwd = 1.5)
 legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5, bty = "n",
-       legend = c("predictive", expression(paste("EB, ", italic(t)[o] == 2))))
+       legend = c("predictive", expression(paste("EB, ", italic(z)[o] == 2))))
 }

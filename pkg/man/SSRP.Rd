@@ -16,50 +16,50 @@
     \item{\code{study}}{
     Study identifier, usually names of authors from original study
     }
-    \item{\code{r_O}}{
-    Effect estimate of original study transformed to correlation scale
+    \item{\code{ro}}{
+    Effect estimate of original study on correlation scale
     }
-    \item{\code{r_I}}{
-    Effect estimate of replication study at the interim analysis transformed to correlation scale
+    \item{\code{ri}}{
+    Effect estimate of replication study at the interim analysis on correlation scale
     }
-    \item{\code{r_R}}{
-    Effect estimate of replication study at the final analysis transformed to correlation scale
+    \item{\code{rr}}{
+    Effect estimate of replication study at the final analysis on correlation scale
     }
-    \item{\code{z_O}}{
+    \item{\code{fiso}}{
     Effect estimate of original study transformed to Fisher-z scale
     }
-    \item{\code{z_I}}{
+    \item{\code{fisi}}{
     Effect estimate of replication study at the interim analysis transformed to Fisher-z scale
     }
-    \item{\code{z_R}}{
+    \item{\code{fisr}}{
     Effect estimate of replication study at the final analysis transformed to Fisher-z scale
     }
-    \item{\code{z_se_O}}{
+    \item{\code{se_fiso}}{
     Standard error of Fisher-z transformed effect estimate of original study
     }
-    \item{\code{z_se_I}}{
+    \item{\code{se_fisi}}{
     Standard error of Fisher-z transformed effect estimate of replication study at the interim analysis
     }
-    \item{\code{z_se_R}}{
+    \item{\code{se_fisr}}{
     Standard error of Fisher-z transformed effect estimate of replication study at the final analysis
     }
-    \item{\code{n_O}}{
+    \item{\code{no}}{
     Sample size in original study
     }
-    \item{\code{n_I}}{
+    \item{\code{ni}}{
     Sample size in replication study at the interim analysis
     }
-    \item{\code{n_R}}{
+    \item{\code{nr}}{
     Sample size in replication study at the final analysis
     }
-    \item{\code{pval_O}}{
-    Two-sided P-value from significance test of effect estimate from original study
+    \item{\code{po}}{
+    Two-sided p-value from significance test of effect estimate from original study
     }
-    \item{\code{pval_I}}{
-    Two-sided P-value from significance test of effect estimate from replication study at the interim analysis
+    \item{\code{pi}}{
+    Two-sided p-value from significance test of effect estimate from replication study at the interim analysis
     }
-    \item{\code{pval_R}}{
-    Two-sided P-value from significance test of effect estimate from replication study at the final analysis 
+    \item{\code{pr}}{
+    Two-sided p-value from significance test of effect estimate from replication study at the final analysis 
     }
     \item{\code{n75}}{
    Sample size calculated to have 90\% power in replication study to detect 75\% of the original effect size (expressed as the correlation coefficient r)
@@ -71,8 +71,8 @@
 }
 \details{
 %%  ~~ If necessary, more details than the __description__ above ~~
-  Two-sided P-values were calculated assuming normality of Fisher-z transformed effect estimates.
-  A two-stage procedure was used for the replications. In stage 1, the authors had 90\% power to detect 75\% of the original effect size at the 5\% significance level in a two-sided test. If the original result replicated in stage 1 (two-sided P-value < 0.05 and effect in the same direction as in the original study), the data collection was stopped. If not, a second data collection was carried out in stage 2 to have 90\% power to detect 50\% of the original effect size for the first and the second data collections pooled. \code{n75} and \code{n50} are the planned sample sizes calculated to reach 90\% power in stage 1 and 2, respectively. They sometimes differ from the sample sizes that were actually collected (\code{n_I} and \code{n_R}, respectively). See supplementary information of Camerer et al. (2018) for details.
+  Two-sided p-values were calculated assuming normality of Fisher-z transformed effect estimates.
+  A two-stage procedure was used for the replications. In stage 1, the authors had 90\% power to detect 75\% of the original effect size at the 5\% significance level in a two-sided test. If the original result replicated in stage 1 (two-sided P-value < 0.05 and effect in the same direction as in the original study), the data collection was stopped. If not, a second data collection was carried out in stage 2 to have 90\% power to detect 50\% of the original effect size for the first and the second data collections pooled. \code{n75} and \code{n50} are the planned sample sizes calculated to reach 90\% power in stage 1 and 2, respectively. They sometimes differ from the sample sizes that were actually collected (\code{ni} and \code{nr}, respectively). See supplementary information of Camerer et al. (2018) for details.
  
 }
 \source{
@@ -84,7 +84,7 @@
 Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
 }
 \seealso{
-  \code{\link{ReplicationProjects}}
+  \code{\link{RProjects}}
 }
   
 \examples{
@@ -92,14 +92,14 @@ data("SSRP", package = "ReplicationSuccess")
 
 # plot of the sample sizes
 
-plot(n_I~n_O, data = SSRP, ylim = c(0,2500), 
-     xlim = c(0,400), xlab = expression(n[o]), 
+plot(ni ~ no, data = SSRP, ylim = c(0, 2500), 
+     xlim = c(0, 400), xlab = expression(n[o]), 
      ylab = expression(n[i]))
 abline(a = 0, b = 1, col = "grey")
 
 
-plot(n_R~n_O, data = SSRP, ylim = c(0,2500), 
-     xlim = c(0,400), xlab = expression(n[o]), 
+plot(nr ~ no, data = SSRP, ylim = c(0, 2500), 
+     xlim = c(0, 400), xlab = expression(n[o]), 
      ylab = expression(n[r]))
 abline(a = 0, b = 1, col = "grey")
 }

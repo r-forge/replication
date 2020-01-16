@@ -1,8 +1,6 @@
-sampleSizePIwidth <- function(po = NULL,
-                              to = p2t(po, alternative = alternative),
+sampleSizePIwidth <- function(zo,
                               w,
                               conf.level = 0.95,
-                              alternative = "two.sided",
                               designPrior = "predictive",
                               d = 0) { 
     # sanity checks
@@ -15,8 +13,8 @@ sampleSizePIwidth <- function(po = NULL,
     if (any(w <= 0)) 
         stop("w must be positive")
     if (designPrior == "EB") {
-        if (length(to) == 0) 
-            stop("For EB designPrior 'to' needs to be specified")
+        if (length(zo) == 0) 
+            stop("For EB designPrior 'zo' needs to be specified")
     }
     
     # compute relative sample size for specified relative width
@@ -25,7 +23,7 @@ sampleSizePIwidth <- function(po = NULL,
         c <- 1/w^2
     } else {
         if (designPrior == "predictive") s <- 1
-        if (designPrior == "EB") s <- pmax(1 - (1 + d)/to^2, 0)
+        if (designPrior == "EB") s <- pmax(1 - (1 + d)/zo^2, 0)
         c <- 1/(w^2 - s*(1 + d) - d)
     }
     

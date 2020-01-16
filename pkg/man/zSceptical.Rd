@@ -1,33 +1,34 @@
 \name{zSceptical}
 \alias{zSceptical}
-\title{Computes the test statistic of the sceptical P-value}
+\title{Computes the test statistic of the sceptical p-value}
 \description{
-  The test statistic of the sceptical P-value is
-  computed based on the test statistic of the
+  The test statistic of the sceptical p-value is
+  computed based on the z-value of the
   original and the replication study and the corresponding variance ratio.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-zSceptical(to, tr, c)
+zSceptical(zo, zr, c)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{to}{
-    A vector of test statistics from original studies. 
+  \item{zo}{
+    A vector of z-values from original studies. 
   }
-  \item{tr}{
-    A vector of test statistics from replication studies. 
+  \item{zr}{
+    A vector of z-values from replication studies. 
   }
-  \item{c}{A vector of variance ratios of the original and replication
-          effect estimates. This is usually the ratio of the sample
-          size of the replication study to the sample size of the
-          original study.}
+  \item{c}{
+  A vector of variance ratios of the original and replication
+  effect estimates. This is usually the ratio of the sample
+  size of the replication study to the sample size of the
+  original study.}
 }
 \value{
-The test statistic of the sceptical P-value. 
+The z-value of the sceptical p-value. 
 }
 \references{
-Held, L. (2019). A new standard for the analysis and design of replication studies (with discussion). 
+Held, L. (2020). A new standard for the analysis and design of replication studies (with discussion). 183(2):431 - 448.
   \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 
   \url{https://doi.org/10.1111/rssa.12493}
 }
@@ -44,11 +45,11 @@ Leonhard Held
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 %}
 \seealso{
-  \code{\link{sampleSizeReplicationSuccess}}, \code{\link{powerReplicationSuccess}}, \code{\link{pSceptical}}
+  \code{\link{sampleSizeReplicationSuccess}}, \code{\link{powerReplicationSuccess}}, \code{\link{pSceptical}}, \code{\link{thresholdSceptical}}
 }
 \examples{
-zSceptical(to=2, tr=3, c=2)
-zSceptical(to=3, tr=2, c=2)
+zSceptical(zo = 2, zr = 3, c = 2)
+zSceptical(zo = 3, zr = 2, c = 2)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

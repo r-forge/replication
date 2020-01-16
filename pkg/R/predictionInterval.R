@@ -1,9 +1,7 @@
-predictionInterval <- function(po = NULL,
-                               to = p2t(po, alternative = alternative),
+predictionInterval <- function(zo,
                                c = 1,
                                conf.level = 0.95,
                                designPrior = "predictive",
-                               alternative = "two.sided",
                                d = 0){
     # sanity checks
     if (!(designPrior %in% c("conditional", "predictive", "EB")))
@@ -15,16 +13,16 @@ predictionInterval <- function(po = NULL,
     
     # determine parameters of predictive distribution of tr
     if(designPrior == "conditional"){
-        mu <- to*sqrt(c)
+        mu <- zo*sqrt(c)
         sigma <- 1
     }
     if(designPrior == "predictive"){
-        mu <- to*sqrt(c)
+        mu <- zo*sqrt(c)
         sigma <- sqrt(c + 1 + 2*d*c)
     }
     if (designPrior == "EB"){
-        s <- pmax(1 - (1 + d)/to^2, 0)
-        mu <- s*to*sqrt(c)
+        s <- pmax(1 - (1 + d)/zo^2, 0)
+        mu <- s*zo*sqrt(c)
         sigma <- sqrt(s*c*(1 + d) + 1 + d*c)
     }
     

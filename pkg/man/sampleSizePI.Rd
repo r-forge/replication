@@ -4,31 +4,19 @@
   Computes the required relative sample size for the prediction interval of the replication effect estimate not to include zero
 }
 \description{
-  The relative sample size for the prediction interval of the replication effect estimate not to include zero is computed based on the test statistic of the original study, the confidence level, the design prior, and the relative heterogeneity. 
+  The relative sample size for the prediction interval of the replication effect estimate not to include zero is computed based on the z-value of the original study, the confidence level, the design prior, and the relative heterogeneity. 
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-  sampleSizePI(po = NULL, to = p2t(po, alternative = alternative),
-  conf.level = 0.95, alternative = "two.sided", designPrior = "predictive",
-  d = 0)
+sampleSizePI(zo, conf.level = 0.95, designPrior = "predictive", d = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{po}{
-    A vector of P-values from original studies, default is \code{NULL}
-  }
-  \item{to}{
-    A vector of test statistics from original studies. 
-    Is calculated from \code{po}, if necessary. 
+  \item{zo}{
+    A vector of z-values from original studies. 
   }
   \item{conf.level}{
     The confidence level of the prediction intervals. Default is 0.95.
-  }
-  \item{alternative}{
-    Either \code{"less"}, \code{"greater"}, or \code{"two.sided"}.  
-    Defaults to \code{"two.sided"}.  
-    Specifies direction of the alternative for the P-value. Only needed when
-    input is a P-value rather than a test statistic.
   }
   \item{designPrior}{
     Either \code{"conditional"}, \code{"predictive"}, or \code{"EB"}.  
@@ -57,17 +45,17 @@
   \code{\link{predictionInterval}}, \code{\link{sampleSizePIwidth}}
 }
 \examples{
-sampleSizePI(to = c(1, 2, 3), conf.level = 0.99)
-sampleSizePI(to = c(1, 2, 3), designPrior = "EB")
+sampleSizePI(zo = c(1, 2, 3), conf.level = 0.99)
+sampleSizePI(zo = c(1, 2, 3), designPrior = "EB")
 
 # required relative sample size for 0.95 PI not to include 0 as function of 
-# test statistic
-to <- seq(0, 5, 0.01)
-plot(to, sampleSizePI(to = to), type = "l", log = "y", lwd = 1.5, las = 2,
+# z-value
+zo <- seq(0, 5, 0.01)
+plot(zo, sampleSizePI(zo = zo), type = "l", log = "y", lwd = 1.5, las = 2,
      ylab = expression(paste("Relative sample size ", n[r]/n[o])),
-     xlab = expression(italic(t)[o]))
+     xlab = expression(italic(z)[o]))
 abline(h = 1, lty = 3)
-lines(to, sampleSizePI(to = to, designPrior = "EB"), lty = 2, lwd = 1.5)
+lines(zo, sampleSizePI(zo = zo, designPrior = "EB"), lty = 2, lwd = 1.5)
 legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5,
        legend = c("predictive", "EB"), bty = "n")
 }

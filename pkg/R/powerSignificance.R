@@ -1,29 +1,8 @@
-
-## function powerSignificant computes a generalisation of Goodman's pSig
-## the probability of significance of a replication experiment
-## to: test statistic of original study
-## c: variance ratio sigma_o^2/sigma_r^2 = n_r/n_o
-## d: relative between study heterogeneity tau^2/sigma_o^2
-
-# powerSignificance <- function(po=NULL, to=p2t(po, alternative=alternative),
-#                               c=1, level=0.05,
-#                               designPrior="conditional",
-#                               alternative="two.sided"){
-#     v <- p2t(level, alternative=alternative)
-#     to <- abs(to)
-#     if(designPrior=="conditional")
-#         pSig <- pnorm(to*sqrt(c) - v)
-#     if(designPrior=="predictive")
-#         pSig <- pnorm(v, mean=sqrt(c)*to, sd=sqrt(1+c), lower.tail=FALSE)
-#     return(pSig)
-# }
-
-powerSignificance <- function(po = NULL, 
-                              to = p2t(po, alternative = alternative),
+powerSignificance <- function(zo,
                               c = 1, 
-                              level = 0.05,
+                              level = 0.025,
                               designPrior = "conditional",
-                              alternative = "two.sided",
+                              alternative = "one.sided",
                               d = 0,
                               shrinkage = 1){
     # sanity checks
@@ -36,26 +15,28 @@ powerSignificance <- function(po = NULL,
     if ((min(shrinkage, na.rm = TRUE) < 0 || max(shrinkage, na.rm = TRUE) > 1)) 
         stop("shrinkage must be in [0, 1]")
     
-    # determine direction of alternative and critical value of tr
-    v <- p2t(level, alternative = alternative)
+    # determine direction of alternative and critical value of zr
+    v <- p2z(p = level, alternative = alternative) 
     lowertail <- ifelse(alternative == "less", TRUE, FALSE)
+    if (alternative %in% c("one.sided", "two.sided")) zo  <- abs(zo)
     
     # determine parameters of predictive distribution of tr
     if(designPrior == "conditional"){
-        mu <- shrinkage*to*sqrt(c)
+        mu <- shrinkage*zo*sqrt(c)
         sigma <- 1
     }
     if(designPrior == "predictive"){
-        mu <- shrinkage*to*sqrt(c)
+        mu <- shrinkage*zo*sqrt(c)
         sigma <- sqrt(c + 1 + 2*d*c)
     }
     if (designPrior == "EB"){
-        shrinkage <- pmax(1 - (1 + d)/to^2, 0)
-        mu <- shrinkage*to*sqrt(c)
+        shrinkage <- pmax(1 - (1 + d)/zo^2, 0)
+        mu <- shrinkage*zo*sqrt(c)
         sigma <- sqrt(shrinkage*c*(1 + d) + 1 + d*c)
     }
     
     # compute replication probability
     pSig <- pnorm(q = v, mean = mu, sd = sigma, lower.tail = lowertail)
+    # if (alternative == "two.sided") pSig + pnorm(q = -v, mean = mu, sd = sigma)
     return(pSig)
 }
