@@ -88,18 +88,16 @@ the sceptical $p$-value \citep{Held2020}, are included.
 In this vignette the usage of the package is illustrated on the data sets
 from four large-scale replication projects which are also included in the 
 package.
-% This vignette illustrates the usage of \texttt{ReplicationSuccess} on data sets
-% from large-scale replication projects.
 
 \subsection{Statistical framework}
 \texttt{ReplicationSuccess} assumes a simple but general and practically relevant 
 statistical framework for effect sizes. Specifically, after a suitable transformation the effect estimates are 
 assumed to be approximately normally distributed with known variances
-which do not depend on the effect anymore. %, but are usually only inversely proportional to the sample size of the studies.
+which do not depend on the effect anymore. 
 The same framework is also common in the meta-analysis literature and
 can for example be applied to mean differences, odds ratios 
 (log transformation), or correlation coefficients (Fisher $z$-transformation). 
-% WRITE MORE DETAILS.
+
 
 Moreover, most functions in \texttt{ReplicationSuccess} take unitless quantities as inputs. In particular, the $z$-values 
 $z_o = \hat{\theta}_o/\sigma_o$, $z_r = \hat{\theta}_r/\sigma_r$, 
@@ -113,8 +111,6 @@ the variance ratio is also the relative sample size
 $c = \sigma^2_o/\sigma^2_r = n_r/n_o$. 
 For this reason, all functions from \texttt{ReplicationSuccess} 
 used for sample size computations return $c$. 
-
-% WRITE ABOUT ADVANTAGE OF THIS APPROACH
 
 
 \section{Data sets}
@@ -156,8 +152,7 @@ thus easy to compare and interpret. Design and statistical analysis, on the othe
 is then usually carried out on a scale where the estimates are approximately normally 
 distributed. For correlation coefficients this is the case after applying the Fisher $z$-transformation, which leads to their variance asymptotically being only a function 
 of the study sample size $n$, \ie $\Var(\hat{\theta}) = 1/(n - 3)$ \citep{Fisher1921}.
-% For details about how the data were obtained and pre-processed, see the
-% supplementary materials of \citet{Pawel2019}.
+
 
 The data can be loaded with the command \texttt{data("RProjects")}. For a
 description of the variables see the documentation with \texttt{?RProjects}.
@@ -218,7 +213,7 @@ There are some variations of this approach, for example,
 \citet{Camerer2016} only assessed whether the replication effect is significant in
 the same direction, but not whether the original effect shows the same significance 
 status. 
-% WRITE MORE HERE
+
 
 For the four data sets, we can simply check whether the (two-sided) $p$-values of original and
 replication are both below the conventional threshold 0.05 and whether the directions
@@ -270,20 +265,18 @@ leads to larger sample sizes than the standard method.
 In practice, however, often more ad hoc approaches are used. For instance, the
 original estimate is just shrunken by an (arbitrary) constant, \eg it was halved in the 
 sociel sciences replication project, and standard sample size calculations are
-then carried out. A more principled approach is to use a design prior which induces
-shrinkage and then estimate the prior variance by empirical Bayes. This leads to
-``data-driven'' shrinkage that is larger when there was only weak evidence for the
-effect, and smaller when there was strong evidence for the effect.
+then carried out. 
 
 
 Using the function \texttt{sampleSizeSignificance},
 it is straightforward to plan the sample size of the replication study with the
 just mentioned approaches. The argument \texttt{designPrior} allows to carry out 
 sample size planning based on classical power ignoring the uncertainty 
-(\texttt{"conditional"}), based on predictive power (\texttt{"predictive"}), and 
-using the empirical Bayes shrinkage approach (\texttt{"EB"}). Moreover, ad hoc
-shrinkage can be specified with the argument \texttt{shrinkage} for the conditional
-and predictive design prior. It must be noted that the function \texttt{sampleSizeSignificance}, as well as most of the functions from the package, takes $z$-values and no $p$-values as arguments. The conversion between the two measures can easily be done using the function \texttt{p2z}.
+(\texttt{"conditional"}) or based on predictive power (\texttt{"predictive"}). 
+Moreover, ad hoc shrinkage can be specified with the argument \texttt{shrinkage}.
+It must be noted that the function \texttt{sampleSizeSignificance}, as well as most of the
+functions from the package, takes $z$-values and no $p$-values as arguments. 
+The conversion between the two measures can easily be done using the function \texttt{p2z}.
 
 The following code shows a few examples. Note that the function returns the required
 relative sample size $c = n_r/n_o$, \ie by which factor the sample size of the replication 
@@ -293,7 +286,6 @@ sampleSizeSignificance(zo = 2.5, power = 0.8, level = 0.05, designPrior = "condi
 sampleSizeSignificance(zo = 2.5, power = 0.8, level = 0.05, designPrior = "predictive")
 sampleSizeSignificance(zo = 2.5, power = 0.8, level = 0.05, designPrior = "conditional",
                        shrinkage = 0.75)
-sampleSizeSignificance(zo = 2.5, power = 0.8, level = 0.05, designPrior = "EB")
 @
 
 Figure \ref{fig:powerSignificance} shows the power to achieve significance in the
@@ -323,9 +315,8 @@ axis(side = 3, at = seq(0.0, 0.05, by = 0.01),
 mtext(text = expression(paste("|", italic(z)[o], "|")), side = 3, line = 2)
 abline(h = 50, col = "#333333B3", lty = 3)
 lines(po, powerSignificance(zo = p2z(po), designPrior = "predictive")*100, lwd = 2, lty = 2)
-lines(po, powerSignificance(zo = p2z(po), designPrior = "EB")*100, lwd = 1.5, lty = 4)
-legend("topright", legend = c("conditional", "predictive", "EB"), 
-       title = "Design prior", lty = c(1, 2, 4), lwd = 1.5, bty = "n")
+legend("topright", legend = c("conditional", "predictive"), 
+       title = "Design prior", lty = c(1, 2), lwd = 1.5, bty = "n")
 @
 \caption{Power to achieve significance at the one-sided 2.5\% level in replication as a function of (two-sided) $p$-value or $z$-value of original study using the same sample size
 as in the original study.}
@@ -346,10 +337,8 @@ mtext(text = expression(paste("|", italic(z)[o], "|")), side = 3, line = 2)
 abline(h = 1, col = "#333333B3", lty = 3)
 lines(po, sampleSizeSignificance(zo = p2z(po), designPrior = "predictive", power = 0.8), 
       lwd = 2, lty = 2)
-lines(po, sampleSizeSignificance(zo = p2z(po), designPrior = "EB", power = 0.8),
-      lwd = 1.5, lty = 4)
-legend("topleft", legend = c("conditional", "predictive", "EB"), 
-       title = "Design prior", lty = c(1, 2, 4), lwd = 1.5, bty = "n")
+legend("topleft", legend = c("conditional", "predictive"), 
+       title = "Design prior", lty = c(1, 2), lwd = 1.5, bty = "n")
 @
 \caption{Relative sample size to achieve significance at the one-sided 2.5\% level with 80\% power as
 a function of (two-sided) $p$-value or $z$-value of original study.}
@@ -405,85 +394,8 @@ This in turn can lead to very different effect estimates being compatible,
 no information about the effect itself (which actually happens in some 
 cases in the economics and philosophy data sets).
 
-% \paragraph{Design}
-% There are different possibilities for specifying the sample size in the prediction
-% interval analysis approach. 
-% 
-% First, in order to avoid the situation that the estimates
-% are deemed compatible, although they show a different sign, we can determine the
-% required sample size such that the prediction interval of the replication estimate 
-% does not include zero. This can be done with the function \texttt{sampleSizePI}. 
-% The following code shows a few examples. Note that the function returns again the required
-% relative sample size $c = n_r/n_o$, \ie how much the sample size of the replication 
-% needs to be changed compared to the original study.
-<< eval = FALSE, echo = FALSE >>=
-sampleSizePI(zo = 2.5, conf.level = 0.95, designPrior = "predictive")
-sampleSizePI(zo = 2.1, conf.level = 0.95, designPrior = "predictive")
-@
-% However, note that the original estimate needs
-% to be at least significant at level $1 - \gamma$ such that it is even possible
-% for a $\gamma \cdot 100\%$  prediction interval not to include zero (Figure 
-% \ref{fig:sampleSizePI}). 
-% \begin{figure}[!h]
-<< "plot-sampleSizePI", echo = FALSE, fig.height = 4, eval = FALSE  >>=
-## required relative sample size for 0.95 PI not to include 0 as function of 
-## test statistic
-zo <- seq(0, 5, 0.01)
-plot(zo, sampleSizePI(zo = zo), type = "l", log = "y", lwd = 1.5,
-     ylab = expression(paste("Relative sample size ", n[r]/n[o])),
-     xlab = expression(italic(z)[o]), ylim = c(0.15, 1000), yaxt = "n")
-axis(side = 2, las = 1, at = c(0.1, 1, 10, 100, 1000), 
-     labels = c("1/10", "1", "10", "100", "1000"))
-abline(h = 1, lty = 3)
-# lines(to, sampleSizePI(zo = zo, designPrior = "EB"), lty = 2, lwd = 1.5)
-# legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5,
-#        legend = c("predictive", "EB"), bty = "n")
-@
-% \caption{Relative sample size for the 95\% prediction interval of the replication effect estimate not to include zero as a function of the test statistic of original study.}
-% \label{fig:sampleSizePI}
-% \end{figure}
-% 
-% Second, we can also determine the required sample size of
-% the replication such that the prediction interval has a certain width. This can 
-% be done with the function \texttt{sampleSizePIwidth}. 
-% Specifically, the function
-% takes as an argument the desired relative width \texttt{w} of the
-% $\gamma \cdot 100\%$ prediction interval compared to the $\gamma \cdot 100\%$ 
-% confidence interval of the original effect. 
-% Below are again two examples. Also in this case the function returns the required
-% relative sample size $c = n_r/n_o$, \ie how much the sample size of the replication 
-% needs to be changed compared to the original study.
-<< eval = FALSE, echo = FALSE >>=
-sampleSizePIwidth(w = 2, conf.level = 0.95, designPrior = "predictive")
-sampleSizePIwidth(w = 1.2, conf.level = 0.95, designPrior = "predictive")
-@
-% Note that if the design prior incorporates
-% the uncertainty of the original estimate, the prediction interval cannot be narrower
-% than the original confidence interval, \ie the relative width needs to be at least one
-% (Figure \ref{fig:sampleSizePIwidth}).
-% \begin{figure}[!h]
-<< "plot-sampleSizePIwidth", echo = FALSE, fig.height = 4, eval = FALSE >>=
-## required relative sample size for 0.95 PI to have certain width
-w <- seq(0.5, 3, 0.01)
-plot(w, sampleSizePIwidth(zo = NULL, w = w), type = "l", log = "y", lwd = 1.5,
-     ylab = expression(paste("Relative sample size ", n[r]/n[o])),
-     xlab = "Relative width w", ylim = c(0.1, 50), yaxt = "n")
-axis(side = 2, las = 1, at = c(0.1, 1, 10, 50), 
-     labels = c("1/10", "1", "10", "50"))
-abline(h = 1, lty = 3)
-# lines(w, sampleSizePIwidth(zo = 2, w = w, designPrior = "EB"),
-#       lty = 2, lwd = 1.5)
-# legend("topright", title = "designPrior", lty = c(1, 2, 4), lwd = 1.5, bty = "n",
-#        legend = c("predictive", expression(paste("EB, ", italic(z)[o] == 2))))
-@
-% \caption{Relative sample size for the prediction interval of the replication effect estimate to have a specific relative width (relative to the width of the confidence
-% interval of the original effect estimate).}
-% \label{fig:sampleSizePIwidth}
-% \end{figure}
-
 
 \subsection{The sceptical $p\,$-value}
-% EXPAND THIS SECTION
 \paragraph{Analysis}
 The \emph{sceptical $p$-value}, a new quantitative measure of replication success was recently proposed by \citet{Held2020}. The \emph{sceptical $p$-value} arises from 
 combining the intrinsic credibility method \citep{Matthews2001a} with the
@@ -763,6 +675,53 @@ uncertainty due to between-study heterogeneity into the predictive model. For ex
 By default, \texttt{d} is set to zero, however, if between-study heterogeneity is
 expected, \eg a different population of study participants is used, this should
 be considered in the design. For details, see \citet{Pawel2019}.
+
+\subsection{Data-driven shrinkage with empirical Bayes}
+As previously mentioned, the functions \texttt{sampleSizeSignificance} and 
+\texttt{powerSignificance} allow to specify the argument \texttt{shrinkage}, in order
+to shrink the original effect estimate towards zero by a certain (arbitrary) amount. 
+A more principled approach is to use a design prior which induces
+shrinkage and then estimate the prior variance by empirical Bayes. This leads to
+``data-driven'' shrinkage that is larger when there was only weak evidence for the
+effect, and smaller when there was strong evidence for the effect (shown in Figure
+\ref{fig:ebshrinkage}). 
+Furthermore, under this prior, the specified between-study heterogeneity will also 
+induce shrinkage towards zero, for details see \citet{Pawel2019}.
+Empirical Bayes shrinkage is currently supported for the functions 
+\texttt{sampleSizeSignificance}, \texttt{powerSignificance}, and 
+\texttt{predictionInterval} by setting the design prior argument to \texttt{"EB"}.
+
+\begin{figure}
+<< "shrinkage", echo = FALSE, fig.height = 3.5 >>=
+formatpval <- function (x, break.eps = 1e-04, break.middle = 0.01, na.form = "NA", 
+    ...) 
+{
+    format1Pval <- function(pv) {
+        if (is.na(pv)) {
+            na.form
+        }
+        else if (pv < break.eps) {
+            paste("<", format(break.eps, scientific = FALSE))
+        }
+        else {
+            largep <- pv >= break.middle
+            format(pv, digits = 1 + largep, nsmall = 1 + largep, 
+                scientific = FALSE, ...)
+        }
+    }
+    vapply(X = x, FUN = format1Pval, FUN.VALUE = "", USE.NAMES = TRUE)
+}
+
+zo <- seq(0, 4, 0.01)
+s <- pmax(1 - 1/zo^2, 0)
+plot(zo, s, type = "l", ylim = c(0, 1), las = 1,
+     xlab = expression(paste("|",italic(z)[o],"|")), ylab = "Shrinkage factor")
+axis(side = 3, at = seq(0, 4, by = 1), labels = formatpval(z2p(seq(0, 4, by = 1))))
+mtext(text = expression(italic(p)[o]), side = 3, line = 2)
+@
+\caption{Empirical Bayes shrinkage when there is no between-study heterogeneity.}
+\label{fig:ebshrinkage}
+\end{figure}
 
 \bibliography{bibliography}
 
