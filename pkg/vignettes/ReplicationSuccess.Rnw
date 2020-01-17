@@ -391,7 +391,7 @@ for (p in unique(RProjects$project)) {
   study <- seq(1, nrow(data_project))
   plot(data_project$rr, study, col = color, pch = 20, 
        xlim = c(-0.5, 1), xlab = expression(italic(r)[r]), ylab = "Study",
-       main = paste0(p, ": ", round(coverage*100, 1), "% coverage"))
+       main = paste0(p, ": ", round(coverage*100, 0), "% coverage"))
   arrows(PI$lower, study, PI$upper, study, length = 0.02, angle = 90, code = 3, col = color)
   abline(v = 0, lty = 3)
 }
@@ -745,7 +745,7 @@ plot(intpow_cond*100, intpow_pred*100,
      ylim = c(0,100))
 abline(a = 0, b = 1, col = "grey")
 @
-\caption{Conditional vs.\ predictive power at interim of the 10 studies from the social science replication project that were not stopped after stage 1. Grey line indicates the same value for conditional and predictive power.}
+\caption{Conditional vs.\ predictive power at interim of the 10 studies from the social science replication project that were not stopped after stage 1. The grey line indicates the same value for conditional and predictive power.}
 \label{fig:PowerSignificanceInterim}
 \end{figure}
 
