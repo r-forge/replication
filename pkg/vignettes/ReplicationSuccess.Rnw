@@ -184,14 +184,14 @@ gives a good overview of the data.
 ## plots of effect estimates
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(RProjects$project)) {
-  data_project <- subset(RProjects, project == p)
-  significant <- ifelse(data_project$pr < 0.05, "darkred", "black")
-  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), col = significant,
-       xlim = c(-0.1, 1), main = p, xlab = expression(italic(r)[o]), 
-       cex = 0.7, pch = 19, ylab = expression(italic(r)[r]))
-  legend("topleft", legend = "significant", pch = 20, col = "darkred", bty = "n")
-  abline(h = 0, lty = 2)
-  abline(a = 0, b = 1, col = "grey")
+    data_project <- subset(RProjects, project == p)
+    significant <- ifelse(data_project$pr < 0.05, "darkred", "black")
+    plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), col = significant,
+         xlim = c(-0.1, 1), main = p, xlab = expression(italic(r)[o]), 
+         cex = 0.7, pch = 19, ylab = expression(italic(r)[r]))
+    legend("topleft", legend = "significant", pch = 20, col = "darkred", bty = "n")
+    abline(h = 0, lty = 2)
+    abline(a = 0, b = 1, col = "grey")
 }
 @
 
@@ -226,17 +226,17 @@ of the effects are the same.
 
 << >>=
 for (p in unique(RProjects$project)) {
-  data_project <- subset(RProjects, project == p)
-  significant_O <- data_project$po < 0.05
-  significant_R <- data_project$pr < 0.05
-  success <- (significant_O == significant_R) & 
-      (sign(data_project$fiso) == sign(data_project$fisr))
-  cat(paste0(p, ": \n"))
-  cat(paste0(round(mean(significant_O)*100, 2), "% original studies significant (", 
-             sum(significant_O), "/", length(significant_O), ")\n"))
-  cat(paste0(round(mean(significant_R)*100, 2), "% replications significant (", 
-             sum(significant_R), "/", length(significant_R), ")\n"))
-  cat(paste0(round(mean(success)*100, 2), "% same significance status, same direction \n \n"))
+    data_project <- subset(RProjects, project == p)
+    significant_O <- data_project$po < 0.05
+    significant_R <- data_project$pr < 0.05
+    success <- (significant_O == significant_R) & 
+        (sign(data_project$fiso) == sign(data_project$fisr))
+    cat(paste0(p, ": \n"))
+    cat(paste0(round(mean(significant_O)*100, 2), "% original studies significant (", 
+               sum(significant_O), "/", length(significant_O), ")\n"))
+    cat(paste0(round(mean(significant_R)*100, 2), "% replications significant (", 
+               sum(significant_R), "/", length(significant_R), ")\n"))
+    cat(paste0(round(mean(success)*100, 2), "% same significance status, same direction \n \n"))
 }
 @
 
@@ -321,7 +321,6 @@ plot(po, powerSignificance(zo = p2z(po), designPrior = "conditional")*100,
 axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
      labels = c("", round(p2z(p = seq(0.01, 0.05, by = 0.01)), 2)))
 mtext(text = expression(paste("|", italic(z)[o], "|")), side = 3, line = 2)
-## abline(h = seq(0, 100, 25), col = "#333333B3", lty = 3)
 abline(h = 50, col = "#333333B3", lty = 3)
 lines(po, powerSignificance(zo = p2z(po), designPrior = "predictive")*100, lwd = 2, lty = 2)
 lines(po, powerSignificance(zo = p2z(po), designPrior = "EB")*100, lwd = 1.5, lty = 4)
@@ -381,19 +380,21 @@ assessment we transform the intervals and estimates back to the correlation scal
 ## compute prediction intervals for replication projects
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(RProjects$project)) {
-  data_project <- subset(RProjects, project == p)
-  PI <- predictionInterval(zo = data_project$zo, c = data_project$c)
-  PI <- PI*data_project$se_fisr # multiplying by standard error to transform to fisher z-scale
-  PI <- tanh(PI) ## transforming back to correlation scale
-  within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
-  coverage <- mean(within)
-  color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
-  study <- seq(1, nrow(data_project))
-  plot(data_project$rr, study, col = color, pch = 20, 
-       xlim = c(-0.5, 1), xlab = expression(italic(r)[r]), ylab = "Study",
-       main = paste0(p, ": ", round(coverage*100, 0), "% coverage"))
-  arrows(PI$lower, study, PI$upper, study, length = 0.02, angle = 90, code = 3, col = color)
-  abline(v = 0, lty = 3)
+    data_project <- subset(RProjects, project == p)
+    PI <- predictionInterval(zo = data_project$zo, c = data_project$c)
+    ## multiplying by standard error to transform to Fisher z-scale
+    PI <- PI*data_project$se_fisr 
+    ## transforming back to correlation scale 
+    PI <- tanh(PI)
+    within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
+    coverage <- mean(within)
+    color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
+    study <- seq(1, nrow(data_project))
+    plot(data_project$rr, study, col = color, pch = 20, 
+         xlim = c(-0.5, 1), xlab = expression(italic(r)[r]), ylab = "Study",
+         main = paste0(p, ": ", round(coverage*100, 0), "% coverage"))
+    arrows(PI$lower, study, PI$upper, study, length = 0.02, angle = 90, code = 3, col = color)
+    abline(v = 0, lty = 3)
 }
 @
 
@@ -501,8 +502,8 @@ is smaller than $\alpha$, rendering the objection of the sceptic unrealistic.
 << "plot-pSceptical", echo = FALSE, fig.height = 4 >>=
 ## Functions
 ssv <- function(zo, so, a) {
-  tau2 <- so^2/(zo^2/qnorm(p = a/2, lower.tail = FALSE)^2 - 1)
-  return(tau2)
+    tau2 <- so^2/(zo^2/qnorm(p = a/2, lower.tail = FALSE)^2 - 1)
+    return(tau2)
 }
 
 ## Parameters and computations
@@ -559,7 +560,6 @@ abline(h = 0, lty = 2)
 arrows(x0 = as.numeric(df$estimate), y0 = df$lower, y1 = df$upper,
        length = 0.05, angle = 90, code = 3)
 text(x = 4 + 0.3, y = 0.9, labels = bquote(italic(p)[S] == .(ps_tilde)), col = 2)
-## text(x = 4 + 0.3, y = 0.75, labels = bquote(tilde(italic(p))[S] == .(ps_tilde)))
 text(x = 0.6, y = theta_o + 0.05, labels = bquote(hat(theta)[o] == .(theta_o)))
 text(x = 3.65, y = theta_r + 0.05, labels = bquote(hat(theta)[r] == .(theta_r)))
 text(x = 0.65, y = theta_o - 0.1, labels = bquote(italic(p)[o] == .(df$p[1])))
@@ -611,19 +611,19 @@ stripchart(ps ~ project, data = RProjects, vertical = TRUE, add = TRUE,
            pch = 19, method = "jitter", jitter = 0.2, cex = 0.6)
 
 for (p in unique(RProjects$project)) {
-  data_project <- subset(RProjects, project == p)
-  cat(paste0(p, ": \n"))
-  success_scept <- (data_project$ps < thresh_contr)
-  cat(paste0(round(mean(success_scept)*100, 2), 
-             "% smaller than 0.0653 (one-sided sceptical p-value) \n"))
-  success_tradit <- (data_project$po/2 < 0.025) & (data_project$pr/2 < 0.025)
-  cat(paste0(round(mean(success_tradit)*100, 2), 
-             "% smaller than 0.025 (both one-sided traditional p-values) \n"))
-  if(sum(success_scept != success_tradit) > 0){
-    discord <- data_project[(success_scept != success_tradit), c("ro", "rr", "c", "po", "pr", "ps")]
-    # print effect estimates, p-values, and c of discordant studies
-    cat("Discordant studies: \n")
-    print(signif(discord, 2), row.names = FALSE)
+    data_project <- subset(RProjects, project == p)
+    cat(paste0(p, ": \n"))
+    success_scept <- (data_project$ps < thresh_contr)
+    cat(paste0(round(mean(success_scept)*100, 2), 
+               "% smaller than 0.0653 (one-sided sceptical p-value) \n"))
+    success_tradit <- (data_project$po/2 < 0.025) & (data_project$pr/2 < 0.025)
+    cat(paste0(round(mean(success_tradit)*100, 2), 
+               "% smaller than 0.025 (both one-sided traditional p-values) \n"))
+    if(sum(success_scept != success_tradit) > 0){
+        discord <- data_project[(success_scept != success_tradit), c("ro", "rr", "c", "po", "pr", "ps")]
+        ## print effect estimates, p-values, and c of discordant studies
+        cat("Discordant studies: \n")
+        print(signif(discord, 2), row.names = FALSE)
   }
   cat("\n \n")
 }
@@ -705,19 +705,18 @@ abline(h = 1, lty = 3)
 axis(side = 3, at = seq(0.0, 0.05, by = 0.01), 
      labels = c("", round(p2z(p = seq(0.01, 0.05, by = 0.01)), 2)))
 mtext(text = expression(paste("|", italic(z)[o], "|")), side = 3, line = 2)
-lines(po, 
-      sampleSizeReplicationSuccess(zo = p2z(po),
-                                   designPrior = "predictive", 
-                                   level = thresh_contr, 
-                                   alternative = "one.sided", 
-                                   power = 0.8), 
+lines(po, sampleSizeReplicationSuccess(zo = p2z(po),
+                                       designPrior = "predictive", 
+                                       level = thresh_contr, 
+                                       alternative = "one.sided", 
+                                       power = 0.8), 
       lwd = 2, lty = 2)
 legend("topleft", legend = c("conditional", "predictive"), 
        title = "Design prior", lty = c(1, 2), lwd = 1.5, bty = "n")
 @
 \caption{Relative sample size to achieve replication success 
-(at the one-sided 0.0653 level) with 80\% power as
-a function of (two-sided) $p$-value or $z$-value of original study.}
+  (at the one-sided 0.0653 level) with 80\% power as
+  a function of (two-sided) $p$-value or $z$-value of original study.}
 \label{fig:sampleSizeReplicationSuccess}
 \end{figure}
 
@@ -734,8 +733,10 @@ Figure~\ref{fig:PowerSignificanceInterim} shows the conditional and the predicti
 <<echo = FALSE>>=
 data("SSRP")
 par(las = 1)
-intpow_cond <- with(SSRP, powerSignificanceInterim(zo = fiso/se_fiso, zi = fisi/se_fisi, c = ni/no, f = ni/nr, designPrior = "conditional"))
-intpow_pred <- with(SSRP, powerSignificanceInterim(zo = fiso/se_fiso, zi = fisi/se_fisi, c = ni/no, f = ni/nr, designPrior = "predictive"))
+intpow_cond <- with(SSRP, powerSignificanceInterim(zo = fiso/se_fiso, zi = fisi/se_fisi, c = ni/no, 
+                                                   f = ni/nr, designPrior = "conditional"))
+intpow_pred <- with(SSRP, powerSignificanceInterim(zo = fiso/se_fiso, zi = fisi/se_fisi, c = ni/no, 
+                                                   f = ni/nr, designPrior = "predictive"))
 plot(intpow_cond*100, intpow_pred*100,  
      xlab = "Conditional power (in %)", 
      ylab = "Predictive power (in %)", 
