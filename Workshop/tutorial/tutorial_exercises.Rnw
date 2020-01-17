@@ -1,0 +1,686 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{xifthen}
+% introduce a boolean that switches back and forth between the versions with and without solution:
+\newboolean{isstudent}
+\setboolean{isstudent}{false} % to true excludes solutions, false keeps them
+
+\usepackage{comment}
+\specialcomment{solution}{\ \\ \textbf{Solution: }}{}
+\ifthenelse{\boolean{isstudent}}{\excludecomment{solution}}{}
+
+%-----------------------------------------------------------------------
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{datetime}\newcommand{\dating}[1]{#1$\mid$%
+\newdateformat{mydate}{\THEYEAR-\twodigit{\THEMONTH}-\twodigit{\THEDAY}}%
+\mydate\today}
+\usepackage{natbib}
+% a4 is size 8.3 × 11.7
+\textwidth6.8in
+\textheight10.2in
+\topmargin0in
+\oddsidemargin-.25in
+\evensidemargin-.25in
+\headsep-.25in
+\headheight0pt
+\tabcolsep0pt
+\parindent0pt
+\parskip10pt plus2pt minus1pt
+
+\input{newCommands}
+\pagestyle{empty}
+\begin{document}
+\graphicspath{{./figures/}}
+\DeclareGraphicsExtensions{.pdf}
+
+Charlotte Micheloud, Samuel Pawel, Leonhard Held \hfill 22.01.2020 \\
+Department of Biostatistics, Center for Reproducible Science\hfill  \textbf{Tutorial exercises}\\
+\hrule
+\kern5pt
+\bf
+ Package and datasets \hspace*{4cm}\normalsize\rm \\[0pt]
+\hrule
+\begin{itemize}
+      \item Linux / Windows
+<< eval = FALSE, size = "small" >>=
+install.packages(pkgs = "ReplicationSuccess", 
+                 repos ="http://R-Forge.R-project.org")
+@
+      \item Mac 
+<< eval = FALSE, size = "small" >>=
+install.packages(pkgs = "ReplicationSuccess", 
+                 repos = "http://R-Forge.R-project.org",
+                 type = "source")
+@
+      \item Usage
+ << size = "small", eval = FALSE>>=
+library(ReplicationSuccess)
+vignette("ReplicationSuccess")
+?pSceptical # documentation
+data("RProjects") #datasets
+@
+  \end{itemize}
+
+
+\hrule
+\kern5pt
+\bf
+Part I \hspace*{4cm}\normalsize\rm \\[0pt]
+\hrule
+
+For your favourite replication project investigate:
+   \begin{enumerate}
+      \item How many study pairs fulfill the \emph{significance} criterion for replication succes?
+  
+      \item How many study pairs show \emph{compatible effect estimates}? Use the function \texttt{predictionInterval()}
+      
+      \item Compute the one-sided \emph{sceptical $p$-value}. How many replication studies are successful at the nominal and controlled threshold? 
+      Use the functions \texttt{pSceptical()} and \texttt{thresholdSceptical()}
+      
+    \end{enumerate}
+
+\begin{solution}
+\begin{enumerate}
+\item Statisical significance
+<< echo = FALSE >>=
+library("knitr")
+library("ReplicationSuccess")
+data("RProjects")
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  significant_O <- data_project$po < 0.05
+  significant_R <- data_project$pr < 0.05
+  success <- significant_O & significant_R & 
+      (sign(data_project$fiso) == sign(data_project$fisr))
+  cat(paste0(p, ": \n"))
+  cat(paste0(round(mean(significant_O)*100, 1), "% original studies significant (", 
+             sum(significant_O), "/", length(significant_O), ")\n"))
+  cat(paste0(round(mean(significant_R)*100, 1), "% replications significant (", 
+             sum(significant_R), "/", length(significant_R), ")\n"))
+  cat(paste0(round(mean(success)*100, 1), 
+             "% both significant, same direction (",
+             sum(success), "/", length(success), ") \n \n"))
+}
+@
+
+<< echo = FALSE >>=
+## Plots of effect estimates
+par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  success <- data_project$po < 0.05 & data_project$pr < 0.05 & 
+      (sign(data_project$fiso) == sign(data_project$fisr))
+  col_success <- color <- ifelse(success == FALSE, "#333333B3", "#8B0000B3")
+  title <- paste0(p, ": ", round(mean(success)*100, 1), 
+                  "% (", sum(success), "/", length(success), ")")
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
+       xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]), col = col_success, pch = 20)
+  legend("topleft", c("significant (5%)", "not significant (5%)"), 
+         pch = 20, pt.cex = 2, 
+         # title = "signficant in same direction (5%)",
+         col = c("#8B0000B3", "#333333B3"), bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
+}
+@
+
+\item Prediction intervals
+
+<< echo = FALSE >>=
+## computing zo, zr, c
+RProjects$zo <- with(RProjects, fiso/se_fiso)
+RProjects$zr <- with(RProjects, fisr/se_fisr)
+RProjects$c <- with(RProjects, se_fiso^2/se_fisr^2)
+
+## compute prediction intervals for replication projects
+par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  PI <- predictionInterval(zo = data_project$zo, c = data_project$c)
+  PI <- PI*data_project$se_fisr # multiplying by standard error to transform to fisher z-scale
+  PI <- tanh(PI) ## transforming back to correlation scale
+  within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
+  coverage <- mean(within)
+  color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
+  studynr <- seq(1, nrow(data_project))
+  plot(data_project$rr, studynr, col = color, pch = 20, 
+       xlim = c(-0.5, 1), xlab = expression(italic(r)[r]), 
+       main = paste0(p, ": ", round(coverage*100, 1), "% coverage"), yaxt = "n",
+       ylab = "")
+  arrows(PI$lower, studynr, PI$upper, studynr, length = 0.02, 
+         angle = 90, code = 3, col = color)
+  abline(v = 0, lty = 3)
+}
+@
+
+\item Sceptical $p$-value
+
+<< echo = FALSE, fig.height = 4 >>=
+## computing one.sided sceptical p-value for replication projects
+RProjects$ps <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
+                                           alternative = "one.sided"))
+thresh_nominal <- thresholdSceptical(level = 0.025, alternative = "one.sided")
+thresh_controlled <- thresholdSceptical(level = 0.025, type = "controlled", 
+                                        alternative = "one.sided")
+
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  cat(paste0(p, ": \n"))
+  success_scept_nominal <- (data_project$ps < thresh_nominal)
+  success_scept_controlled <- (data_project$ps < thresh_controlled)
+  cat(paste0(round(mean(success_scept_controlled)*100, 1), 
+             "% smaller than controlled threshold 0.065 (",
+             sum(success_scept_controlled), "/", length(success_scept_controlled), ") \n"))
+  cat(paste0(round(mean(success_scept_nominal)*100, 1), 
+             "% smaller than nominal threshold 0.025 (",
+             sum(success_scept_nominal), "/", length(success_scept_nominal), ") \n"))
+  cat("\n")
+}
+@
+
+<< echo = FALSE >>=
+par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  success_scept_controlled <- (data_project$ps < thresh_controlled)
+  col_success <- ifelse(success_scept_controlled == FALSE, 
+                        "#333333B3", "#8B0000B3")
+  title <- paste0(p, ": ", round(mean(success_scept_controlled)*100, 1), 
+                  "% (", sum(success_scept_controlled), "/", 
+                  length(success_scept_controlled), ")")
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
+       xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]), col = col_success, pch = 20)
+  legend("topleft", c("p-sceptical < 0.065", 
+                      "p-sceptical > 0.065"), 
+         pch = 20, pt.cex = 2, 
+         col = c("#333333B3", "#8B0000B3"), bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
+}
+@
+
+
+\item[] Discordant studies
+
+<< echo = FALSE, fig.height = 4 >>=
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  cat(paste0(p, ": \n"))
+
+  PI <- predictionInterval(zo = data_project$zo, c = data_project$c)
+  PI <- PI*data_project$se_fisr # multiplying by standard error to transform to fisher z-scale
+  PI <- tanh(PI) ## transforming back to correlation scale
+  data_project$withinPI <- (data_project$rr < PI$upper) & 
+                           (data_project$rr > PI$lower)
+  
+  success_scept_controlled <- (data_project$ps < thresh_controlled)
+  success_tradit <- (data_project$po/2 < 0.025) & 
+                    (data_project$pr/2 < 0.025)
+
+  if(sum(success_tradit != success_scept_controlled) > 0){
+    discordant <- which(success_scept_controlled != success_tradit)
+    discord_df <- data_project[discordant,
+                               c("ro", "rr", "c", "po", "pr", "ps")]
+    discord_df$po <- discord_df$po/2
+    discord_df$pr <- discord_df$pr/2
+    colnames(discord_df) <- c("ro", "rr", "c", "po1sided", "pr1sided", "ps1sided")
+    # print effect estimates, p-values, and c of discordant studies
+    print(cbind(signif(discord_df, 2), 
+                withinPI = data_project$withinPI[discordant]), 
+          row.names = FALSE)
+  }
+  cat("\n")
+}
+@
+
+<< echo = FALSE >>=
+par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  success_scept_controlled <- (data_project$ps < thresh_controlled)
+  success_tradit <- (data_project$po/2 < 0.025) & 
+                    (data_project$pr/2 < 0.025)
+  discordant <- success_scept_controlled != success_tradit
+  col_discord <- ifelse(discordant == TRUE, 
+                 ifelse(success_scept_controlled == TRUE, 
+                        "#8B0000B3", "#00008AB3"), "#B2B2B299")
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
+       xlim = c(-0.5, 1), main = p, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]), col = col_discord, pch = 20)
+  legend("topleft", c("only p-sceptical successful", 
+                      "only significance successful"), 
+         pch = 20, pt.cex = 2, 
+         col = c("#8B0000B3", "#00008AB3"), bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
+}
+@
+
+\end{enumerate}
+
+\end{solution}
+
+
+\hrule
+\kern5pt
+\bf
+Part II \hspace*{4cm}\normalsize\rm \\[0pt]
+\hrule
+
+\begin{itemize}
+\item \textbf{Exercise 1.1}
+
+
+We have six original studies that we want to replicate. Their $p$-values are $0.0001$, $0.001$, $0.005$, $0.01$, $0.03$ and $0.05$, respectively. We decide to simply use the same sample size as in the original study. 
+\begin{itemize}
+\item Compute the conditional and predictive power of the six replication studies and plot it.
+\item What do you notice? % Goal: bordeline significant original study: very low power with both methods
+\item What happens if we decide to shrink the original effect estimate to 75\% of the reported value?  
+\end{itemize}
+
+\begin{solution}
+
+
+<<echo = FALSE, eval = T, fig.height = 5, fig.width = 10>>=
+par(las = 1, mfrow = c(1,2))
+pval.or <- c(0.0001, 0.001, 0.005, 0.01, 0.03, 0.05)
+pow.cond <- powerSignificance(zo = p2z(pval.or), c = 1, designPrior = "conditional")
+pow.pred <- powerSignificance(zo = p2z(pval.or), c = 1, designPrior = "predictive")
+
+po.plot <- seq(0.000001, 0.05, by = 0.0001)
+pow.cond1 <- powerSignificance(zo = p2z(po.plot), c = 1, designPrior = "conditional")
+pow.pred1 <- powerSignificance(zo = p2z(po.plot), c = 1, designPrior = "predictive")
+plot(po.plot, pow.cond1*100, col = "red", ylim = c(0,100), type = "l", 
+           xlab = "Two-sided original p-value",
+     ylab = "Power (in %)", lwd = 1.8, 
+     cex.lab = 1.5, 
+     cex.axis = 1.5, 
+     main = "c = 1")
+points(pval.or, pow.cond*100, col = "red", pch = 20, cex = 1.5)
+lines(po.plot, pow.pred1*100, col = "blue", lwd = 2)
+points(pval.or, pow.pred*100, col = "blue", pch = 20, cex = 1.5)
+abline(h = 50, lty = 2)
+axis(2, at = 50, label = "50", cex.axis = 1.5,
+     col = "gray40")
+
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1, bty = "n", 
+       cex = 1.5, lwd = 2)
+
+pow.cond <- powerSignificance(zo = p2z(po.plot), c = 1, designPrior = "conditional", 
+                              shrinkage = 0.75)
+pow.pred <- powerSignificance(zo = p2z(po.plot), c = 1, designPrior = "predictive", 
+                              shrinkage = 0.75)
+
+pow.condS <- powerSignificance(zo = p2z(pval.or), c = 1, designPrior = "conditional", shrinkage = 0.75)
+pow.predS <- powerSignificance(zo = p2z(pval.or), c = 1, designPrior = "predictive", shrinkage = 0.75)
+
+
+plot(po.plot, pow.cond*100, col = "red", ylim = c(0,100), type = "l", 
+      xlab = "Two-sided original p-value",
+     ylab = "Power(in %)", 
+     lwd = 2, 
+    cex.lab = 1.5, 
+     cex.axis = 1.5, 
+    main = "c = 1, shrinkage = 0.75")
+points(pval.or, pow.condS*100, col = "red", cex = 1.5, pch = 20)
+lines(po.plot, pow.pred*100, col = "blue", 
+      lwd = 2)
+points(pval.or, pow.predS*100, col = "blue", cex = 1.5, pch = 20)
+abline(h = 50, lty = 2)
+axis(2, at = 50, label = "50", cex.axis = 1.5,
+     col = "gray40")
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1, bty = "n", 
+       cex = 1.5, 
+       lwd = 2)
+
+
+  @
+   
+\end{solution}
+
+\item \textbf{Exercise 1.2}
+
+
+We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
+\begin{itemize}
+\item Compute and plot the relative replication sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
+\item What happens if we decide to shrink the original effect estimate to 75\% of the reported value? 
+\end{itemize}
+
+\begin{solution}
+
+
+<<echo = FALSE, fig.height = 5, fig.width = 10>>=
+par(las = 1, mfrow = c(1,2))
+
+ss.cond <- sampleSizeSignificance(zo = p2z(po.plot), power = 0.8, designPrior = "conditional")
+ss.pred <- sampleSizeSignificance(zo = p2z(po.plot), power = 0.8, designPrior = "predictive" )
+
+ss.condp <- sampleSizeSignificance(zo = p2z(pval.or), power = 0.8, designPrior = "conditional")
+ss.predp <- sampleSizeSignificance(zo = p2z(pval.or), power = 0.8, designPrior = "predictive")
+
+plot(po.plot, ss.cond, type = "l", ylim = c(0,10), col = "red", 
+     xlab = "Two-sided original p-value", 
+     ylab = "Relative sample size", 
+     lwd = 2,
+     cex.lab = 1.5, 
+     cex.axis = 1.5, 
+     main = "power = 0.8")
+points(pval.or, ss.condp, col = "red", pch = 20)
+lines(po.plot, ss.pred, col = "blue", 
+      lwd = 2)
+points(pval.or, ss.predp, col = "blue", pch = 20)
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1, bty = "n", 
+       cex = 1.5, 
+       lwd = 2)
+
+
+ss.cond2 <- sampleSizeSignificance(zo = p2z(po.plot), power = 0.8, designPrior = "conditional",
+                                  shrinkage = 0.75)
+ss.pred2 <- sampleSizeSignificance(zo = p2z(po.plot), power = 0.8, designPrior = "predictive", 
+                                  shrinkage = 0.75)
+
+ss.condpS <- sampleSizeSignificance(zo = p2z(pval.or), power = 0.8, designPrior = "conditional", shrinkage = 0.75)
+ss.predpS <- sampleSizeSignificance(zo = p2z(pval.or), power = 0.8, designPrior = "predictive", shrinkage = 0.75)
+
+plot(po.plot, ss.cond2, type = "l", ylim = c(0,10), col = "red", 
+     xlab = "Two-sided original p-value", 
+     ylab = "Relative sample size", 
+     lwd = 2, 
+     cex.lab = 1.5, 
+     cex.axis = 1.5, 
+     main  = "power = 0.8, shrinkage = 0.75")
+points(pval.or, ss.condpS, col = "red", pch = 20)
+lines(po.plot, ss.pred2, col = "blue", 
+      lwd = 2)
+points(pval.or, ss.predpS, col = "blue", pch = 20)
+legend("topleft", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1, bty = "n", 
+       cex = 1.5, 
+       lwd = 2)
+
+
+@
+
+
+\end{solution}
+
+\item \textbf{Exercise 1.3} 
+
+For the experimental economics replication project
+  \begin{itemize}
+  \item Calculate the conditional power for significance of each study. Use a one-sided alternative. 
+    \item Calculate now the predictive power. What do you observe?
+  \end{itemize}
+  
+\begin{solution}
+
+\begin{center}
+<<echo = FALSE, fig.height = 4, fig.width = 4>>=
+eco <- subset(RProjects, project == "Experimental Economics" )
+library("lattice")
+pow_c1 <- powerSignificance(zo = p2z(eco$po),
+      c = eco$se_fiso^2/eco$se_fisr^2, level = 0.025, 
+                             alternative = "one.sided",
+                             designPrior = "conditional")
+
+pow_p1 <- powerSignificance(zo = p2z(eco$po),
+      c = eco$se_fiso^2/eco$se_fisr^2, level = 0.025, 
+                             alternative = "one.sided",
+                             designPrior = "predictive")
+
+
+mat1 <- matrix(c(rep(eco$study, times=2),pow_c1*100, pow_p1*100,rep(c("Conditional","Predictive"), times=c(nrow(eco),nrow(eco)))), ncol=3)
+
+colnames(mat1) <- c("ID","power", "group")
+mat1 <- as.data.frame(mat1)
+mat1$ID <- as.factor(mat1$ID)
+mat1$group <- factor(mat1$group, levels=c("Conditional","Predictive"), order=TRUE)
+mat1$power <- as.numeric(as.character(mat1$power))
+
+panel_bw <- function(x, y, groups, subscripts, ...) {
+ panel.bwplot(x = x, y = y, ...)
+ tapply(1:length(y), groups[subscripts], function(i) {
+   llines(
+     x = 1:nlevels(x),
+     y = y[i][order(x[i])],
+     col = rgb(.2, .2, .2, .2)
+   )
+   lpoints(
+    x = 1:nlevels(x),
+    y = y[i][order(x[i])],
+    col = rgb(.2, .2, .2, .2),
+    pch = 16,
+    cex = 1.2
+   )
+ })
+  panel.abline(h=50, col="red", lty=2)
+
+}
+bwplot(power~group, data=mat1, groups = ID, panel = panel_bw, 
+        xlab=list(""),
+        ylab=list("Power (in %)", cex = 1),
+        between = list(x = 1), scales = list(x = "free", y="free", rot=0, cex = 1))
+
+@
+\end{center}
+\end{solution}
+
+
+\item \textbf{Exercise 1.4} 
+
+
+For the experimental philosophy replication project
+  \begin{itemize}
+  \item Calculate for each study the required relative sample size to reach a power for significance of 95\%.
+  \item Compare them to the actually used relative sample sizes.
+  \end{itemize}
+  
+\begin{solution}
+\begin{center}
+<<echo=F, fig.height = 4, fig.width = 4>>=
+philo <- subset(RProjects, 
+                 project == "Experimental Philosophy")
+ss_aut <- philo$se_fiso^2/philo$se_fisr^2
+ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
+                             designPrior = "conditional")
+
+plot(ss_aut, ss_cond1, 
+     xlim = c(0.01,20), 
+     ylim = c(0.01,20), 
+     xlab = "Reported relative sample size", 
+     ylab = "Calculated relative sample size", 
+     pch = 20, 
+     log = "xy", 
+     xaxt = "n", 
+     yaxt = "n", 
+     cex = 1.5)
+abline(a = 0, b = 1, 
+       col = "lightpink")
+axis(1, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
+axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
+
+@
+\end{center}
+\end{solution}
+
+\item \textbf{Exercise 1.5}
+
+
+Some original studies belonging to the psychology data set were not statistically significant at the two-sided 5\%-level. This is the case for the study from Reynolds and Besner (2008), for example. 
+\begin{itemize}
+\item Compute the required replication sample size to reach a power of 95\% for this study with the conditional and the predictive design prior. 
+\end{itemize}
+
+\begin{solution}
+<<>>=
+reynolds <- subset(RProjects,
+                   study == "M Reynolds, D Besner")
+
+sampleSizeSignificance(zo = p2z(reynolds$po), 
+                       power = 0.95, 
+                       designPrior = "conditional")
+sampleSizeSignificance(zo = p2z(reynolds$po), 
+                       power = 0.95, 
+                       designPrior = "predictive")
+@
+
+\end{solution}
+
+\item \textbf{Exercise 2.1}
+
+
+\begin{itemize}
+    \item Compute and plot the conditional and predictive power for replication success of the 6 studies from exercise 1.1 as a function of the two-sided $p$-value using the nominal (0.025) and controlled (0.065) threshold. \\
+   $c = 1$; $p_o = 0.0001, 0.001, 0.005, 0.01, 0.03$ and $0.05$.
+    \item How does the plot compare with the one from exercise 1.1?
+    \end{itemize}
+    
+
+\begin{solution}
+
+\begin{center}
+<<echo = F, fig.width = 5, fig.height = 4>>=
+pow.cond2 <- powerReplicationSuccess(zo = p2z(po.plot), c = 1, designPrior = "conditional", level  = 0.065, alternative = "one.sided")
+
+pow.pred2 <- powerReplicationSuccess(zo = p2z(po.plot), c = 1, designPrior = "predictive", level = 0.065, alternative = "one.sided")
+pow.cond3 <- powerReplicationSuccess(zo = p2z(po.plot), c = 1, designPrior = "conditional", level  = 0.025, alternative = "one.sided")
+pow.pred3 <- powerReplicationSuccess(zo = p2z(po.plot), c = 1, designPrior = "predictive", level  = 0.025, alternative = "one.sided")
+
+par(las = 1)
+plot(po.plot, pow.cond3*100, type = "l", col = "red", ylim = c(0,100), 
+     lwd = 1.5, 
+     xlab = "Two-sided original p-value ", 
+     ylab = "Power (in %)",
+     lty = 2)
+lines(po.plot, pow.pred3*100, col = "blue", 
+      lwd = 1.5, 
+      lty = 2)
+
+lines(po.plot, pow.cond2*100, col = "red", lty = 1,
+      lwd = 1.5)
+lines(po.plot, pow.pred2*100, col = "blue", lty = 1, 
+      lwd = 1.5)
+
+lines(po.plot, pow.cond1*100, col = "red", lty = 3,
+      lwd = 1.5)
+lines(po.plot, pow.pred1*100, col = "blue", lty = 3, 
+      lwd = 1.5)
+
+abline(h = 50, lwd = 2, col = "gray40")
+axis(2, at = 50, label = "50",
+     col = "gray40")
+
+legend("topright", 
+        c("Conditional", "Predictive"), 
+        col = c("red", "blue"), 
+       lty = 1.5, bty = "n",
+       lwd = 1.5)
+
+legend("bottomleft", 
+       c("Nominal", "Controlled", "Significance"), 
+       lty = c(2,1,3), 
+       bty = "n",
+       lwd = 1.5, 
+       cex = 0.8)
+@
+\end{center}
+\end{solution}
+
+\item \textbf{Exercise 2.2}
+
+For the experimental economics replication project
+  \begin{itemize}
+  \item Calculate the conditional power for replication success of each study with the controlled threshold and a one-sided alternative
+    \item Compare it to the predictive power for replication success
+  \end{itemize}
+  
+\begin{solution}
+
+\begin{center}
+<<echo = FALSE, fig.height = 4, fig.width = 4>>=
+pow_c2 <- powerReplicationSuccess(zo = p2z(eco$po),
+      c = eco$se_fiso^2/eco$se_fisr^2, level = 0.065, 
+                             alternative = "one.sided",
+                             designPrior = "conditional")
+pow_p2 <- powerReplicationSuccess(zo = p2z(eco$po),
+      c = eco$se_fiso^2/eco$se_fisr^2, level = 0.065, 
+                             alternative = "one.sided",
+                             designPrior = "predictive")
+
+mat2 <- matrix(c(rep(eco$study, times=2),pow_c2*100, pow_p2*100,rep(c("Conditional","Predictive"), times=c(nrow(eco),nrow(eco)))), ncol=3)
+
+colnames(mat2) <- c("ID","power", "group")
+mat2 <- as.data.frame(mat2)
+mat2$ID <- as.factor(mat2$ID)
+mat2$group <- factor(mat2$group, levels=c("Conditional","Predictive"), order=TRUE)
+mat2$power <- as.numeric(as.character(mat2$power))
+
+bwplot(power~group, data=mat2, groups = ID, panel = panel_bw, 
+        xlab=list(""),
+        ylab=list("Power (in %)", cex = 1),
+        between = list(x = 1), scales = list(x = "free", y="free", rot=0, cex =1))
+
+
+
+@
+\end{center}
+\end{solution}
+
+\item \textbf{Exercise 2.3}
+
+ For the experimental philosophy replication project
+  \begin{itemize}
+  \item Calculate for each study the required relative sample size to reach a power for replication success of 95\%. Use the conditional design prior, a level of 0.065 and a one-sided alternative.
+  \item Compare them to the actually used relative sample sizes.
+  \end{itemize}
+  
+\begin{solution}
+
+\begin{center}
+<<echo = F, fig.height = 4, fig.width = 4>>=
+
+ss_c2 <- sampleSizeReplicationSuccess(zo = p2z(philo$po), power = 0.95, level = 0.065, 
+                             alternative = "one.sided",
+                             designPrior = "conditional")
+
+plot(ss_aut, ss_c2, 
+     xlim = c(0.01,50), 
+     ylim = c(0.01,50), 
+     xlab = "Reported relative sample size", 
+     ylab = "Calculated relative sample size", 
+     pch = 20, 
+     cex = 1.5, 
+     log = "xy",
+     xaxt = "n", 
+     yaxt = "n")
+abline(a = 0, b = 1, 
+       col = "lightpink")
+axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
+axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
+
+@
+\end{center}
+
+\end{solution}
+
+\end{itemize}
+
+\end{document}
+
