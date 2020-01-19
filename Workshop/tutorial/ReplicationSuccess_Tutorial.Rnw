@@ -838,7 +838,7 @@ sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
 sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
 @
   \pause
-  \item Goal is to have between 80\%  and 95\% power in the replication study to detect the effect estimate from the original study
+  \item Goal is to have between 80\%  and 95\% power in the replication study to detect the {\color{red}{effect estimate from the original study}}.
   \item Shrinkage of the original effect estimate is sometimes used
   \end{itemize}
 \end{block}
@@ -865,7 +865,7 @@ sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
 \begin{frame}{Application}
  \begin{enumerate}
     \item Statistical significance
-    \item Sceptical $p$-value
+    \item Sceptical $p$-value (replication success)
   \end{enumerate}
 \end{frame}
 
@@ -905,11 +905,13 @@ Example from Morewedge et al. (2010)
 <<>>=
 
 # power calculation
-powerSignificance(zo = p2z(0.009), c = 3, designPrior = "conditional")
+powerSignificance(zo = p2z(0.009), c = 3, 
+                  designPrior = "conditional")
 
 
 # sample size calculation
-sampleSizeSignificance(zo = p2z(0.009), power = 0.9, designPrior = "predictive")
+sampleSizeSignificance(zo = p2z(0.009), power = 0.9, 
+                       designPrior = "predictive")
 @
   
 \end{frame}
@@ -921,7 +923,7 @@ sampleSizeSignificance(zo = p2z(0.009), power = 0.9, designPrior = "predictive")
   \begin{block}{Exercise 1.1}
 We have six original studies that we want to replicate. Their $p$-values are $0.0001$, $0.001$, $0.005$, $0.01$, $0.03$ and $0.05$, respectively. We decide to simply use the same sample size as in the original study. 
 \begin{itemize}
-\item Compute the conditional and predictive power of the six replication studies and plot it.
+\item Compute the conditional and predictive power of the six replication studies and plot it as a function of the original $p$-value.
 \item What do you notice? % Goal: bordeline significant original study: very low power with both methods
 \item What happens if we decide to shrink the original effect estimate to 75\% of the reported value?  
 \end{itemize}
@@ -1012,7 +1014,7 @@ pow.pred <- powerSignificance(zo = p2z(po.plot), c = 1, designPrior = "predictiv
                               shrinkage = 0.75)
 plot(po.plot, pow.cond*100, col = "red", ylim = c(0,100), type = "l", 
       xlab = "Two-sided original p-value",
-     ylab = "Power(in %)", 
+     ylab = "Power (in %)", 
      lwd = 2, 
     cex.lab = 1.5, 
      cex.axis = 1.5)
@@ -1190,11 +1192,11 @@ bwplot(power~group, data=mat1, groups = ID, panel = panel_bw,
 \end{frame}
 
 
-\begin{frame}{1. Statistical Significance}
+\begin{frame}{1. Statistical significance}
   \begin{block}{Exercise 1.4}
   For the experimental philosophy replication project
   \begin{itemize}
-  \item Calculate for each study the required relative sample size to reach a power for significance of 95\%.
+  \item Calculate for each study the required relative sample size to reach a power for significance of 95\%. Use the conditional design prior.
   \item Compare them to the actually used relative sample sizes.
   \end{itemize}
 
@@ -1276,7 +1278,7 @@ sampleSizeSignificance(zo = p2z(reynolds$po),
  \end{block}
 \end{frame}
 
-\begin{frame}{2. Sceptical $p$-value}
+\begin{frame}{2. Replication Success}
 \begin{block}{}
 Two functions:
     \begin{itemize}
@@ -1298,7 +1300,7 @@ Main arguments:
 \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
 Example from Morewedge et al. (2010)
     \begin{itemize}
       \item $p$-value $p_o =$ \Sexpr{round(study$po, 3)}
@@ -1315,7 +1317,7 @@ sampleSizeReplicationSuccess(zo = p2z(0.009), power = 0.8,
 % Explain here why we use alpha level of 0.065 and one-sided test
 \end{frame}
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.1}
     \begin{itemize}
     \item Compute and plot the conditional and predictive power for replication success of the 6 studies from exercise 1.1 as a function of the two-sided $p$-value using the nominal (0.025) and controlled (0.065) threshold. \\
@@ -1326,7 +1328,7 @@ sampleSizeReplicationSuccess(zo = p2z(0.009), power = 0.8,
 \end{frame}
 
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.1 - \color{red}{Solutions}}
     \begin{itemize}
     \item Compute and plot the conditional and predictive power for replication success of the 6 studies from exercise 1.1 as a function of the two-sided $p$-value using the nominal (0.025) and controlled (0.065) threshold. 
@@ -1367,7 +1369,7 @@ legend("bottomleft",
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.1 - \color{red}{Solutions}}
     \begin{itemize}
     \item Compute and plot the conditional and predictive power for replication success of the 6 studies from exercise 1.1 as a function of the two-sided $p$-value using the nominal (0.025) and controlled (0.065) threshold. 
@@ -1407,7 +1409,7 @@ legend("bottomleft",
 \end{frame}
 
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.1 - \color{red}{Solutions}}
     \begin{itemize}
     \item Compute and plot the conditional and predictive power for replication success of the 6 studies from exercise 1.1 as a function of the two-sided $p$-value using the nominal (0.025) and controlled (0.065) threshold. 
@@ -1452,7 +1454,7 @@ legend("bottomleft",
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.1 - \color{red}{Solutions}}
     \begin{itemize}
     \item Compute and plot the conditional and predictive power for replication success of the 6 studies from exercise 1.1 as a function of the two-sided $p$-value using the nominal (0.025) and controlled (0.065) threshold. 
@@ -1503,7 +1505,7 @@ legend("bottomleft",
 
 
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.2}
   For the experimental economics replication project
   \begin{itemize}
@@ -1515,7 +1517,7 @@ legend("bottomleft",
 \end{frame}
 
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.2 - \color{red}{Solutions}}
 <<echo = FALSE>>=
 pow_c2 <- powerReplicationSuccess(zo = p2z(eco$po),
@@ -1546,7 +1548,7 @@ bwplot(power~group, data=mat2, groups = ID, panel = panel_bw,
   \end{block}
 \end{frame}
 
-\begin{frame}{2. Sceptical $p$-value}
+\begin{frame}{2. Replication Success}
   \begin{block}{Exercise 2.3}
   For the experimental philosophy replication project
   \begin{itemize}
@@ -1557,7 +1559,7 @@ bwplot(power~group, data=mat2, groups = ID, panel = panel_bw,
 \end{frame}
 
 
-\begin{frame}[fragile]{2. Sceptical $p$-value}
+\begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.3 - \color{red}{Solutions}}
 <<fig.height = 8, echo = F>>=
 
