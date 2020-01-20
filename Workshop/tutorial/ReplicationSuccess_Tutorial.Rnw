@@ -364,13 +364,6 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 
 \begin{frame}{4. Sceptical $p$-value}
 \framesubtitle{New definition of replication success}
-  \centering
-\includegraphics[width=0.9\textwidth]{images_presentation/Held2019.png}
-\end{frame}
-
-
-\begin{frame}{4. Sceptical $p$-value}
-\framesubtitle{New definition of replication success}
 \begin{minipage}[t][2.7cm][t]{\textwidth}
 \vspace{-2em}
 \begin{block}{}
@@ -378,9 +371,8 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 the original study not significant?}}
 
 $\rightarrow$ function: \texttt{pSceptical()} \\
-$\rightarrow$ returns one-sided sceptical $p$-value per default
+$\rightarrow$ returns one-sided $p$-value per default
 \end{block}
-\vspace{-.5cm}
 \end{minipage}
 \begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
@@ -467,8 +459,7 @@ scept_plot
   \begin{itemize}
     \item Significance can always be achieved by increasing sample size
     \item Exchangability assumption questionable
-\item Sceptical $p$-value penalizes shrinkage of effect estimates 
-%%    \item Estimates can be compatible but provide no information about true effect
+    \item Estimates can be compatible but provide no information about true effect
   \end{itemize} 
 \end{block}
 \end{minipage}
@@ -521,18 +512,18 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 
 
 
-\begin{frame}[fragile]{Package {\tt ReplicationSuccess}}
+\begin{frame}[fragile]{Package}
 \begin{itemize}
-  \item Statistical methods and functionality for the design and analysis of replication studies \\
-  %% $\rightarrow$ Traditional methods \\
-  %% $\rightarrow$ Sceptical $p$-value \citep{Held2020}
+  \item Statistical methods and functionality for design and analysis of replication studies \\
+  $\rightarrow$ Traditional methods \\
+  $\rightarrow$ Sceptical $p$-value \citep{Held2020}
   \end{itemize}
-%%   \centering
-%% \includegraphics[width=0.75\textwidth]{images_presentation/Held2019.png}
+  \centering
+\includegraphics[width=0.75\textwidth]{images_presentation/Held2019.png}
   
-%% \end{frame}
-\vspace{-1cm}
-%% \begin{frame}[fragile]{Installation}
+\end{frame}
+
+\begin{frame}[fragile]{Installation}
   \begin{block}{}
     \begin{itemize}
       \item Linux / Windows
@@ -596,13 +587,13 @@ c <- study$se_fiso^2/study$se_fisr^2
 RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 @
 \pause
-\item $z$-value $z_o$ or $p$-value $p_o$ of original study
+\item $p$-value $p_o$ or $z$-value $z_o$ of original study
 << size = "small" >>=
 RProjects$zo <- RProjects$fiso/RProjects$se_fiso
 RProjects$po <- z2p(RProjects$zo)
 @
 \pause
-\item $z$-value $z_r$ or $p$-value $p_r$ of replication study
+\item $p$-value $p_r$ or $z$-value $z_r$ of replication study
 << size = "small" >>=
 RProjects$zr <- RProjects$fisr/RProjects$se_fisr
 RProjects$pr <- z2p(RProjects$zr)
@@ -980,8 +971,8 @@ legend("topright",
 \begin{frame}[fragile]{1. Statistical significance}
   \begin{block}{Exercise 1.1 - \color{red}{Solutions}}
 \begin{itemize}
-\item Compute the conditional and predictive power of the six replication studies and plot it. What do you notice? % Goal: bordeline significant original study: very low power with both methods
-
+\item Compute the conditional and predictive power of the six replication studies and plot it.
+\item What do you notice? % Goal: bordeline significant original study: very low power with both methods
 <<echo = FALSE, eval = T, fig.height = 5>>=
 par(las = 1)
 
@@ -1050,7 +1041,7 @@ legend("topright",
   \begin{block}{Exercise 1.2}
 We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
 \begin{itemize}
-\item Compute and plot the relative replication sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
+\item Compute and plot the replication sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
 \item What happens if we decide to shrink the original effect estimate to 75\% of the reported value? 
 \end{itemize}
   \end{block}
@@ -1060,10 +1051,9 @@ We now know that taking the same sample size as in the original study is not opt
 \begin{frame}{1. Statistical significance}
   \begin{block}{Exercise 1.2 - \color{red}{Solutions}}
 \begin{itemize}
-\item Compute and plot the relative replication sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
+\item Compute and plot the replication sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
 \end{itemize}
   \end{block}
-\vspace{-1cm}
 <<echo = FALSE, fig.height = 5>>=
 par(las = 1)
 
@@ -1078,7 +1068,7 @@ plot(po.plot, ss.cond, type = "l", ylim = c(0,10), col = "red",
      cex.axis = 1.5)
 lines(po.plot, ss.pred, col = "blue", 
       lwd = 2)
-legend("topleft", 
+legend("topright", 
         c("Conditional", "Predictive"), 
         col = c("red", "blue"), 
        lty = 1, bty = "n", 
@@ -1097,7 +1087,6 @@ legend("topleft",
 \item What happens if we decide to shrink the original effect estimate to 75\% of the reported value?  
 \end{itemize}
   \end{block}
-\vspace{-.5cm}
 <<echo = FALSE, fig.height = 5>>=
 par(las = 1)
 
@@ -1131,7 +1120,7 @@ legend("topleft",
   \begin{block}{Exercise 1.3}
   For the experimental economics replication project
   \begin{itemize}
-  \item Calculate the conditional power for significance of each study. Use a one-sided alternative. 
+  \item Calculate the conditional power for significance of each study. 
     \item Calculate now the predictive power. What do you observe?
   \end{itemize}
 
@@ -1145,8 +1134,7 @@ eco <- subset(RProjects, project == "Experimental Economics" )
 
 \begin{frame}[fragile]{1. Statistical significance}
   \begin{block}{Exercise 1.3 - \color{red}{Solutions}}
-\vspace{.5cm}
-<<echo = FALSE, fig.height=6>>=
+<<echo = FALSE>>=
 library("lattice")
 
 pow_c1 <- powerSignificance(zo = p2z(eco$po),
@@ -1225,8 +1213,7 @@ philo <- subset(RProjects,
 
 \begin{frame}[fragile]{1. Statistical significance}
   \begin{block}{Exercise 1.4 - \color{red}{Solutions}}
-    \vspace{.5cm}
-<<fig.height = 6, echo = FALSE>>=
+<<fig.height = 8, echo = FALSE>>=
 ss_aut <- philo$se_fiso^2/philo$se_fisr^2
 ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
                              designPrior = "conditional")
@@ -1533,8 +1520,7 @@ legend("bottomleft",
 
 \begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.2 - \color{red}{Solutions}}
-\vspace{.5cm}
-<<echo = FALSE, fig.height=6>>=
+<<echo = FALSE>>=
 pow_c2 <- powerReplicationSuccess(zo = p2z(eco$po),
       c = eco$se_fiso^2/eco$se_fisr^2, level = 0.065, 
                              alternative = "one.sided",
@@ -1576,8 +1562,7 @@ bwplot(power~group, data=mat2, groups = ID, panel = panel_bw,
 
 \begin{frame}[fragile]{2. Replication Success}
   \begin{block}{Exercise 2.3 - \color{red}{Solutions}}
-    \vspace{.5cm}
-<<fig.height = 6, echo = F>>=
+<<fig.height = 8, echo = F>>=
 
 ss_c2 <- sampleSizeReplicationSuccess(zo = p2z(philo$po), power = 0.95, level = 0.065, 
                              alternative = "one.sided",
