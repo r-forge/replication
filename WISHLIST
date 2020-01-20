@@ -6,3 +6,8 @@
 * consistent and short names of studies in data set
 * write tests for functions which don't have tests
 * option "strict" for two.sided alternative in powerSignificance and sampleSizeSignificance
+* Comments from Gosha : page 5 of vignette ; explain more what is meant by "same significance status" 
+* Comment from Gosha : how to plan an original study ?
+* Comment from Gosha : say that for some plots the code is not provided
+
+
