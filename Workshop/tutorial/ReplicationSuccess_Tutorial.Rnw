@@ -521,18 +521,18 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 
 
 
-\begin{frame}[fragile]{Package}
+\begin{frame}[fragile]{Package {\tt ReplicationSuccess}}
 \begin{itemize}
-  \item Statistical methods and functionality for design and analysis of replication studies \\
-  $\rightarrow$ Traditional methods \\
-  $\rightarrow$ Sceptical $p$-value \citep{Held2020}
+  \item Statistical methods and functionality for the design and analysis of replication studies \\
+  %% $\rightarrow$ Traditional methods \\
+  %% $\rightarrow$ Sceptical $p$-value \citep{Held2020}
   \end{itemize}
-  \centering
-\includegraphics[width=0.75\textwidth]{images_presentation/Held2019.png}
+%%   \centering
+%% \includegraphics[width=0.75\textwidth]{images_presentation/Held2019.png}
   
-\end{frame}
-
-\begin{frame}[fragile]{Installation}
+%% \end{frame}
+\vspace{-1cm}
+%% \begin{frame}[fragile]{Installation}
   \begin{block}{}
     \begin{itemize}
       \item Linux / Windows
