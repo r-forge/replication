@@ -3,7 +3,7 @@
 \usepackage{xifthen}
 % introduce a boolean that switches back and forth between the versions with and without solution:
 \newboolean{isstudent}
-\setboolean{isstudent}{false} % to true excludes solutions, false keeps them
+\setboolean{isstudent}{true} % to true excludes solutions, false keeps them
 
 \usepackage{comment}
 \specialcomment{solution}{\ \\ \textbf{Solution: }}{}
@@ -278,7 +278,7 @@ Part II \hspace*{4cm}\normalsize\rm \\[0pt]
 
 We have six original studies that we want to replicate. Their $p$-values are $0.0001$, $0.001$, $0.005$, $0.01$, $0.03$ and $0.05$, respectively. We decide to simply use the same sample size as in the original study. 
 \begin{itemize}
-\item Compute the conditional and predictive power of the six replication studies and plot it.
+\item Compute the conditional and predictive power of the six replication studies and plot it as a function of the original $p$-value.
 \item What do you notice? % Goal: bordeline significant original study: very low power with both methods
 \item What happens if we decide to shrink the original effect estimate to 75\% of the reported value?  
 \end{itemize}
@@ -354,7 +354,7 @@ legend("topright",
 
 We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
 \begin{itemize}
-\item Compute and plot the relative replication sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
+\item Compute and plot the relative sample sizes of the six studies to achieve a power of 80\% with the conditional and the predictive design prior. 
 \item What happens if we decide to shrink the original effect estimate to 75\% of the reported value? 
 \end{itemize}
 
@@ -425,7 +425,7 @@ legend("topleft",
 
 For the experimental economics replication project
   \begin{itemize}
-  \item Calculate the conditional power for significance of each study. Use a one-sided alternative. 
+  \item Calculate the conditional power for significance of each study. 
     \item Calculate now the predictive power. What do you observe?
   \end{itemize}
   
