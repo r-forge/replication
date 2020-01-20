@@ -973,7 +973,7 @@ legend("topright",
         c("Conditional", "Predictive"), 
         col = c("red", "blue"), 
        pch = 20, bty = "n", 
-       cex = 1.5)
+       cex = 2.2)
   @
 
 \end{frame}
@@ -1001,7 +1001,7 @@ legend("topright",
         c("Conditional", "Predictive"), 
         col = c("red", "blue"), 
        lty = 1, bty = "n", 
-       cex = 1.5, lwd = 2)
+       cex = 2.2, lwd = 2)
 
   @
 
@@ -1031,7 +1031,7 @@ legend("topright",
         c("Conditional without shrinkage", "Conditional with 25% shrinkage"), 
         col = c("red", "red"), 
        lty = c(1, 2), bty = "n", 
-       cex = 1.5, 
+       cex = 2.2, 
        lwd = 2)
 
   @
@@ -1072,7 +1072,7 @@ legend("topleft",
         c("Conditional", "Predictive"), 
         col = c("red", "blue"), 
        lty = 1, bty = "n", 
-       cex = 1.5, 
+       cex = 2.2, 
        lwd = 2)
 
 
@@ -1103,7 +1103,7 @@ legend("topleft",
         c("Conditional without shrinkage", "Conditional with 25% shrinkage"), 
         col = c("red", "red"), 
        lty = c(1, 2), bty = "n", 
-       cex = 1.5, 
+       cex = 2.2, 
        lwd = 2)
 
 @
@@ -1195,7 +1195,7 @@ bwplot(power~group, data=mat1, groups = ID, panel = panel_bw,
 \framesubtitle{(Solutions available at \url{https://osf.io/})}
 
   \begin{block}{Exercise 2.4}
-  For the experimental philosophy replication project
+  For the experimental philosophy replicability project
   \begin{itemize}
   \item Calculate for each study the required relative sample size to reach a power for significance of 95\%. Use the conditional design prior.
   \item Compare them to the actually used relative sample sizes.
@@ -1329,13 +1329,13 @@ legend("topright",
         c("Conditional", "Predictive"), 
         col = c("red", "blue"), 
        lty = 1.5, bty = "n", 
-       cex = 1.5, 
+       cex = 2.2, 
        lwd = 1.5)
 legend("bottomleft", 
        c("Controlled"), 
        lty = c(1), 
        bty = "n", 
-       cex = 1.5, 
+       cex = 2.2, 
        lwd = 1.5)
 @
 
@@ -1365,14 +1365,14 @@ legend("topright",
         c("Conditional", "Predictive"), 
         col = c("red", "blue"), 
        lty = 1.5, bty = "n", 
-       cex = 1.5, 
+       cex = 2.2, 
        lwd = 1.5)
 
 legend("bottomleft", 
        c("Controlled", "Significance"), 
        lty = c(1, 2), 
        bty = "n", 
-       cex = 1.5, 
+       cex = 2.2, 
        lwd = 1.5)
   @
 \end{frame}
@@ -1422,7 +1422,7 @@ bwplot(power~group, data=mat2, groups = ID, panel = panel_bw,
 
 \begin{frame}{Exercises}
   \begin{block}{Exercise 3.3}
-  For the experimental philosophy replication project
+  For the experimental philosophy replicability project
   \begin{itemize}
   \item Calculate for each study the required relative sample size to reach a power for replication success of 95\%. Use the  function \texttt{sampleSizeReplicationSuccess()} with conditional design prior and the controlled threshold ($\alpha$ = 0.065). 
   \item Compare the results to the actually used relative sample sizes.
