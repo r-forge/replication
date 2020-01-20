@@ -377,9 +377,10 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 {\large \textit{Can we convince a sceptic whose priof beliefs make
 the original study not significant?}}
 
-$\rightarrow$ function: \texttt{pSceptical()} \\
-$\rightarrow$ returns one-sided sceptical $p$-value per default \\
-\vspace{-.5cm}
+$\rightarrow$ \texttt{pSceptical()} %% \\
+%%$\rightarrow$ 
+returns one-sided sceptical $p$-value \\ % per default \\
+%% \vspace{-.5cm}
 \begin{center}
 {\color{red} If $p_S \leq \alpha$ we have replication success at level $\alpha$}
 \end{center}
@@ -586,8 +587,10 @@ uncertainty about the true effect after the original experiment
 \end{frame}
 
 \begin{frame}[fragile]{Data sets}
-<< >>=
+<<eval=FALSE>>=
 ?RProjects # Documentation
+@
+<<eval=TRUE>>=
 str(RProjects)
 @
 \end{frame}
@@ -883,7 +886,8 @@ sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
 \end{frame}
 
 
-\begin{frame}{Statistical significance: Functions}
+\begin{frame}{Design based on significance} 
+%%    \framesubtitle{Functions}
   \begin{block}{}
 Two functions: 
     \begin{itemize}
@@ -1018,15 +1022,15 @@ plot(po.plot, pow.cond*100, col = "red", ylim = c(0,100), type = "l",
      lwd = 2, 
     cex.lab = 1.5, 
      cex.axis = 1.5)
-lines(po.plot, pow.condshrink*100, col = "red", lty = 3,
+lines(po.plot, pow.condshrink*100, col = "red", lty = 2,
       lwd = 2)
-abline(h = 50, lty = 2)
+abline(h = 50, lty = 3)
 axis(2, at = 50, label = "50", cex.axis = 1.5,
      col = "gray40")
 legend("topright", 
         c("Conditional without shrinkage", "Conditional with 25% shrinkage"), 
         col = c("red", "red"), 
-       lty = c(1, 3), bty = "n", 
+       lty = c(1, 2), bty = "n", 
        cex = 1.5, 
        lwd = 2)
 
@@ -1093,12 +1097,12 @@ plot(po.plot, ss.cond, type = "l", ylim = c(0, 4), col = "red",
      lwd = 2, 
      cex.lab = 1.5, 
      cex.axis = 1.5)
-lines(po.plot, ss.condshrink, col = "red", lty = 3, 
+lines(po.plot, ss.condshrink, col = "red", lty = 2, 
       lwd = 2)
 legend("topleft", 
         c("Conditional without shrinkage", "Conditional with 25% shrinkage"), 
         col = c("red", "red"), 
-       lty = c(1, 3), bty = "n", 
+       lty = c(1, 2), bty = "n", 
        cex = 1.5, 
        lwd = 2)
 
@@ -1247,7 +1251,7 @@ axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
   % \end{block}
 \end{frame}
 
-\begin{frame}{Replication Success: Functions}
+\begin{frame}{Design based on replication success}
 \begin{block}{}
 Two functions:
     \begin{itemize}
@@ -1278,7 +1282,7 @@ Main arguments (\texttt{default}):
 # sample size calculation
 powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"), 
                         c = 3, 
-                        designPrior = "predictive",
+                        designPrior = "conditional",
                         level = 0.065)
 @
 
@@ -1420,16 +1424,17 @@ bwplot(power~group, data=mat2, groups = ID, panel = panel_bw,
   \begin{block}{Exercise 3.3}
   For the experimental philosophy replication project
   \begin{itemize}
-  \item Calculate for each study the required relative sample size to reach a power for replication success of 95\%. Use the conditional design prior the controlled threshold ($\alpha$ = 0.065). Use the function \texttt{sampleSizeReplicationSuccess()}
-  \item Compare them to the actually used relative sample sizes.
+  \item Calculate for each study the required relative sample size to reach a power for replication success of 95\%. Use the  function \texttt{sampleSizeReplicationSuccess()} with conditional design prior and the controlled threshold ($\alpha$ = 0.065). 
+  \item Compare the results to the actually used relative sample sizes.
   \end{itemize}
   \end{block}
 \end{frame}
 
 
 \begin{frame}[fragile]{Solution: Exercise 3.3}
+\framesubtitle{Replication success}
 
-<<fig.height = 8, echo = F>>=
+<<fig.height = 7, echo = F>>=
 
 ss_c2 <- sampleSizeReplicationSuccess(zo = p2z(philo$po), power = 0.95, level = 0.065, 
                              alternative = "one.sided",
@@ -1456,16 +1461,16 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
 \end{frame}
 
 \begin{frame}[fragile]{Solution: Exercise 2.4}
-\framesubtitle{Statistical significance}
+\framesubtitle{Significance}
 
-<<fig.height = 8, echo = FALSE>>=
+<<fig.height = 7, echo = FALSE>>=
 ss_aut <- philo$se_fiso^2/philo$se_fisr^2
 ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
                              designPrior = "conditional")
 
 plot(ss_aut, ss_cond1, 
-     xlim = c(0.01,20), 
-     ylim = c(0.01,20), 
+     xlim = c(0.01,50), 
+     ylim = c(0.01,50), 
      xlab = "Reported relative sample size", 
      ylab = "Calculated relative sample size", 
      pch = 20, 
@@ -1477,8 +1482,10 @@ plot(ss_aut, ss_cond1,
      yaxt = "n")
 abline(a = 0, b = 1, 
        col = "lightpink")
-axis(1, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
-axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
+## axis(1, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
+## axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
+axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
+axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
 
 
 @
@@ -1491,14 +1498,14 @@ axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
 \begin{frame}{Outlook}
 \begin{itemize}
   
-  \item Between-study heterogeneity \\
+  \item \alert{Between-study heterogeneity} \\
   $\rightarrow$ relative heterogeneity \texttt{d} can be specified in many functions
   % $= \tau^2/\sigma^2_o$
   
-  \item Data-driven shrinkage with empirical Bayes \\
+  \item \alert{Data-driven shrinkage} with empirical Bayes \\
   $\rightarrow$ \texttt{designPrior = "EB"}
   
-  \item Interim analysis \\
+  \item \alert{Interim analysis} \\
   $\rightarrow$ \texttt{powerSignificanceInterim()}
 \end{itemize}
 \end{frame}
