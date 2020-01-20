@@ -224,14 +224,16 @@ for (p in unique(RProjects$project)) {
     data_project <- subset(RProjects, project == p)
     significant_O <- data_project$po < 0.05
     significant_R <- data_project$pr < 0.05
-    success <- (significant_O == significant_R) & 
+    success <- (significant_O == TRUE) & (significant_R == TRUE) & 
         (sign(data_project$fiso) == sign(data_project$fisr))
     cat(paste0(p, ": \n"))
-    cat(paste0(round(mean(significant_O)*100, 2), "% original studies significant (", 
+    cat(paste0(round(mean(significant_O)*100, 1), "% original studies significant (", 
                sum(significant_O), "/", length(significant_O), ")\n"))
-    cat(paste0(round(mean(significant_R)*100, 2), "% replications significant (", 
+    cat(paste0(round(mean(significant_R)*100, 1), "% replications significant (", 
                sum(significant_R), "/", length(significant_R), ")\n"))
-    cat(paste0(round(mean(success)*100, 2), "% same significance status, same direction \n \n"))
+    cat(paste0(round(mean(success)*100, 1), 
+               "% both studies significant in the same direction (", 
+               sum(success), "/", length(success), ")\n \n"))
 }
 @
 
