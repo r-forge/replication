@@ -436,6 +436,7 @@ scept_plot
 \framesubtitle{New definition of replication success}
 
 \begin{minipage}[t][2.7cm][t]{\textwidth}
+\vspace{-1em}
 \begin{block}{Which threshold?}
   \begin{itemize}
     \item nominal: $\alpha = 0.025$
@@ -513,7 +514,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 
 \begin{frame}[fragile]{Package}
 \begin{itemize}
-  \item Functionalities for design and analysis of replication studies \\
+  \item Statistical methods and functionality for design and analysis of replication studies \\
   $\rightarrow$ Traditional methods \\
   $\rightarrow$ Sceptical $p$-value \citep{Held2020}
   \end{itemize}
