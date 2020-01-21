@@ -648,20 +648,7 @@ For your favourite replication project investigate
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
-
-For your favourite replication project
-  \begin{block}{Exercise 1.3}
-    Compute the one-sided \emph{sceptical $p$-value}. How many replication studies are successful at the nominal and controlled threshold? 
-      Use the functions \texttt{pSceptical()} and \texttt{thresholdSceptical()}
-  \end{block}
-  \begin{block}{Exercise 1.4}
-    Investigate the properties of the study pairs which show discrepancies in terms of replication success between the significance and the sceptical $p$-value criteria.
-  \end{block}
-\end{frame}
-
-\begin{frame}[fragile]{Solution: Statistical significance}
+\begin{frame}[fragile]{Solution: Exercise 1.1}
 << echo = FALSE >>=
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
@@ -681,7 +668,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Statistical significance}
+\begin{frame}[fragile]{Solution: Exercise 1.1}
 << echo = FALSE >>=
 ## Plots of effect estimates
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
@@ -697,7 +684,7 @@ for (p in unique(RProjects$project)) {
        ylab = expression(italic(r)[r]), col = col_success, pch = 20,
        cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
   legend("topleft", c("both significant", "not both significant"), 
-         pch = 20, pt.cex = 2, 
+         pch = 20, pt.cex = 2, cex = 1.4,
          # title = "signficant in same direction (5%)",
          col = c("#8B0000B3", "#333333B3"), bty = "n")
   abline(h = 0, lty = 2)
@@ -706,7 +693,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Prediction intervals}
+\begin{frame}[fragile]{Solution: Exercise 1.2}
 << echo = FALSE >>=
 ## computing zo, zr, c
 RProjects$zo <- with(RProjects, fiso/se_fiso)
@@ -736,7 +723,21 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Sceptical $p$-value}
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions available at \url{https://osf.io/})}
+
+For your favourite replication project
+  \begin{block}{Exercise 1.3}
+    Compute the one-sided \emph{sceptical $p$-value}. How many replication studies are successful at the nominal ($\alpha = 0.025$) and controlled ($\alpha = 0.065$) threshold? 
+      Use the function \texttt{pSceptical()}
+  \end{block}
+  \begin{block}{Exercise 1.4}
+    Investigate the properties of the study pairs which show discrepancies in terms of replication success between the significance and the sceptical $p$-value criteria.
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Solution: Exercise 1.3}
 << echo = FALSE, fig.height = 4 >>=
 ## computing one.sided sceptical p-value for replication projects
 RProjects$ps <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
@@ -761,7 +762,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Sceptical $p$-value}
+\begin{frame}[fragile]{Solution: Exercise 1.3}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
@@ -778,7 +779,7 @@ for (p in unique(RProjects$project)) {
        cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
   legend("topleft", c("p-sceptical < 0.065", 
                       "p-sceptical > 0.065"), 
-         pch = 20, pt.cex = 2, 
+         pch = 20, pt.cex = 2, cex = 1.4,
          col = c("#333333B3", "#8B0000B3"), bty = "n")
   abline(h = 0, lty = 2)
   abline(a = 0, b = 1, col = "grey")
@@ -786,7 +787,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Discrepant studies}
+\begin{frame}[fragile]{Solution: Exercise 1.4}
 << echo = FALSE, fig.height = 4 >>=
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
@@ -819,7 +820,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Discrepant studies}
+\begin{frame}[fragile]{Solution: Exercise 1.4}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
@@ -837,7 +838,7 @@ for (p in unique(RProjects$project)) {
        cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
   legend("topleft", c("only p-sceptical successful", 
                       "only significance successful"), 
-         pch = 20, pt.cex = 2, 
+         pch = 20, pt.cex = 2, cex = 1.4,
          col = c("#8B0000B3", "#00008AB3"), bty = "n")
   abline(h = 0, lty = 2)
   abline(a = 0, b = 1, col = "grey")
@@ -1341,12 +1342,12 @@ legend("topright",
        lty = 1.5, bty = "n", 
        cex = 2.2, 
        lwd = 1.5)
-legend("bottomleft", 
-       c("Controlled"), 
-       lty = c(1), 
-       bty = "n", 
-       cex = 2.2, 
-       lwd = 1.5)
+# legend("bottomleft", 
+#        c("Replication success"), 
+#        lty = c(1), 
+#        bty = "n", 
+#        cex = 2.2, 
+#        lwd = 1.5)
 @
 
 \end{frame}
@@ -1384,7 +1385,7 @@ legend("topright",
        lwd = 1.5)
 
 legend("bottomleft", 
-       c("Controlled", "Significance"), 
+       c("Replication success", "Significance"), 
        lty = c(1, 2), 
        bty = "n", 
        cex = 2.2, 
