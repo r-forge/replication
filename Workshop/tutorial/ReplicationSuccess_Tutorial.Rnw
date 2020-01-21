@@ -1211,29 +1211,35 @@ philo <- subset(RProjects,
 \end{frame}
 
 
+
+
 \begin{frame}[fragile]{Solution: Exercise 2.4}
 
-<<fig.height = 8, echo = FALSE>>=
+
+<<fig.height = 7, echo = FALSE>>=
+par(mai = c(1,1.5,1,1))
 ss_aut <- philo$se_fiso^2/philo$se_fisr^2
 ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
                              designPrior = "conditional")
 
 plot(ss_aut, ss_cond1, 
-     xlim = c(0.01,20), 
-     ylim = c(0.01,20), 
+     xlim = c(0.01,50), 
+     ylim = c(0.01,50), 
      xlab = "Reported relative sample size", 
      ylab = "Calculated relative sample size", 
      pch = 20, 
      cex = 2.2, 
-     cex.lab = 1.5, 
-     cex.axis = 1.5, 
+     cex.lab = 1.7, 
+     cex.axis = 1.7, 
      log = "xy", 
      xaxt = "n", 
      yaxt = "n")
 abline(a = 0, b = 1, 
        col = "lightpink")
-axis(1, las = 1, at = c(0.01, 0.1,1,10), labels = c("1/100", "1/10","1","10"))
-axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c("1/100", "1/10","1","10"))
+
+axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"),cex.axis = 1.4)
+axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"), cex.axis = 1.4)
+
 
 @
 
@@ -1444,6 +1450,7 @@ bwplot(power~group, data=mat2, groups = ID, panel = panel_bw,
 \framesubtitle{Replication success}
 
 <<fig.height = 7, echo = F>>=
+par(mai = c(1,1.5,1,1))
 
 ss_c2 <- sampleSizeReplicationSuccess(zo = p2z(philo$po), power = 0.95, level = 0.065, 
                              alternative = "one.sided",
@@ -1456,14 +1463,14 @@ plot(ss_aut, ss_c2,
      ylab = "Calculated relative sample size", 
      pch = 20, 
      cex = 2.2, 
-     cex.lab = 1.5, 
-     cex.axis = 1.5, log = "xy",
+     cex.lab = 1.7, 
+     cex.axis = 1.7, log = "xy",
      xaxt = "n", 
      yaxt = "n")
 abline(a = 0, b = 1, 
        col = "lightpink")
-axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"))
-axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"))
+axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"), cex.axis = 1.4)
+axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"), cex.axis = 1.4)
 @
 
 \end{frame}
@@ -1472,6 +1479,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 \framesubtitle{Significance}
 
 <<fig.height = 7, echo = FALSE>>=
+par(mai = c(1,1.5,1,1))
 ss_aut <- philo$se_fiso^2/philo$se_fisr^2
 ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
                              designPrior = "conditional")
@@ -1483,16 +1491,16 @@ plot(ss_aut, ss_cond1,
      ylab = "Calculated relative sample size", 
      pch = 20, 
      cex = 2.2, 
-     cex.lab = 1.5, 
-     cex.axis = 1.5, 
+     cex.lab = 1.7, 
+     cex.axis = 1.7, 
      log = "xy", 
      xaxt = "n", 
      yaxt = "n")
 abline(a = 0, b = 1, 
        col = "lightpink")
 
-axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"))
-axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"))
+axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"),cex.axis = 1.4)
+axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"), cex.axis = 1.4)
 
 
 @
