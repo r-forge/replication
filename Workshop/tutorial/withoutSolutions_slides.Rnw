@@ -1529,7 +1529,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 
 % ============================================================================
-\nocite{Pawel2019, Held2020, Opensc2015, Camerer2016, Camerer2018, Cova2018, Morewedge2010, Reynolds2008}
+\nocite{Pawel2019, Held2020, Opensc2015, Camerer2016, Camerer2018, Cova2018, Morewedge2010}
 \begin{frame}{References}
   \tiny
   \bibliographystyle{apalike}

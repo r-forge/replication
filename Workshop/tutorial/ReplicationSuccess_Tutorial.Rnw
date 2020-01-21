@@ -644,7 +644,7 @@ For your favourite replication project investigate
      How many study pairs fulfill the \emph{significance} criterion for replication success?
   \end{block}
   \begin{block}{Exercise 1.2}
-    How many study pairs show \emph{compatible effect estimates}? Use the function \texttt{predictionInterval()} with design prior set to \texttt{"predictive"}.
+    How many study pairs show \emph{compatible effect estimates}? Use the function \texttt{predictionInterval()} with design prior set to \texttt{"predictive"} and \texttt{conf.level = 0.95}.
   \end{block}
 \end{frame}
 
@@ -777,8 +777,8 @@ for (p in unique(RProjects$project)) {
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = col_success, pch = 20,
        cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
-  legend("topleft", c("p-sceptical < 0.065", 
-                      "p-sceptical > 0.065"), 
+  legend("topleft", c("p-sceptical > 0.065", 
+                      "p-sceptical < 0.065"), 
          pch = 20, pt.cex = 2, cex = 1.4,
          col = c("#333333B3", "#8B0000B3"), bty = "n")
   abline(h = 0, lty = 2)

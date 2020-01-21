@@ -120,7 +120,7 @@ for (p in unique(RProjects$project)) {
   plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = col_success, pch = 20)
-  legend("topleft", c("p-sceptical < 0.065", "p-sceptical > 0.065"), 
+  legend("topleft", c("p-sceptical > 0.065", "p-sceptical < 0.065"), 
          pch = 20, col = c("#333333B3", "#8B0000B3"), bty = "n")
   abline(h = 0, lty = 2)
   abline(a = 0, b = 1, col = "grey")
