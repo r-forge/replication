@@ -1437,6 +1437,7 @@ bwplot(power~group, data=mat2, groups = ID, panel = panel_bw,
 \end{frame}
 
 \begin{frame}{Exercises}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
   \begin{block}{Exercise 3.3}
   For the experimental philosophy replicability project
   \begin{itemize}
