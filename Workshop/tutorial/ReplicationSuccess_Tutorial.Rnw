@@ -993,7 +993,7 @@ plot(po.plot, pow.cond1*100, col = "red", ylim = c(0,100), type = "l",
      cex.lab = 1.5, 
      cex.axis = 1.5)
 lines(po.plot, pow.pred1*100, col = "blue", lwd = 2)
-abline(h = 50, lty = 2)
+abline(h = 50, lty = 3)
 axis(2, at = 50, label = "50", cex.axis = 1.5,
      col = "gray40")
 
@@ -1232,9 +1232,8 @@ plot(ss_aut, ss_cond1,
      yaxt = "n")
 abline(a = 0, b = 1, 
        col = "lightpink")
-axis(1, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
-axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
-
+axis(1, las = 1, at = c(0.01, 0.1,1,10), labels = c("1/100", "1/10","1","10"))
+axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c("1/100", "1/10","1","10"))
 
 @
 
@@ -1324,6 +1323,11 @@ plot(po.plot, pow.cond2*100, type = "l", col = "red", ylim = c(0,100),
 lines(po.plot, pow.pred2*100, col = "blue", 
       lwd = 1.5, 
       lty = 1)
+abline(h = 50, 
+       lty = 3, 
+       lwd = 1.5)
+axis(2, at = 50, label = "50", cex.axis = 1.5,
+     col = "gray40")
 
 legend("topright", 
         c("Conditional", "Predictive"), 
@@ -1360,6 +1364,11 @@ lines(po.plot, pow.cond1*100, col = "red", lty = 2,
       lwd = 1.5)
 lines(po.plot, pow.pred1*100, col = "blue", lty = 2, 
       lwd = 1.5)
+abline(h = 50, 
+       lty = 3, 
+       lwd = 1.5)
+axis(2, at = 50, label = "50", cex.axis = 1.5,
+     col = "gray40")
 
 legend("topright", 
         c("Conditional", "Predictive"), 
@@ -1453,9 +1462,8 @@ plot(ss_aut, ss_c2,
      yaxt = "n")
 abline(a = 0, b = 1, 
        col = "lightpink")
-axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
-axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
-
+axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"))
+axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"))
 @
 
 \end{frame}
@@ -1482,10 +1490,9 @@ plot(ss_aut, ss_cond1,
      yaxt = "n")
 abline(a = 0, b = 1, 
        col = "lightpink")
-## axis(1, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
-## axis(2, las = 1, at = c(0.01, 0.1,1,10), labels = c(0.01, 0.1,1,10))
-axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
-axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c(0.01, 0.1, 1, 10, 50))
+
+axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"))
+axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"))
 
 
 @
