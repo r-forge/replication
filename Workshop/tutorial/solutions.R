@@ -18,8 +18,8 @@ RProjects$zr <- RProjects$fisr/RProjects$se_fisr
 RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 
 # computing 1-sided p-values (all original estimates were positive)
-RProjects$po1 <- z2p(RProjects$zo, alternative = "one.sided")
-RProjects$pr1 <- z2p(RProjects$zr, alternative = "one.sided")
+RProjects$po1 <- z2p(RProjects$zo, alternative = "greater")
+RProjects$pr1 <- z2p(RProjects$zr, alternative = "greater")
 
 
 # Exercise 1.1

@@ -615,14 +615,14 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 << size = "small" >>=
 RProjects$zo <- RProjects$fiso/RProjects$se_fiso
 RProjects$po1 <- z2p(RProjects$zo, 
-                     alternative = "one.sided")
+                     alternative = "greater")
 @
 \pause
 \item $z$-value $z_r$ or (one-sided) $p$-value $p_r$ of replication study
 << size = "small" >>=
 RProjects$zr <- RProjects$fisr/RProjects$se_fisr
 RProjects$pr1 <- z2p(RProjects$zr, 
-                     alternative = "one.sided")
+                     alternative = "greater")
 @
 
 \end{itemize}

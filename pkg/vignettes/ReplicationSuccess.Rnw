@@ -156,8 +156,12 @@ of the study sample size $n$, \ie $\Var(\hat{\theta}) = 1/(n - 3)$ \citep{Fisher
 
 The data can be loaded with the command \texttt{data("RProjects")}. For a
 description of the variables see the documentation with \texttt{?RProjects}.
-It is a good idea to first compute the unitless quantities $z_o$, $z_r$ and $c$, since 
-most functions of the package use them as input. An extended version of the Social Sciences Replication Project including the details of stages 1 and 2 can be loaded with \texttt{data("SSRP")}.
+An extended version of the Social Sciences Replication Project including the details of stages one and two can be loaded with \texttt{data("SSRP")}.
+It is a good idea to first compute the unitless quantities $z_o$, $z_r$ and
+$c$, since most functions of the package use them as input. 
+We also use the function \texttt{z2p} to compute the one-sided 
+$p$-values for original and replication study. As all original estimates are
+positive, we specify the argument \texttt{alternative} to \texttt{"greater"}.
 
 << "data-loading" >>=
 library(ReplicationSuccess)
@@ -168,6 +172,10 @@ str(RProjects)
 RProjects$zo <- with(RProjects, fiso/se_fiso)
 RProjects$zr <- with(RProjects, fisr/se_fisr)
 RProjects$c <- with(RProjects, se_fiso^2/se_fisr^2)
+
+## computing one-sided p-values for alternative = "greater"
+RProjects$po1 <- z2p(z = RProjects$zo, alternative = "greater")
+RProjects$pr1 <- z2p(z = RProjects$zr, alternative = "greater")
 @
 
 Note that each variable ending with an \texttt{o} is associated with the original,
@@ -530,14 +538,15 @@ for (p in unique(RProjects$project)) {
     success_scept <- (data_project$ps < thresh_contr)
     cat(paste0(round(mean(success_scept)*100, 2), 
                "% smaller than 0.0653 (one-sided sceptical p-value) \n"))
-    success_tradit <- (data_project$po/2 < 0.025) & (data_project$pr/2 < 0.025)
+    success_tradit <- (data_project$po1 < 0.025) & (data_project$pr1 < 0.025)
     cat(paste0(round(mean(success_tradit)*100, 2), 
                "% smaller than 0.025 (both one-sided traditional p-values) \n"))
     if(sum(success_scept != success_tradit) > 0){
-        discord <- data_project[(success_scept != success_tradit), c("ro", "rr", "c", "po", "pr", "ps")]
-        ## print effect estimates, p-values, and c of discordant studies
-        cat("Discordant studies: \n")
-        print(signif(discord, 2), row.names = FALSE)
+        discrep <- data_project[(success_scept != success_tradit), 
+                                c("ro", "rr", "c", "po1", "pr1", "ps")]
+        ## print effect estimates, 1sided p-values, and c of discrepant studies
+        cat("Discrepant studies: \n")
+        print(signif(discrep, 2), row.names = FALSE)
   }
   cat("\n \n")
 }
