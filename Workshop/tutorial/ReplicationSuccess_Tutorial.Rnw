@@ -630,7 +630,7 @@ RProjects$pr1 <- z2p(RProjects$zr,
 \end{frame}
 
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
 \begin{block}{}
 Load the package and the data sets with
 \vspace{-0.5em}
@@ -724,7 +724,7 @@ for (p in unique(RProjects$project)) {
 \end{frame}
 
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
 
 For your favourite replication project
   \begin{block}{Exercise 1.3}
@@ -933,7 +933,7 @@ powerSignificance(zo = p2z(0.004, alternative = "one.sided"), c = 3,
 
 
 \begin{frame}{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
   \begin{block}{Exercise 2.1}
 We have five original studies that we want to replicate. The one-sided $p$-values are 
 $0.0001$, $0.001$, $0.005$, $0.01$, and $0.025$, respectively. 
@@ -1040,7 +1040,7 @@ legend("topright",
 \end{frame}
 
 \begin{frame}{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
 
   \begin{block}{Exercise 2.2}
 We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
@@ -1113,7 +1113,7 @@ legend("topleft",
 
 
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
 
   \begin{block}{Exercise 2.3}
   For the experimental economics replication project
@@ -1193,7 +1193,7 @@ bwplot(power~group, data=mat1, groups = ID, panel = panel_bw,
 
 
 \begin{frame}{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
 
   \begin{block}{Exercise 2.4}
   For the experimental philosophy replicability project
@@ -1296,7 +1296,7 @@ powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"),
 \end{frame}
 
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
   \begin{block}{Exercise 3.1}
     \begin{itemize}
     \item Compute and plot the conditional and predictive power for replication success of the five studies from exercise 2.1 using the controlled ($\alpha$ = 0.065) threshold. Use the function
@@ -1396,7 +1396,7 @@ legend("bottomleft",
 
 
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/})}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
   \begin{block}{Exercise 3.2}
   For the experimental economics replication project
   \begin{itemize}
