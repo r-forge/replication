@@ -1069,12 +1069,14 @@ plot(po.plot, ss.cond, type = "l", ylim = c(0, 4), col = "red",
      cex.axis = 1.5)
 lines(po.plot, ss.pred, col = "blue", 
       lwd = 2)
+abline(h = c(1, 2, 3), col = "grey", lty = 2)
 legend("topleft", 
         c("Conditional", "Predictive"), 
         col = c("red", "blue"), 
        lty = 1, bty = "n", 
        cex = 2.2, 
-       lwd = 2)
+       lwd = 2,
+       bg = "white")
 
 
 @
@@ -1100,6 +1102,7 @@ plot(po.plot, ss.cond, type = "l", ylim = c(0, 4), col = "red",
      cex.axis = 1.5)
 lines(po.plot, ss.condshrink, col = "red", lty = 2, 
       lwd = 2)
+abline(h = c(1, 2, 3), col = "grey", lty = 2)
 legend("topleft", 
         c("Conditional without shrinkage", "Conditional with 25% shrinkage"), 
         col = c("red", "red"), 
@@ -1123,7 +1126,7 @@ legend("topleft",
   \end{itemize}
 
 <<>>=
-eco <- subset(RProjects, project == "Experimental Economics" )
+eco <- subset(RProjects, project == "Experimental Economics")
 @
 
   \end{block}
@@ -1529,12 +1532,12 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 
 % ============================================================================
-\nocite{Pawel2019, Held2020, Opensc2015, Camerer2016, Camerer2018, Cova2018, Morewedge2010, Reynolds2008}
+\nocite{Pawel2019, Held2020, Opensc2015, Camerer2016, Camerer2018, Cova2018, Morewedge2010}
 \begin{frame}{References}
   \tiny
   \bibliographystyle{apalike}
   \bibliography{bibliography}
-  \end{frame}
+\end{frame}
   
 
 
