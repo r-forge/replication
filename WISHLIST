@@ -9,5 +9,10 @@
 * Comments from Gosha : page 5 of vignette ; explain more what is meant by "same significance status" 
 * Comment from Gosha : how to plan an original study ?
 * Comment from Gosha : say that for some plots the code is not provided
+* Feedback from tutorial: 
+			- Add sample sizes on datasets
+			- Put one-sided as default in pSceptical
+			- Confusion on terminologies: ratio of variances 
+			- Put NaN when the desired power is too large in sampleSizeSignificance instead of error message
 
 
