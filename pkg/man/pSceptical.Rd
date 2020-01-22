@@ -7,7 +7,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-pSceptical(zo, zr, c, alternative = "two.sided")
+pSceptical(zo, zr, c, alternative = "one.sided")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,8 +21,12 @@ pSceptical(zo, zr, c, alternative = "two.sided")
           effect estimates. This is usually the ratio of the sample
           size of the replication study to the sample size of the
           original study.}
-  \item{alternative}{either \code{"one.sided"} or \code{"two.sided"}.  Defaults to \code{"two.sided"}. If \code{"one.sided"} then the
-    sceptical p-value is based on a one-sided assessment of replication success in the direction of the original effect estimate.}
+  \item{alternative}{either \code{"one.sided"} or \code{"two.sided"}.  Defaults to \code{"one.sided"}. If \code{"one.sided"} then the
+    sceptical p-value is based on a one-sided assessment of replication
+    success in the direction of the original effect estimate. If \code{"two.sided"} then the
+    sceptical p-value is based on a two-sided assessment of replication
+    success regardless of the direction of the original and replication effect estimate.
+  }
 }
 \value{
 The sceptical p-value. 
@@ -48,9 +52,12 @@ Leonhard Held
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 %}
 \examples{
-pSceptical(zo = p2z(0.01), zr = p2z(0.02), c = 2)
-pSceptical(zo = p2z(0.02), zr = p2z(0.01), c = 1/2)
-pSceptical(zo = p2z(0.01), zr = p2z(0.01), c = 2, alternative = "one.sided")
+## two-sided p-values 0.01 and 0.02, relative sample size 2
+pSceptical(zo = p2z(0.01), zr = p2z(0.02), c = 2, alternative = "one.sided")
+## reverse the studies
+pSceptical(zo = p2z(0.02), zr = p2z(0.01), c = 1/2, alternative = "one.sided")
+## both p-values 0.01, relative sample size 2
+pSceptical(zo = p2z(0.01), zr = p2z(0.01), c = 2, alternative = "two.sided")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -9,3 +9,4 @@ man/sampleSizePI
 man/sampleSizePIwidth
 R/sampleSizePI
 R/sampleSizePIwidth
+tests/Test_deltaEB.R

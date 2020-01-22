@@ -4,9 +4,15 @@
 # 2020-01-08
 # ------------------------------------------------------------------------------
 
-build: ReplicationSuccess_Tutorial.Rnw Makefile
+all: ReplicationSuccess_Tutorial.pdf WorkshopIntro.pdf
+
+ReplicationSuccess_Tutorial.pdf: ReplicationSuccess_Tutorial.Rnw Makefile
 	echo "library('knitr'); knit2pdf('ReplicationSuccess_Tutorial.Rnw')" | R --no-save --no-restore
 	pdfjam --vanilla --quiet --nup 2x2 --landscape  --outfile ReplicationSuccess_Tutorial-nup.pdf ReplicationSuccess_Tutorial.pdf
+
+WorkshopIntro.pdf: WorkshopIntro.Rnw Makefile
+	echo "library('knitr'); knit2pdf('WorkshopIntro.Rnw')" | R --no-save --no-restore
+	pdfjam --vanilla --quiet --nup 2x2 --landscape  --outfile WorkshopIntro-nup.pdf WorkshopIntro.pdf
 
 
 clean:

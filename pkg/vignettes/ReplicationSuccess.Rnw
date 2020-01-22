@@ -439,7 +439,8 @@ zo <- theta_o/so
 zr <- theta_r/sr
 alpha <- 0.05
 za <- qnorm(p = alpha/2, lower.tail = FALSE)
-ps <- signif(pSceptical(zo = zo, zr = zr, c = c), 2)
+ps <- signif(pSceptical(zo = zo, zr = zr, c = c, 
+                        alternative = "two.sided"), 2)
 ps_tilde <- signif(pSceptical(zo = zo, zr = zr, c = c, 
                               alternative = "one.sided"), 2)
 tau <- sqrt(ssv(zo, so, alpha))

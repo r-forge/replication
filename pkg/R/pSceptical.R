@@ -1,7 +1,7 @@
 pSceptical <- function(zo,
                        zr,
                        c, 
-                       alternative = "two.sided"){
+                       alternative = "one.sided"){
     z <- zSceptical(zo, zr, c)
     res <- z2p(z = z)
     if(alternative == "one.sided")
