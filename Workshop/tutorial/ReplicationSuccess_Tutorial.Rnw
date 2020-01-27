@@ -862,7 +862,8 @@ for (p in unique(RProjects$project)) {
 \begin{block}{Sample size of replication study}
   \begin{itemize}
   \item Direct replication $\rightarrow$ procedures of replication study as closely matched as possible to original study 
-\item But proper sample size calculation is essential and depends on analysis strategy
+\item \alert{But} same sample size as in original study can lead to a very low power \citep{Goodman1992}
+\item[] $\rightarrow$ proper sample size calculation is essential 
   \end{itemize}
 \end{block}
 \end{frame}
