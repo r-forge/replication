@@ -563,18 +563,64 @@ vignette("ReplicationSuccess")
 \end{frame}
 
 
-\begin{frame}{Statistical framework of package}
+\begin{frame}[fragile]{Statistical framework of package}
 \begin{block}{}
 \begin{itemize}
-\item Effect estimates are assumed to be {\color{red} normally distributed}
-\begin{itemize}
-\item[] $\rightarrow$ usually fulfilled after suitable transformation 
-\item[] $\rightarrow$ Fisher's $z$-transformation for correlation coefficients $r$ 
-with (effective) sample size $n - 3$
+\item Effect estimates are assumed to be {\color{red} normally distributed} after suitable transformation \\
+$\rightarrow$ Fisher's $z$-transformation for correlation coefficients $r$ with (effective) sample size $n - 3$
 \end{itemize}
-\end{itemize}
-
 \end{block}
+<< fig.height = 4.5, echo = FALSE>>=
+r <- seq(-1, 1, 0.001)
+ztrans_df <- data.frame(r, z = atanh(r))
+ggplot(data = ztrans_df, aes(x = r, y = z)) +
+  geom_abline(intercept = 0, slope = 1, lty = 2, size = 1,
+              alpha = 0.6) +
+  geom_line(size = 1) + 
+  labs(x = expression(paste("Correlation ", italic(r))), 
+       y = expression(paste("Fisher-", italic(z)))) +
+  theme_bw() +
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30))
+@
+\end{frame}
+
+\begin{frame}[fragile]{Statistical framework of package}
+\begin{block}{}
+\begin{itemize}
+\item Effect estimates are assumed to be {\color{red} normally distributed} after suitable transformation \\
+$\rightarrow$ Fisher's $z$-transformation for correlation coefficients $r$ with (effective) sample size $n - 3$
+\end{itemize}
+\end{block}
+<< echo = FALSE, fig.height = 4.5 >>=
+# Second axis for Fisher z-scale
+lims_r <- tanh(seq(0, 1, 0.5))
+labs_r <- round(lims_r, 2)
+
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_text(aes(label = paste("italic(r) ==~", 
+                              round(r, 2), 
+                              sep = "")), parse = TRUE, 
+            nudge_x = c(-0.31, 0.27), nudge_y = 0.1, size = 10) +
+  geom_text(aes(label = paste("italic(z) ==~", 
+                              round(z, 2), 
+                              sep = "")), parse = TRUE, 
+            nudge_x = c(-0.31, 0.27), nudge_y = -0.1, size = 10) +
+  scale_y_continuous(limits = c(-0.05, 1), 
+                     breaks = seq(0, 2.5, 0.5),
+                     sec.axis = sec_axis(trans = ~tanh(.), 
+                                         breaks = lims_r,
+                                         labels = labs_r,
+                                         name = expression(paste("Correlation ", italic(r))))) + 
+  labs(x = " ", y = expression(paste("Fisher-",italic(z)))) + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
 \end{frame}
 
 \begin{frame}[fragile]{Data sets}
