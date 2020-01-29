@@ -884,6 +884,8 @@ for (p in unique(RProjects$project)) {
 \item[] $\rightarrow$ proper sample size calculation is essential 
   \end{itemize}
 \end{block}
+\centering
+\includegraphics[width=0.8\textwidth]{images_presentation/goodmana.pdf}
 \end{frame}
 
 \begin{frame}[fragile]{What is used in practice}
@@ -899,16 +901,20 @@ sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
 sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
 @
     \item Goal is to have between 80\%  and 95\% power in the replication study to detect the {\color{red}{effect estimate from the original study}}.
-    \item Shrunken version of the original effect estimate is sometimes used
+    \item Original effect estimates is sometimes shrunken by a factor of 50\%.
     \item Uncertainty of original effect estimate is ignored
-    \pause
-\item[] $\rightarrow$ Design prior
+  \end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Incorporation of uncertainty}
+\begin{block}{Design prior}
 \begin{itemize}
 \item{\color{red} \emph{Conditional}}: ignores uncertainty of original study
 \item {\color{red} \emph{Predictive}}: reflects that there is 
 uncertainty about the true effect after the original experiment
 \end{itemize}
-  \end{itemize}
 \end{block}
 \end{frame}
 

@@ -14,5 +14,9 @@
 			- Put one-sided as default in pSceptical
 			- Confusion on terminologies: ratio of variances 
 			- Put NaN when the desired power is too large in sampleSizeSignificance instead of error message
+* After the tutorial in Münich: rethink the variables in dataset. Ideas
+			- Only include variables that they need and explain how to obtain the others? 
+			- Create a function? 
+* After tutorial: vectorization of functions (+ add warnings when power is too large for sampleSizeSignificance)
 
 
