@@ -54,8 +54,12 @@ sampleSizeSignificance <- function(zo,
             power.limit <- pnorm(sqrt(1/(s*(1 + d) + d))*s*abs(zo[i]))
             if (power > power.limit) {
                 power.limit.r <- floor(power.limit * 1000)/1000
-                stop(paste("power too large, power should not exceed",
-                           power.limit.r))
+                # warning(paste("power too large, power should not exceed",
+                #                power.limit.r,
+                #               "for a zo of",
+                #               zo,
+                #               "\n"))
+                c[i] <- NaN
             }
             
             # check whether desired power can be achieved for max c = 1000
@@ -78,7 +82,7 @@ sampleSizeSignificance <- function(zo,
                                         shrinkage = shrinkage,
                                         designPrior = designPrior)
             if (sign(target.l) == sign(target.u)) 
-                c[i] <- NA
+                c[i] <- NaN
             
             # determine c to achieve desired power
             else c[i] <- uniroot(f = ClassicalTarget, 

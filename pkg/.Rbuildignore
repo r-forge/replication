@@ -4,7 +4,7 @@ R/deltaEB.R
 man/deltaEB.Rd
 R/BFrep.R
 man/BFrep.Rd
-man/zSceptical.Rd
+#man/zSceptical.Rd
 man/sampleSizePI
 man/sampleSizePIwidth
 R/sampleSizePI
