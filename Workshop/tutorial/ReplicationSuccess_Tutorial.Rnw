@@ -578,12 +578,23 @@ with (effective) sample size $n - 3$
 \end{frame}
 
 \begin{frame}[fragile]{Data sets}
-<<eval=FALSE>>=
+<<eval=FALSE, size = "small" >>=
 ?RProjects # Documentation
 @
-<<eval=TRUE>>=
-str(RProjects)
-@
+\begin{block}{Most important variables}
+\begin{table}
+\centering
+\begin{tabular}{l l}
+  \texttt{project} & Replication project \\
+  \texttt{ro} & Original effect on correlation scale \\
+  \texttt{rr} & Replication effect on correlation scale \\
+  \texttt{fiso} & Original effect on Fisher-$z$ scale \\
+  \texttt{fisr} & Replication effect on Fisher-$z$ scale \\
+  \texttt{se\_fiso} & Standard error of \texttt{fiso} \\
+  \texttt{se\_fisr} & Standard error of \texttt{fisr} 
+\end{tabular}
+\end{table}
+\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Statistical framework of package}
@@ -625,10 +636,26 @@ RProjects$pr1 <- z2p(RProjects$zr,
 \begin{block}{}
 Load the package and the data sets with
 \vspace{-0.5em}
-<< size = "scriptsize", eval = FALSE >>=
+<< size = "small", eval = FALSE >>=
 library(ReplicationSuccess)
 data("RProjects") 
 @
+Compute the key quantities $z_o$, $z_r$, $c$, and the one-sided $p$-values $p_o$ and $p_r$ with
+<< size = "small" >>=
+RProjects$zo <- RProjects$fiso/RProjects$se_fiso
+RProjects$zr <- RProjects$fisr/RProjects$se_fisr
+RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
+RProjects$po1 <- z2p(RProjects$zo, 
+                     alternative = "one.sided")
+RProjects$pr1 <- z2p(RProjects$zr, 
+                     alternative = "one.sided")
+@
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+\begin{block}{}
 For your favourite replication project investigate
 \end{block}
   \begin{block}{Exercise 1.1}
