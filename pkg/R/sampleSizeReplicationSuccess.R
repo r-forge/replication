@@ -1,6 +1,6 @@
 sampleSizeReplicationSuccess <- function(zo,
                                          power, 
-                                         level = 0.025,
+                                         level = thresholdSceptical(0.025, alternative = "one.sided", type="controlled"),
                                          designPrior = "conditional",
                                          alternative = "one.sided"){
     if(min(power) < 0 || max(power) > 1)

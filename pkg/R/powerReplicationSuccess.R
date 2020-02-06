@@ -28,7 +28,7 @@ zr2.quantile <- function(zo,
 
 powerReplicationSuccess <- function(zo,
                                     c = 1, 
-                                    level = 0.025,
+                                    level = thresholdSceptical(0.025, alternative = "one.sided", type="controlled"),
                                     designPrior = "conditional",
                                     alternative = "one.sided"){
     

@@ -5,7 +5,7 @@
   The power for replication success is computed based on the result of the original study, the corresponding variance ratio and the design prior. 
 }
 \usage{
-powerReplicationSuccess(zo, c = 1, level = 0.025, 
+powerReplicationSuccess(zo, c = 1, level = thresholdSceptical(0.025, alternative = "one.sided", type="controlled"),
                         designPrior = "conditional", 
                         alternative = "one.sided")
 }
@@ -20,7 +20,7 @@ powerReplicationSuccess(zo, c = 1, level = 0.025,
     original study.
     }
   \item{level}{
-    Replication success level. Default is 0.025.
+    Replication success level. Default is Default is the controlled level (0.0653).
     }
   \item{designPrior}{
     Either \code{"conditional"} or \code{"predictive"}.  
@@ -45,18 +45,18 @@ Held, L. (2020). A new standard for the analysis and design of replication studi
   \code{\link{sampleSizeReplicationSuccess}}, \code{\link{pSceptical}}, \code{\link{thresholdSceptical}}
 }
 \examples{
-thresControlled <- thresholdSceptical(0.025, type = "controlled")
 
 powerReplicationSuccess(zo = p2z(0.005), c = 2)
 powerReplicationSuccess(zo = p2z(0.005), c = 2, designPrior = "predictive")
-powerReplicationSuccess(zo = p2z(0.005), c = 2, level = thresControlled)
-powerReplicationSuccess(zo = p2z(0.005), c = 2, level = thresControlled, 
+thresNominal <- thresholdSceptical(0.025, type = "nominal")
+powerReplicationSuccess(zo = p2z(0.005), c = 2, level = thresNominal)
+powerReplicationSuccess(zo = p2z(0.005), c = 2, level = thresNominal, 
                         designPrior = "predictive")
 
 powerReplicationSuccess(zo = p2z(0.005), c = 1/2)
 powerReplicationSuccess(zo = p2z(0.005), c = 1/2, designPrior = "predictive")
-powerReplicationSuccess(zo = p2z(0.005), c = 1/2, level = thresControlled)
-powerReplicationSuccess(zo = p2z(0.005), c = 1/2, level = thresControlled, 
+powerReplicationSuccess(zo = p2z(0.005), c = 1/2, level = thresNominal)
+powerReplicationSuccess(zo = p2z(0.005), c = 1/2, level = thresNominal, 
                         designPrior = "predictive")
 
 }

@@ -6,7 +6,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-sampleSizeReplicationSuccess(zo, power, level = 0.025, 
+sampleSizeReplicationSuccess(zo, power, level = thresholdSceptical(0.025, alternative = "one.sided", type="controlled"),
                              designPrior = "conditional",
                              alternative = "one.sided")
 }
@@ -19,7 +19,7 @@ sampleSizeReplicationSuccess(zo, power, level = 0.025,
   The power to achieve replication success.
   }
   \item{level}{
-  Replication success level. Default is 0.025.
+  Replication success level. Default is the controlled level (0.0653).
   }
   \item{designPrior}{
   Either \code{"conditional"}, \code{"predictive"}, or \code{"EB"}.  
@@ -46,16 +46,17 @@ Leonhard Held
   \code{\link{pSceptical}}, \code{\link{powerReplicationSuccess}}, \code{\link{thresholdSceptical}}
 }
 \examples{
-thresControlled <- thresholdSceptical(0.025, type = "controlled")
+
 
 sampleSizeReplicationSuccess(zo = p2z(0.005), power = 0.8)
 sampleSizeReplicationSuccess(zo = p2z(0.005), power = 0.8, 
                              designPrior = "predictive")
+thresNominal <- 0.025
 sampleSizeReplicationSuccess(zo = p2z(0.005), power = 0.8, 
-                             level = thresControlled,
+                             level = thresNominal,
                              alternative = "one.sided")
 sampleSizeReplicationSuccess(zo = p2z(0.005), power = 0.8, 
-                             level = thresControlled,
+                             level = thresNominal,
                              alternative = "one.sided", 
                              designPrior = "predictive")
 }
