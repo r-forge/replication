@@ -32,7 +32,7 @@
 \author{Leonhard Held, Charlotte Micheloud, Samuel Pawel}
 \institute{Department of Biostatistics, Center for Reproducible Science}
 \titlegraphic{\vspace{-1em}\flushright\includegraphics[width=0.4\textwidth]{images_presentation/CRS_Hexasticker7.pdf}}
-\date{22.01.2020}
+\date{06.02.2020}
 
 % ----------------------------------------------------------------------------
 << include = FALSE, purl = FALSE >>=
@@ -948,7 +948,7 @@ sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
 sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
 @
     \item Goal is to have between 80\%  and 95\% power in the replication study to detect the {\color{red}{effect estimate from the original study}}.
-    \item Original effect estimates is sometimes shrunken by a factor of 50\%.
+    \item Original effect estimate is sometimes shrunken by a factor of 50\%.
     \item Uncertainty of original effect estimate is ignored
   \end{itemize}
 \end{block}
