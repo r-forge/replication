@@ -13,7 +13,7 @@ powerSignificanceInterim(zo, zi, c = 1, f = 1/2,
                          designPrior = "conditional",
                          analysisPrior = "flat", 
                          alternative="greater", 
-                         shrinkage = 1)
+                         shrinkage = 0)
 }
 \arguments{
 
@@ -48,8 +48,8 @@ powerSignificanceInterim(zo, zi, c = 1, f = 1/2,
     }
   \item{shrinkage}{
   A number in [0,1]. 
-  Defaults to \code{1}. 
-  Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is halfed for \code{shrinkage = 0.5}). 
+  Defaults to \code{0}. 
+  Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is shrunken by a factor of 25\% for \code{shrinkage = 0.25}). 
   }
 }
   \details{This is an extension of \code{PowerSignificance()} and adapts the `interim power' from section 6.6.3 of Spiegelhalter et al. (2004) to the setting of replication studies.
@@ -88,6 +88,6 @@ powerSignificanceInterim(zo = 2, zi = -2, c = 1, f = 1/2,
 powerSignificanceInterim(zo = 2, zi = 2, c = 1, f = 1/2, 
                          designPrior = "conditional", 
                          analysisPrior = "flat", 
-                         shrinkage = 0.75)
+                         shrinkage = 0.25)
 
 }

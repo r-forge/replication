@@ -4,7 +4,7 @@ powerSignificance <- function(zo,
                               designPrior = "conditional",
                               alternative = "one.sided",
                               d = 0,
-                              shrinkage = 1){
+                              shrinkage = 0){
     # sanity checks
     if (!(designPrior %in% c("conditional", "predictive", "EB")))
         stop('designPrior must be either "conditional", "predictive", or "EB"')
@@ -20,19 +20,22 @@ powerSignificance <- function(zo,
     lowertail <- ifelse(alternative == "less", TRUE, FALSE)
     if (alternative %in% c("one.sided", "two.sided")) zo  <- abs(zo)
     
+    # shrinkage is the shrinkage factor; s is 1-shrinkage factor
+    s <- 1 - shrinkage
+    
     # determine parameters of predictive distribution of tr
     if(designPrior == "conditional"){
-        mu <- shrinkage*zo*sqrt(c)
+        mu <- s*zo*sqrt(c)
         sigma <- 1
     }
     if(designPrior == "predictive"){
-        mu <- shrinkage*zo*sqrt(c)
+        mu <- s*zo*sqrt(c)
         sigma <- sqrt(c + 1 + 2*d*c)
     }
     if (designPrior == "EB"){
-        shrinkage <- pmax(1 - (1 + d)/zo^2, 0)
-        mu <- shrinkage*zo*sqrt(c)
-        sigma <- sqrt(shrinkage*c*(1 + d) + 1 + d*c)
+        s <- pmax(1 - (1 + d)/zo^2, 0)
+        mu <- s*zo*sqrt(c)
+        sigma <- sqrt(s*c*(1 + d) + 1 + d*c)
     }
     
     # compute replication probability

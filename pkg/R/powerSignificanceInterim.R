@@ -6,7 +6,7 @@ powerSignificanceInterim <- function(zo,
                                      designPrior = "conditional",
                                      analysisPrior = "flat",
                                      alternative = "greater",
-                                     shrinkage = 1) 
+                                     shrinkage = 0) 
 {
   if (!(designPrior %in% c("conditional", "predictive", "flat"))) 
     stop("designPrior must be either \"conditional\", \"predictive\", or \"flat\"")
@@ -21,8 +21,11 @@ powerSignificanceInterim <- function(zo,
        1)) 
     stop("shrinkage must be in [0, 1]")
   
+  # s is 1 - shrinkage
+  s <- 1 - shrinkage
+  
   v <- p2z(p = level, alternative = alternative)
-  zo <- shrinkage * zo
+  zo <- s * zo
   
   if (designPrior == "conditional")
     if (analysisPrior == "flat"){

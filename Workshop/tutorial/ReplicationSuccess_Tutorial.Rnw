@@ -1207,7 +1207,7 @@ Main arguments (\texttt{default}):
 \item \texttt{c} (\texttt{1})
 \item \texttt{power}
 \item \texttt{designPrior} (\texttt{"conditional"})
-\item \texttt{shrinkage} (\texttt{1})
+\item \texttt{shrinkage} (\texttt{0})
 \item \texttt{level} (\texttt{0.065})
 \item \texttt{alternative} (\texttt{"one.sided"})
 \end{itemize}
@@ -1244,7 +1244,7 @@ $0.0001$, $0.001$, $0.005$, $0.01$, and $0.025$, respectively.
 We decide to use the same sample size as in the original study ($c = 1$). 
 \begin{itemize}
 \item Compute and plot the conditional and predictive power of the five replication studies. Use the function \texttt{powerSignificance()} % Goal: bordeline significant original study: very low power with both methods
-\item Shrink the original effect estimate to 75\% of the reported value and use a conditonal design prior. How does the power compare to the conditional power without shrinkage?  
+\item Shrink the original effect estimate by a factor of 25\% and use a conditonal design prior. How does the power compare to the conditional power without shrinkage?  
 \end{itemize}
   \end{block}
 <<echo = FALSE, eval = F>>=
@@ -1269,7 +1269,7 @@ pow.cond <- powerSignificance(zo = p2z(pval.or, alternative = "one.sided"),
 pow.condRS <- powerReplicationSuccess(zo = p2z(pval.or, alternative = "one.sided"), 
                               c = 1, designPrior = "conditional")
 pow.condshrink <- powerSignificance(zo = p2z(pval.or, alternative = "one.sided"), 
-                              c = 1, designPrior = "conditional", shrinkage=0.75)
+                              c = 1, designPrior = "conditional", shrinkage=0.25)
 pow.pred <- powerSignificance(zo = p2z(pval.or, alternative = "one.sided"),
                               c = 1, designPrior = "predictive")
 pow.predRS <- powerReplicationSuccess(zo = p2z(pval.or, alternative = "one.sided"), 
@@ -1277,7 +1277,7 @@ pow.predRS <- powerReplicationSuccess(zo = p2z(pval.or, alternative = "one.sided
 ss.cond <- sampleSizeSignificance(zo = p2z(pval.or, alternative = "one.sided"), 
                               power=0.8, designPrior = "conditional")
 ss.condshrink <- sampleSizeSignificance(zo = p2z(pval.or, alternative = "one.sided"), 
-                              power=0.8, designPrior = "conditional", shrinkage=0.75)
+                              power=0.8, designPrior = "conditional", shrinkage=0.25)
 ss.pred <- sampleSizeSignificance(zo = p2z(pval.or, alternative = "one.sided"),
                               power=0.8, designPrior = "predictive")
 plot(pval.or, pow.cond*100, type = "p", col = "red", ylim = c(0,100), 
@@ -1334,7 +1334,7 @@ pow.cond2 <- powerSignificance(zo = p2z(po.plot, alternative = "one.sided"),
                               c = 1, designPrior = "conditional")
 pow.condshrink2 <- powerSignificance(zo = p2z(po.plot, alternative = "one.sided"), 
                                     c = 1, designPrior = "conditional", 
-                                    shrinkage = 0.75)
+                                    shrinkage = 0.25)
 plot(po.plot, pow.cond2*100, col = "red", ylim = c(0,100), type = "l", 
       xlab = "One-sided original p-value",
      ylab = "Power (in %)", 
@@ -1411,7 +1411,7 @@ par(las = 1)
 
 ss.condshrink1 <- sampleSizeSignificance(zo = p2z(po.plot, alternative = "one.sided"), 
                                         power = 0.8, designPrior = "conditional", 
-                                        shrinkage = 0.75)
+                                        shrinkage = 0.25)
 
 plot(po.plot, ss.cond1, type = "l", ylim = c(0, 4), col = "red", 
      xlab = "One-sided original p-value", 

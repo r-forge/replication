@@ -8,7 +8,7 @@
 }
 \usage{
 sampleSizeSignificance(zo, power, level = 0.025, designPrior = "conditional", 
-                       alternative = "one.sided", d = 0, shrinkage = 1)
+                       alternative = "one.sided", d = 0, shrinkage = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -37,8 +37,8 @@ sampleSizeSignificance(zo, power, level = 0.025, designPrior = "conditional",
   } 
   \item{shrinkage}{
   A number in [0,1]. 
-  Defaults to \code{1}. 
-  Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is halfed for \code{shrinkage = 0.5}). 
+  Defaults to \code{0}. 
+   Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is shrunken by a factor of 25\% for \code{shrinkage = 0.25}).
   Is only taken into account when \code{designPrior = "conditional"} or \code{designPrior = "predictive"}.
   }
 }

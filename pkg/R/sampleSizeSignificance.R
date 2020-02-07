@@ -4,7 +4,7 @@ sampleSizeSignificance <- function(zo,
                                    designPrior = "conditional",
                                    alternative = "one.sided",
                                    d = 0,
-                                   shrinkage = 1){
+                                   shrinkage = 0){
     # sanity checks
     if (!(designPrior %in% c("conditional", "predictive", "EB")))
         stop('designPrior must be either "conditional", "predictive", or "EB"')
@@ -17,11 +17,14 @@ sampleSizeSignificance <- function(zo,
     if ((min(shrinkage, na.rm = TRUE) < 0 || max(shrinkage, na.rm = TRUE) > 1)) 
         stop("shrinkage must be in [0, 1]")
     
+    # s is 1 - shrinkage
+    s <- 1 - shrinkage
+    
     # for conditional designPrior use analytical solution
     if(designPrior == "conditional"){
         u <- qnorm(p = power)
         v <- p2z(p = level, alternative = alternative)
-        c <- (u + v)^2*(1/(shrinkage*zo))^2
+        c <- (u + v)^2*(1/(s*zo))^2
     }
     
     # Target function for calculating required sample size using uniroot
@@ -49,7 +52,6 @@ sampleSizeSignificance <- function(zo,
         for(i in seq_len(length(zo))){
 
             # compute upper bound of power
-            if (designPrior == "predictive") s <- shrinkage
             if (designPrior == "EB") s <- pmax(1 - (1 + d)/zo[i]^2, 0)
             power.limit <- pnorm(sqrt(1/(s*(1 + d) + d))*s*abs(zo[i]))
             if (power > power.limit) {

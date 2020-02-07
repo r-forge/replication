@@ -295,7 +295,7 @@ needs to be changed compared to the original study.
 sampleSizeSignificance(zo = 2.5, power = 0.8, level = 0.05, designPrior = "conditional")
 sampleSizeSignificance(zo = 2.5, power = 0.8, level = 0.05, designPrior = "predictive")
 sampleSizeSignificance(zo = 2.5, power = 0.8, level = 0.05, designPrior = "conditional",
-                       shrinkage = 0.75)
+                       shrinkage = 0.25)
 @
 
 Figure \ref{fig:powerSignificance} shows the power to achieve significance in the
