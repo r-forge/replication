@@ -1,10 +1,10 @@
 \name{powerSignificanceInterim}
 \alias{powerSignificanceInterim}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Power of an adaptative replication study}
+\title{Interim power of a replication study}
 %%  ~~function to do ... ~~
 \description{
-Computes the probability that a replication study yields a significant effect estimate in the specified direction at the final analysis given the data so far (accumulated up to the interim analysis).
+Computes the probability that a replication study yields a significant effect estimate in the specified direction at the final analysis given the interim results.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
@@ -23,9 +23,7 @@ powerSignificanceInterim(zo, zi, c = 1, f = 1/2,
    \item{zi}{
     A vector of z-values from interim analyses of replication studies. 
   }
-  \item{c}{
-    The ratio of the sample size of the
-    replication study up to the interim analysis to the sample size of the original study. 
+  \item{c}{Ratio of the sample size of the replication study to the sample size of the original study. 
   }
   \item{f}{
   Fraction of the replication study already completed.

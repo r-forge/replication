@@ -29,24 +29,24 @@ powerSignificanceInterim <- function(zo,
   
   if (designPrior == "conditional")
     if (analysisPrior == "flat"){
-      pSig <-  pnorm(zo * sqrt(c * (1 / f - 1)) + zi / (sqrt(1 / f - 1)) - 
-                       sqrt(1 / (1 - f)) * v)
+      pSig <- pnorm(zo * sqrt(c * (1 - f) ) + zi*sqrt(f) / (sqrt(1-f)) - 
+                      sqrt(1 / (1 - f)) * v)
     } else if (analysisPrior == "original") {
       return(NA) ## For now, we are not interested in the case where the design prior is conditional and the analysis prior normal.
     }
   
   if (designPrior == "predictive") {
     if (analysisPrior == "flat") {
-      term1 <- sqrt(((1 - f) * c) / ((c + 1) * (f + c))) * zo
-      term2 <- sqrt((f + c) / ((1 - f) * (c + 1))) * zi
-      term3 <- sqrt((f * (c + 1)) / ((f + c) * (1 - f))) * v
+      term1 <- sqrt(((1 - f) * c) / ((c*f + 1) * (1 + c))) * zo
+      term2 <- sqrt(f*(1 + c) / ((1 - f) * (c*f + 1))) * zi
+      term3 <- sqrt((c*f + 1) / ((1 + c) * (1 - f))) * v
       pSig <- pnorm(term1 + term2 - term3)
     }
     else if (analysisPrior == "original") {
-      term1 <- sqrt(1 + (c * (1 - f)) / (f * (c + 1)))
-      term2 <- sqrt(f / (c * (1 - f))) * zo
+      term1 <- sqrt(1 + (c * (1 - c*f)) / (f * (c*f + 1)))
+      term2 <- sqrt(f / (c*f * (1 - f))) * zo
       term3 <- sqrt(f / (1 - f)) * zi
-      term4 <- sqrt((f * (c + 1)) / (c * (1 - f))) * v
+      term4 <- sqrt((f * (c*f + 1)) / (c*f * (1 - f))) * v
       
       pSig <-  pnorm(term1 * (term2 + term3) - term4)
     }
