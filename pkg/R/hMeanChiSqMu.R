@@ -22,3 +22,5 @@ hMeanChiSqMu <- function(thetahat, se, w=rep(1, length(thetahat)), mu=0, alterna
     return(res)
 }
 
+
+
