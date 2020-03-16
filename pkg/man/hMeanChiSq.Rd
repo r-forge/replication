@@ -18,8 +18,6 @@ hMeanChiSq(z, w=rep(1, length(z)), alternative="greater")
       Either \code{"greater"}, \code{"less"} or \code{"two.sided"}.
       Defaults to \code{"greater"}. Specifies the alternative to
       be considered in the computation of the p-value. 
-      If alternative is two-sided, then a one-sided p-value for
-      intrinsic credibility is computed.
   }
 }
 \value{
