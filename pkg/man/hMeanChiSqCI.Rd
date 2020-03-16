@@ -1,8 +1,8 @@
 \name{hMeanChiSqCI}
 \alias{hMeanChiSqCI}
-\title{Computes the p-value from the harmonic mean chi-squared test}
+\title{Computes a confidence interval by inverting the harmonic mean chi-squared test}
 \description{
-  The p-value from the harmonic mean chi-squared test is computed based on study-specific z-values. 
+  A confidence interval by inverting the harmonic mean chi-squared test based on study-specific estimates and standard errors. 
 }
 \usage{
 hMeanChiSqCI(thetahat, se, w=rep(1, length(thetahat)),
