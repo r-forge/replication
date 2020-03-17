@@ -8,8 +8,8 @@ powerSignificanceInterim <- function(zo,
                                      alternative = "greater",
                                      shrinkage = 0) 
 {
-  if (!(designPrior %in% c("conditional", "predictive", "flat"))) 
-    stop("designPrior must be either \"conditional\", \"predictive\", or \"flat\"")
+  if (!(designPrior %in% c("conditional", "informed predictive", "predictive"))) 
+    stop("designPrior must be either \"conditional\", \"informed predictive\", or \"flat\"")
   if (!(analysisPrior %in% c("flat", "original"))) 
     stop("analysisPrior must be either \"flat\" or \"original\"")
   if (min(c, na.rm = TRUE) < 0) 
@@ -35,7 +35,7 @@ powerSignificanceInterim <- function(zo,
       return(NA) ## For now, we are not interested in the case where the design prior is conditional and the analysis prior normal.
     }
   
-  if (designPrior == "predictive") {
+  if (designPrior == "informed predictive") {
     if (analysisPrior == "flat") {
       term1 <- sqrt(((1 - f) * c) / ((c*f + 1) * (1 + c))) * zo
       term2 <- sqrt(f*(1 + c) / ((1 - f) * (c*f + 1))) * zi
@@ -52,7 +52,7 @@ powerSignificanceInterim <- function(zo,
     }
   }
   
-  if (designPrior == "flat"){
+  if (designPrior == "predictive"){
     if (analysisPrior == "flat") {
       pSig <- pnorm((zi - sqrt(f) * v) / sqrt(1 - f))
     } else if (analysisPrior == "original"){

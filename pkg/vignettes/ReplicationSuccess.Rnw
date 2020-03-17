@@ -649,7 +649,7 @@ legend("topleft", legend = c("conditional", "predictive"),
 
 \subsection{Interim analysis}
 % + Add the reference of paper to come
-Adaptive designs are a type of designs where one or more interim analyses are planned during the course of a study. This topic has extensively been studied and used in clinical trials for example, where continuing a study that should be stopped may lead to serious consequences. However, this type of design has not be covered in the framework of replication studies. \texttt{ReplicationSuccess} allows to calculate the power of the replication study after an interim analysis has been performed, taking into account the results from the first part of the study. The function \texttt{powerSignificanceInterim} is an extension of \texttt{powerSignificance} and requires in addition the specification of \texttt{zi}, the $z$-value at the interim analysis and \texttt{f}, the fraction of the replication study already completed. Moreover, the argument \texttt{designPrior} can be set to \texttt{flat}, indicating the ignorance of the original study in the design phase. Finally, the argument \texttt{analysisPrior} allows to also take the original result into account in the analysis of the replication study. 
+Adaptive designs are a type of designs where one or more interim analyses are planned during the course of a study. This topic has extensively been studied and used in clinical trials for example, where continuing a study that should be stopped may lead to serious consequences. However, this type of design has not be covered in the framework of replication studies. \texttt{ReplicationSuccess} allows to calculate the power of the replication study after an interim analysis has been performed, taking into account the results from the first part of the study. The function \texttt{powerSignificanceInterim} is an extension of \texttt{powerSignificance} and requires in addition the specification of \texttt{zi}, the $z$-value at the interim analysis and \texttt{f}, the fraction of the replication study already completed. Moreover, the argument \texttt{designPrior} can be set to  \texttt{conditional}, \texttt{informed predictive} and \texttt{predictive}. Finally, the argument \texttt{analysisPrior} allows to also take the original result into account in the analysis of the replication study. 
 
 Figure~\ref{fig:PowerSignificanceInterim} shows the conditional and the predictive power of the replication studies that continued into stage 2. While the condition power is larger than 80\% for all the studies, the predictive power is close to 0\% for some studies and always smaller than the conditional power.
 
@@ -657,9 +657,9 @@ Figure~\ref{fig:PowerSignificanceInterim} shows the conditional and the predicti
 <<echo = FALSE>>=
 data("SSRP")
 par(las = 1)
-intpow_cond <- with(SSRP, powerSignificanceInterim(zo = fiso/se_fiso, zi = fisi/se_fisi, c = ni/no, 
+intpow_cond <- with(SSRP, powerSignificanceInterim(zo = fiso/se_fiso, zi = fisi/se_fisi, c = nr/no, 
                                                    f = ni/nr, designPrior = "conditional"))
-intpow_pred <- with(SSRP, powerSignificanceInterim(zo = fiso/se_fiso, zi = fisi/se_fisi, c = ni/no, 
+intpow_pred <- with(SSRP, powerSignificanceInterim(zo = fiso/se_fiso, zi = fisi/se_fisi, c = nr/no, 
                                                    f = ni/nr, designPrior = "predictive"))
 plot(intpow_cond*100, intpow_pred*100,  
      xlab = "Conditional power (in %)", 

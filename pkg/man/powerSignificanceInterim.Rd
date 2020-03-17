@@ -4,7 +4,7 @@
 \title{Interim power of a replication study}
 %%  ~~function to do ... ~~
 \description{
-Computes the probability that a replication study yields a significant effect estimate in the specified direction at the final analysis given the interim results.
+Computes the power of a replication study taking into account data from an interim analysis.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
@@ -32,8 +32,10 @@ powerSignificanceInterim(zo, zi, c = 1, f = 1/2,
     The significance level.
   }
   \item{designPrior}{
-    Either \code{"conditional"}, \code{"predictive"} or \code{"flat"}.  
-    Defaults to \code{"conditional"}.
+    Either \code{"conditional"}, \code{"informed predictive"} or \code{"predictive"}.  
+    Defaults to \code{"conditional"}. \code{"informed predictive"} refers to an informative 
+    normal prior coming from the original study. 
+    \code{"predictive"} refers to a flat prior.
   }
     \item{analysisPrior}{
     Either \code{"flat"} or \code{"original"}.  
@@ -72,11 +74,11 @@ powerSignificanceInterim(zo = 2, zi = 2, c = 1, f = 1/2,
                          analysisPrior = "flat")
 
 powerSignificanceInterim(zo = 2, zi = 2, c = 1, f = 1/2, 
-                         designPrior = "predictive", 
+                         designPrior = "informed predictive", 
                          analysisPrior = "flat")
 
 powerSignificanceInterim(zo = 2, zi = 2, c = 1, f = 1/2,
-                        designPrior = "flat", 
+                        designPrior = "predictive", 
                         analysisPrior = "flat")
 
 powerSignificanceInterim(zo = 2, zi = -2, c = 1, f = 1/2, 
