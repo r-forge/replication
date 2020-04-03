@@ -12,7 +12,7 @@ hMeanChiSqCI(thetahat, se, w=rep(1, length(thetahat)),
   \item{thetahat}{
     A vector of parameter estimates. 
   }
-  \item{thetahat}{
+  \item{se}{
     A vector of standard errors. 
   }
   \item{w}{

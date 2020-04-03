@@ -5,6 +5,7 @@ ci2se <- function(lower,
     
     stopifnot(length(lower) == length(upper))
     stopifnot(sum(lower >= upper) == 0)
+    stopifnot(conf.level > 0 & conf.level < 1)
     
     level <- 1 - conf.level
     q <- qnorm(p = 1 - level/2, lower.tail = TRUE)
@@ -45,6 +46,7 @@ ci2z <- function(lower,
     
     stopifnot(length(lower) == length(upper))
     stopifnot(sum(lower >= upper) == 0)
+    stopifnot(conf.level > 0 & conf.level < 1)
     estimate <- ci2estimate(lower = lower, upper = upper, ratio = ratio)
     se <- ci2se(lower = lower, upper = upper, 
                 conf.level = conf.level, ratio = ratio)

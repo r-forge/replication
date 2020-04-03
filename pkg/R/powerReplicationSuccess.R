@@ -28,16 +28,13 @@ zr2.quantile <- function(zo,
 
 powerReplicationSuccess <- function(zo,
                                     c = 1, 
-                                    level = thresholdSceptical(0.025, alternative = "one.sided", type="controlled"),
+                                    level = thresholdSceptical(level = 0.025, 
+                                                               alternative = "one.sided", 
+                                                               type = "controlled"),
                                     designPrior = "conditional",
                                     alternative = "one.sided"){
     
-    targetPower <- function(power, 
-                            zo, 
-                            c, 
-                            level,
-                            designPrior, 
-                            alternative){
+    targetPower <- function(power, zo, c, level, designPrior, alternative){
         zr2 <- zr2.quantile(zo = zo, c = c, p = 1 - power, 
                             designPrior = designPrior)
         pC <- pSceptical(zo = zo, zr = sqrt(zr2), c = c, 
@@ -45,48 +42,59 @@ powerReplicationSuccess <- function(zo,
         return(pC - level)
     }
     
-    # check if original study was not significant, then power is zero
-    zo <- abs(zo)
-    p <- z2p(z = zo, alternative = alternative)
-    if((length(c) == 1) & (length(p) > 1))
-        c <- rep(c, length(p))
-    eps <- 1e-5
-    mylower <- eps
-    myupper <- 1 - eps
-    res <- numeric()
-    for(i in seq_len(length(zo))){
-        if(p[i] > level) res[i] <- 0
-        else{
-            # now the more interesting case
+    # vectorize function in all arguments
+    resV <- mapply(FUN = function(zo, c, level, designPrior, alternative) {
+        
+        # sanity checks
+        if (is.na(zo))
+            return(NA)
+        if (!(designPrior %in% c("conditional", "predictive")))
+            stop('designPrior must be either "conditional" or "predictive"')
+        if (!is.numeric(c) || c < 0)
+            stop("c must be numeric and larger than 0")
+        if (!is.numeric(level) || (level <= 0 || level >= 1))
+            stop("level must be numeric and in (0,1)!")
+        
+        # check if original study was not significant, then power is zero
+        zo <- abs(zo)
+        p <- z2p(z = zo, alternative = alternative)
+        eps <- 1e-5
+        mylower <- eps
+        myupper <- 1 - eps
+        
+        if (p > level) res <- 0
+        else {
             target.l <- targetPower(power = mylower, 
-                                    zo = zo[i], 
-                                    c = c[i], 
+                                    zo = zo, 
+                                    c = c, 
                                     level = level,
                                     designPrior = designPrior,
                                     alternative = alternative)
             target.u <- targetPower(power = myupper, 
-                                    zo = zo[i], 
-                                    c = c[i], 
+                                    zo = zo, 
+                                    c = c, 
                                     level = level,
                                     designPrior = designPrior,
                                     alternative = alternative)
-            if(sign(target.l) == sign(target.u)){
-                if((sign(target.l) >= 0) & (sign(target.u) >= 0))
-                    res[i] <- 0
-                if((sign(target.l) < 0) & (sign(target.u) < 0))
-                    res[i] <- 1
+            if (sign(target.l) == sign(target.u)) {
+                if ((sign(target.l) >= 0) & (sign(target.u) >= 0))
+                    res <- 0
+                if ((sign(target.l) < 0) & (sign(target.u) < 0))
+                    res <- 1
             }
-            else{
-                res[i] <- uniroot(f = targetPower, 
-                                  lower = mylower, 
-                                  upper = myupper,
-                                  zo = zo[i], 
-                                  c = c[i], 
-                                  level = level,
-                                  designPrior = designPrior,
-                                  alternative = alternative)$root
+            else {
+                res <- uniroot(f = targetPower, 
+                               lower = mylower, 
+                               upper = myupper,
+                               zo = zo, 
+                               c = c, 
+                               level = level,
+                               designPrior = designPrior,
+                               alternative = alternative)$root
             }
         }
-    }
-    return(res)
+        return(res)
+    }, zo, c, level, designPrior, alternative)
+    
+    return(resV)
 }

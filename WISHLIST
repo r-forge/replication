@@ -1,7 +1,7 @@
 * powerSignificanceInterim: also add the EB shrinkage? -> maybe later
-* powerSignificanceInterim: Bounds for power error message?
+* powerSignificanceInterim: Bounds for power error message? -> I commented this out for the moment, since we anyway return NaN when the limits of uniroot don't have a different sign
 * one-sided vs. two-sided, alternative: greater vs. less -> maybe later
-* vectorization issues, multiple arguments which don't match in dimensions -> maybe later
+* vectorization issues, multiple arguments which don't match in dimensions -> Is implemented now, but still need to decide what to do when dimensions don't match
 * include shrinkage and heterogeneity in powerReplicationSuccess sampleReplicationSuccess 
 * consistent and short names of studies in data set
 * write tests for functions which don't have tests

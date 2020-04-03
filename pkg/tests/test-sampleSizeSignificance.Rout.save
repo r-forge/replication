@@ -1,6 +1,6 @@
 
-R version 3.6.2 (2019-12-12) -- "Dark and Stormy Night"
-Copyright (C) 2019 The R Foundation for Statistical Computing
+R version 3.6.3 (2020-02-29) -- "Holding the Windsock"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -17,10 +17,56 @@ Type 'q()' to quit R.
 
 > library(ReplicationSuccess)
 > 
-> zo <- seq(2, 4, 0.5)
+> ## Functions to check for errors and (approximate) numerical equality
+> ## ------------------------------------------------------------------
+> checkError <- function(expr) {
++   inherits(try(expr = expr, silent = TRUE), "try-error")
++ }
+> 
+> checkNum <- function(x, y) {
++   stopifnot(isTRUE(all.equal.numeric(x, y)))
++ }
+> 
+> checkNumTol <- function(x, y, tol = .Machine$double.eps) {
++   stopifnot(isTRUE(all.equal.numeric(x, y, 
++                                      tolerance = tol,
++                                      check.attributes = FALSE)))
++ }
+> 
+> ## Check that wrong inputs throw errors
+> ## ------------------------------------------------------------------
+> checkError(sampleSizeSignificance(zo = 1, power = 0.8, designPrior = "wrong"))
+[1] TRUE
+> checkError(sampleSizeSignificance(zo = 1, power = -1))
+[1] TRUE
+> checkError(sampleSizeSignificance(zo = 1, power = 2))
+[1] TRUE
+> checkError(sampleSizeSignificance(zo = 1, power = 0.8, level = -1))
+[1] TRUE
+> checkError(sampleSizeSignificance(zo = 1, power = 0.8, level = 2))
+[1] TRUE
+> checkError(sampleSizeSignificance(zo = 1, power = 0.8, d = -1))
+[1] TRUE
+> checkError(sampleSizeSignificance(zo = 1, power = 0.8, shrinkage = -1))
+[1] TRUE
+> checkError(sampleSizeSignificance(zo = 1, power = 0.8, shrinkage = 2))
+[1] TRUE
+> checkError(sampleSizeSignificance(zo = 1, power = 0.8, alternative = "wrong"))
+[1] TRUE
+> 
+> ## Check numerically some results 
+> ## ------------------------------------------------------------------
+> za <- qnorm(p = 0.025, lower.tail = FALSE)
+> checkNumTol(sampleSizeSignificance(zo = za, designPrior = "conditional",
++                                    power = 0.8, alternative = "one.sided"),
++             2.04, tol = 0.01)
+> 
+> ## Apply over a grid of values
+> ## ------------------------------------------------------------------
+> zo <- seq(-4, 4, 2)
 > apply_grid <- expand.grid(priors = c("conditional", "predictive", "EB"),
 +                           d = c(0, 0.1),
-+                           shrinkage = c(1, 0.75),
++                           shrinkage = c(0, 0.75),
 +                           alt = c("greater", "two.sided"),
 +                           stringsAsFactors = FALSE)
 > for (i in seq(1, nrow(apply_grid))) {
@@ -30,82 +76,83 @@ Type 'q()' to quit R.
 +                               level = 0.05,
 +                               designPrior = apply_grid$priors[i],
 +                               alternative = apply_grid$alt[i],
-+                               d = apply_grid$d[i])
++                               d = apply_grid$d[i],
++                               shrinkage = apply_grid$shrinkage[i])
 +   print(round(c, digits = 5))
 + }
        priors d shrinkage     alt
-1 conditional 0         1 greater
-[1] 1.54564 0.98921 0.68695 0.50470 0.38641
+1 conditional 0         0 greater
+[1] 0.38641 1.54564     Inf 1.54564 0.38641
       priors d shrinkage     alt
-2 predictive 0         1 greater
-[1] 2.64240 1.38811 0.86812 0.59914 0.44059
+2 predictive 0         0 greater
+[1]     NaN     NaN     NaN 2.64240 0.44059
   priors d shrinkage     alt
-3     EB 0         1 greater
-[1] 5.68100 2.10175 1.13173 0.72138 0.50569
+3     EB 0         0 greater
+[1]     NaN     NaN     NaN 5.68100 0.50569
        priors   d shrinkage     alt
-4 conditional 0.1         1 greater
-[1] 1.54564 0.98921 0.68695 0.50470 0.38641
+4 conditional 0.1         0 greater
+[1] 0.38641 1.54564     Inf 1.54564 0.38641
       priors   d shrinkage     alt
-5 predictive 0.1         1 greater
-[1] 2.95872 1.48792 0.91028 0.62022 0.45233
+5 predictive 0.1         0 greater
+[1]     NaN     NaN     NaN 2.95872 0.45233
   priors   d shrinkage     alt
-6     EB 0.1         1 greater
-[1] 7.60909 2.42046 1.23412 0.76557 0.52828
+6     EB 0.1         0 greater
+[1]     NaN     NaN     NaN 7.60909 0.52828
        priors d shrinkage     alt
 7 conditional 0      0.75 greater
-[1] 1.54564 0.98921 0.68695 0.50470 0.38641
+[1]  6.18256 24.73023      Inf 24.73023  6.18256
       priors d shrinkage     alt
 8 predictive 0      0.75 greater
-[1] 2.64240 1.38811 0.86812 0.59914 0.44059
+[1]      NaN      NaN      NaN      NaN 113.1002
   priors d shrinkage     alt
 9     EB 0      0.75 greater
-[1] 5.68100 2.10175 1.13173 0.72138 0.50569
+[1]     NaN     NaN     NaN 5.68100 0.50569
         priors   d shrinkage     alt
 10 conditional 0.1      0.75 greater
-[1] 1.54564 0.98921 0.68695 0.50470 0.38641
+[1]  6.18256 24.73023      Inf 24.73023  6.18256
        priors   d shrinkage     alt
 11 predictive 0.1      0.75 greater
-[1] 2.95872 1.48792 0.91028 0.62022 0.45233
+[1]      NaN      NaN      NaN      NaN 453.9128
    priors   d shrinkage     alt
 12     EB 0.1      0.75 greater
-[1] 7.60909 2.42046 1.23412 0.76557 0.52828
+[1]     NaN     NaN     NaN 7.60909 0.52828
         priors d shrinkage       alt
-13 conditional 0         1 two.sided
-[1] 1.96222 1.25582 0.87210 0.64072 0.49055
+13 conditional 0         0 two.sided
+[1] 0.49055 1.96222     Inf 1.96222 0.49055
        priors d shrinkage       alt
-14 predictive 0         1 two.sided
-[1] 3.51088 1.82089 1.12933 0.77504 0.56767
+14 predictive 0         0 two.sided
+[1] 0.56767 3.51088     NaN 3.51088 0.56767
    priors d shrinkage       alt
-15     EB 0         1 two.sided
-[1] 7.62155 2.76988 1.47590 0.93450 0.65212
+15     EB 0         0 two.sided
+[1] 0.65212 7.62155     NaN 7.62155 0.65212
         priors   d shrinkage       alt
-16 conditional 0.1         1 two.sided
-[1] 1.96222 1.25582 0.87210 0.64072 0.49055
+16 conditional 0.1         0 two.sided
+[1] 0.49055 1.96222     Inf 1.96222 0.49055
        priors   d shrinkage       alt
-17 predictive 0.1         1 two.sided
-[1] 3.95489 1.96138 1.18884 0.80486 0.58435
+17 predictive 0.1         0 two.sided
+[1] 0.58435 3.95489     NaN 3.95489 0.58435
    priors   d shrinkage       alt
-18     EB 0.1         1 two.sided
-[1] 10.30125  3.21065  1.61724  0.99548  0.68329
+18     EB 0.1         0 two.sided
+[1]  0.68329 10.30125      NaN 10.30125  0.68329
         priors d shrinkage       alt
 19 conditional 0      0.75 two.sided
-[1] 1.96222 1.25582 0.87210 0.64072 0.49055
+[1]  7.84888 31.39552      Inf 31.39552  7.84888
        priors d shrinkage       alt
 20 predictive 0      0.75 two.sided
-[1] 3.51088 1.82089 1.12933 0.77504 0.56767
+[1] 158.406     NaN     NaN     NaN 158.406
    priors d shrinkage       alt
 21     EB 0      0.75 two.sided
-[1] 7.62155 2.76988 1.47590 0.93450 0.65212
+[1] 0.65212 7.62155     NaN 7.62155 0.65212
         priors   d shrinkage       alt
 22 conditional 0.1      0.75 two.sided
-[1] 1.96222 1.25582 0.87210 0.64072 0.49055
+[1]  7.84888 31.39552      Inf 31.39552  7.84888
        priors   d shrinkage       alt
 23 predictive 0.1      0.75 two.sided
-[1] 3.95489 1.96138 1.18884 0.80486 0.58435
+[1] 640.3952      NaN      NaN      NaN 640.3952
    priors   d shrinkage       alt
 24     EB 0.1      0.75 two.sided
-[1] 10.30125  3.21065  1.61724  0.99548  0.68329
+[1]  0.68329 10.30125      NaN 10.30125  0.68329
 > 
 > proc.time()
    user  system elapsed 
-  0.205   0.202   0.173 
+  0.202   0.213   0.194 

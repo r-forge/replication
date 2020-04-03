@@ -18,30 +18,32 @@ checkNumTol <- function(x, y, tol = .Machine$double.eps) {
 
 ## Check that wrong inputs throw errors
 ## ------------------------------------------------------------------
-checkError(predictionInterval(zo = 1, c = 1, designPrior = "wrong"))
-checkError(predictionInterval(zo = 1, c = -1))
-checkError(predictionInterval(zo = 1, c = 1, d = -1))
-checkError(predictionInterval(zo = 1, c = 1, conf.level = -1))
-checkError(predictionInterval(zo = 1, c = 1, conf.level = 2))
+checkError(pSceptical(zo = 1, zr = 1, c = 1, alternative = "wrong"))
+checkError(pSceptical(zo = 1, zr = 1, c = -1))
+checkError(pSceptical(zo = 1, zr = 1, alternative = "wrong"))
 
-## Check numerically some results 
+
+## Check numerically some results from the paper
 ## ------------------------------------------------------------------
-za <- qnorm(p = 0.025, lower.tail = FALSE)
-checkNumTol(predictionInterval(zo = za, designPrior = "conditional"),
-            data.frame(lower = 0, mean = za, upper = 2*za))
+checkNumTol(pSceptical(zo = sqrt(12.19), zr = sqrt(3.99), c = 1, 
+                       alternative = "two.sided"),
+            0.083, tol = 0.01)
+checkNumTol(pSceptical(zo = 2.33, zr = 2.33, c = 1, alternative = "one.sided"),
+            0.05, tol = 0.01)
+
 
 ## Apply over a grid of values
 ## ------------------------------------------------------------------
-zo <- seq(-2, 2, 2)
-apply_grid <- expand.grid(priors = c("conditional", "predictive", "EB"),
-                          d = c(0, 0.5),
+zo <- seq(-4, 4, 2)
+apply_grid <- expand.grid(zr = seq(-4, 4, 2),
                           c = c(0.5, 2),
+                          alt = c("one.sided", "two.sided"),
                           stringsAsFactors = FALSE)
 for (i in seq(1, nrow(apply_grid))) {
   print(apply_grid[i,])
-  pis <- predictionInterval(zo = zo,
-                            c = apply_grid$c[i],
-                            designPrior = apply_grid$priors[i],
-                            d = apply_grid$d[i])
-  print(round(pis, digits = 5))
+  c <- pSceptical(zo = zo, 
+                  zr = apply_grid$zr[i], 
+                  c = 0.05,
+                  alternative = apply_grid$alt[i])
+  print(round(c, digits = 5))
 }

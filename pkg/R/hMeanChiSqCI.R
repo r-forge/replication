@@ -1,12 +1,12 @@
 ## confidence interval based on harmonic mean chi-squared test
 
-hMeanChiSqCI <- function(thetahat, se, w=rep(1, length(thetahat)),
-                         alternative="two.sided", level=0.95){
-    stopifnot(min(w)>0)
-    stopifnot(min(se)>0)
+hMeanChiSqCI <- function(thetahat, se, w = rep(1, length(thetahat)),
+                         alternative = "two.sided", level = 0.95){
+    stopifnot(min(w) > 0)
+    stopifnot(min(se) > 0)
     if (!(alternative %in% c("two.sided", "greater", "less")))
         stop('alternative must be either "two.sided", "greater" or "less"')
-    stopifnot((level>0)|(level<1))
+    stopifnot((level > 0) | (level < 1))
     ## target function to compute the limits of the CI
     target <- function(limit, thetahat, se, w=w, alternative=alternative, alpha){
         res <- hMeanChiSqMu(thetahat, se, w=w, mu=limit, alternative=alternative)-alpha

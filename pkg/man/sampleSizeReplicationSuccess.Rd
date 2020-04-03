@@ -6,7 +6,11 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-sampleSizeReplicationSuccess(zo, power, level = thresholdSceptical(0.025, alternative = "one.sided", type="controlled"),
+sampleSizeReplicationSuccess(zo, 
+                             power, 
+                             level = thresholdSceptical(level = 0.025, 
+                                                        alternative = "one.sided", 
+                                                        type = "controlled"),
                              designPrior = "conditional",
                              alternative = "one.sided")
 }

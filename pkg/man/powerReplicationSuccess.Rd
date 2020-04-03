@@ -5,7 +5,11 @@
   The power for replication success is computed based on the result of the original study, the corresponding variance ratio and the design prior. 
 }
 \usage{
-powerReplicationSuccess(zo, c = 1, level = thresholdSceptical(0.025, alternative = "one.sided", type="controlled"),
+powerReplicationSuccess(zo, 
+                        c = 1, 
+                        level = thresholdSceptical(level = 0.025, 
+                                                   alternative = "one.sided",
+                                                   type = "controlled"),
                         designPrior = "conditional", 
                         alternative = "one.sided")
 }

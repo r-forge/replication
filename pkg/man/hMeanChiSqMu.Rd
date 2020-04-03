@@ -11,7 +11,7 @@ hMeanChiSqMu(thetahat, se, w=rep(1, length(thetahat)), mu=0, alternative="greate
   \item{thetahat}{
   A vector of parameter estimates. 
   }
-  \item{thetahat}{
+  \item{se}{
   A vector of standard errors. 
   }
   \item{w}{
