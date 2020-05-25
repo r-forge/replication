@@ -14,8 +14,8 @@ pScepticalMu = function(thetao,
     pS = pSceptical(zo, zr, se_thetao^2/se_thetar^2, alternative = alternative)
     if (alternative == "one.sided") {
       if (sign(zo) == sign(zr)) 
-        res <- res/2
-      else res <- 1 - res/2
+        pS <- pS/2
+      else pS <- 1 - res/2
     }
     return(pS)
   }, thetao, thetar, se_thetao, se_thetar, mu, alternative)
