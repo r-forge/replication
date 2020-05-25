@@ -8,7 +8,7 @@ thresholdSceptical(level, alternative = "one.sided", type = "nominal")
 }
 \arguments{
 \item{level}{
-The required significance level. This can be a vector.
+The required one-sided significance level. This can be a vector.
 }
 \item{alternative}{
 either \code{"one.sided"} or \code{"two.sided"}.

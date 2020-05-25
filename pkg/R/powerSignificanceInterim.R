@@ -9,7 +9,7 @@ powerSignificanceInterim <- function(zo,
                                      shrinkage = 0) 
 {
   if (!(designPrior %in% c("conditional", "informed predictive", "predictive"))) 
-    stop("designPrior must be either \"conditional\", \"informed predictive\", or \"flat\"")
+    stop("designPrior must be either \"conditional\", \"informed predictive\", or \"predictive\"")
   if (!(analysisPrior %in% c("flat", "original"))) 
     stop("analysisPrior must be either \"flat\" or \"original\"")
   if (min(c, na.rm = TRUE) < 0) 

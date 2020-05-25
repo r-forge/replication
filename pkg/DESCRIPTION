@@ -7,6 +7,7 @@ Author: Leonhard Held [aut], Samuel Pawel [ctb], Charlotte Micheloud [ctb]
 Maintainer: Leonhard Held <leonhard.held@uzh.ch>
 Description: Contains utilities for planning and analysing replication studies. Traditional methods based on statistical signficance and confidence intervals, as well as more recently developed methods such as the sceptical p-value are included.  Also provides functions to compute the p-value for intrinsic credibility as well as the threshold for intrinsic credibility. Contains data sets from four large-scale replication projects.
 VignetteBuilder: knitr
+Imports: rootSolve
 Suggests: knitr
 License: GPL (>=2)
 NeedsCompilation: no
