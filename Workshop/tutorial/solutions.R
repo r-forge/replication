@@ -63,12 +63,11 @@ for (p in unique(RProjects$project)) {
 # ----------------------------------------------------------------------
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
-  PI <- predictionInterval(zo = data_project$zo, c = data_project$c)
+  PI <- predictionInterval(thetao = data_project$fiso, 
+                           seo = data_project$se_fiso, 
+                           ser = data_project$se_fisr)
   
-  # multiplying by standard error to transform to Fisher z-scale:
-  PI <- PI*data_project$se_fisr 
-  # transforming back to correlation scale with inverse Fisher z-trans:
-  PI <- tanh(PI) 
+  PI <- tanh(PI) # transforming back to correlation scale
   
   within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
   coverage <- mean(within)

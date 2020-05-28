@@ -272,9 +272,9 @@ $\rightarrow$ function: \texttt{predictionInterval()}
 \end{minipage}
 \begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
-pi_df <- predictionInterval(zo = study$fiso/study$se_fiso,
-                            c = study$se_fiso^2/study$se_fisr^2)*
-         study$se_fisr
+pi_df <- predictionInterval(thetao = study$fiso,
+                            seo = study$se_fiso,
+                            ser = study$se_fisr)
 pi_df <- tanh(pi_df)
 ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_hline(yintercept = 0, lty = 2) +
@@ -704,9 +704,10 @@ RProjects$c <- with(RProjects, se_fiso^2/se_fisr^2)
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
-  PI <- predictionInterval(zo = data_project$zo, c = data_project$c)
-  PI <- PI*data_project$se_fisr # multiplying by standard error to transform to fisher z-scale
-  PI <- tanh(PI) ## transforming back to correlation scale
+  PI <- predictionInterval(thetao = data_project$fiso, 
+                           seo = data_project$se_fiso, 
+                           ser = data_project$se_fisr)
+  PI <- tanh(PI) # transforming back to correlation scale
   within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
   coverage <- mean(within)
   color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
@@ -793,8 +794,9 @@ for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
   cat(paste0(p, ": \n"))
 
-  PI <- predictionInterval(zo = data_project$zo, c = data_project$c)
-  PI <- PI*data_project$se_fisr # multiplying by standard error to transform to fisher z-scale
+  PI <- predictionInterval(thetao = data_project$fiso, 
+                           seo = data_project$se_fiso,
+                           ser = data_project$se_fisr)
   PI <- tanh(PI) ## transforming back to correlation scale
   data_project$withinPI <- (data_project$rr < PI$upper) & 
                            (data_project$rr > PI$lower)

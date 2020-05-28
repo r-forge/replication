@@ -51,7 +51,7 @@ sampleSizeSignificance(zo, power, level = 0.025, designPrior = "conditional",
   \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 183(2):431 - 448.
   \url{https://doi.org/10.1111/rssa.12493},
   
-  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
+  Pawel, S., Held, L. (2020). Probabilistic forecasting of replication studies. PLoS ONE 15(4):e0231416. \url{https://doi.org/10.1371/journal.pone.0231416}
 }
 \author{
   Leonhard Held, 

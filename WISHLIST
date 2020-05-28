@@ -18,5 +18,5 @@
 			- Only include variables that they need and explain how to obtain the others? 
 			- Create a function? 
 * After tutorial: vectorization of functions (+ add warnings when power is too large for sampleSizeSignificance)
-
+* names for theta: thetahat, thetao, thetar, thathato, thetahatr ????
 

@@ -60,7 +60,7 @@
   From the RPP only the \emph{meta-analytic subset} is included, which consists of 73 out of 100 study pairs for which the standard error of the z-transformed correlation coeffient can be computed. 
   For the RPP also sample sizes were recalculated from standard errors of fisher z-transformed correlation coefficients.
   From the EPRP only 31 out of 40 study pairs are included where effective sample size for original and replication study are available simultaneously.
-  For details about how the the data was preprocessed see supplement S1 of Pawel and Held (2019).
+  For details about how the the data was preprocessed see supplement S1 of Pawel and Held (2020).
 }
 \source{
   RPP: \url{https://github.com/CenterForOpenScience/rpp/}
@@ -80,7 +80,7 @@ Cova,  F.,  Strickland,  B.,  Abatista,  A.,  Allard,  A.,  Andow,  J., Attie, M
  
   Open Science Collaboration. (2015). Estimating the reproducibility of psychological science. \emph{Science}, 349, aac4716. \url{https://dx.doi.org/10.1126/science.aac4716}
   
-  Pawel, S., Held, L. (2019). Probabilistic forecasting of replication studies. \url{https://dx.doi.org/10.31234/osf.io/fhwb7}
+  Pawel, S., Held, L. (2020). Probabilistic forecasting of replication studies. PLoS ONE 15(4):e0231416. \url{https://doi.org/10.1371/journal.pone.0231416}
 }
 \seealso{
   \code{\link{SSRP}}

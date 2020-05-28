@@ -60,6 +60,8 @@ powerSignificanceInterim(zo, zi, c = 1, f = 1/2,
   \references{
   Spiegelhalter, D. J., Abrams, K. R., and Myles, J. P. (2004). Bayesian Approaches to Clinical Trials    and Health-Care
   Evaluation, volume 13. John Wiley & Sons
+  
+  Micheloud, C., Held, L. (2020). Power Calculations for Replication Studies. \url{https://arxiv.org/abs/2004.10814}
    
   }
   \author{

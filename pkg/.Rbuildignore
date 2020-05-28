@@ -1,4 +1,5 @@
 vignettes/figure
+vignettes/Makefile
 #vignettes
 R/deltaEB.R
 man/deltaEB.Rd

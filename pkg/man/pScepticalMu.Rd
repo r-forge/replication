@@ -60,7 +60,7 @@ Charlotte Micheloud
 %}
 \examples{
 pScepticalMu(thetao = 0.4, thetar = 0.2, se_thetao = 0.1, se_thetar = 0.1, 
-mu = c(0, 0.2, 0.4, 0.6), alternative = "two.sided")
+             mu = c(0, 0.2, 0.4, 0.6), alternative = "two.sided")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

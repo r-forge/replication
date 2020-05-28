@@ -366,7 +366,7 @@ and replication study. A reasonable way to assess whether the observed estimates
 compatible is to check whether the replication
 estimate is contained within its prediction interval based on the original
 estimate \citep{Patil2016}. With the function \texttt{predictionInterval}, a prediction
-interval of the replication $z$-value can be computed under different predictive
+interval of the replication effect estimate can be computed under different predictive
 distributions which depend on the design prior. The default design prior
 \texttt{"predictive"} is likely the choice most people would want to use as it takes
 into account the uncertainty of the original estimate without shrinking it.
@@ -380,9 +380,9 @@ assessment we transform the intervals and estimates back to the correlation scal
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(RProjects$project)) {
     data_project <- subset(RProjects, project == p)
-    PI <- predictionInterval(zo = data_project$zo, c = data_project$c)
-    ## multiplying by standard error to transform to Fisher z-scale
-    PI <- PI*data_project$se_fisr 
+    PI <- predictionInterval(thetao = data_project$fiso, 
+                             seo = data_project$se_fiso, 
+                             ser = data_project$se_fisr)
     ## transforming back to correlation scale 
     PI <- tanh(PI)
     within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
@@ -686,7 +686,7 @@ uncertainty due to between-study heterogeneity into the predictive model. For ex
 \ie the ratio of the heterogeneity variance to the variance of the original effect estimate.
 By default, \texttt{d} is set to zero, however, if between-study heterogeneity is
 expected, \eg a different population of study participants is used, this should
-be considered in the design. For details, see \citet{Pawel2019}.
+be considered in the design. For details, see \citet{Pawel2020}.
 
 \subsection{Data-driven shrinkage with empirical Bayes}
 As previously mentioned, the functions \texttt{sampleSizeSignificance} and 
@@ -698,7 +698,7 @@ shrinkage and then estimate the prior variance by empirical Bayes. This leads to
 effect, and smaller when there was strong evidence for the effect (shown in Figure
 \ref{fig:ebshrinkage}). 
 Furthermore, under this prior, the specified between-study heterogeneity will also 
-induce shrinkage towards zero, for details see \citet{Pawel2019}.
+induce shrinkage towards zero, for details see \citet{Pawel2020}.
 Empirical Bayes shrinkage is currently supported for the functions 
 \texttt{sampleSizeSignificance}, \texttt{powerSignificance}, and 
 \texttt{predictionInterval} by setting the design prior argument to \texttt{"EB"}.
