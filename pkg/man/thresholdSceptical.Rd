@@ -24,7 +24,9 @@ Type of threshold. Default is \code{"nominal"} as in
   \code{"liberal"} then significance of both studies is a sufficient
   requirement for replication success if the variance ratio is equal to 1.
   If \code{"type"} is \code{"controlled"} then the Type-I error is equal
-  to \code{level}^2 if the variance ratio is equal to 1. 
+  to \code{level}^2 if the variance ratio is equal to 1. If \code{"type"} is \code{"golden"}, 
+  this ensures that any significant original study can achieve replication success with a replication effect estimate 
+  smaller than the original one, provided the replication sample size is sufficiently large.
 }
 }
 \value{
@@ -45,4 +47,5 @@ Leonhard Held
 thresholdSceptical(level = 0.025, type = "nominal")
 thresholdSceptical(level = 0.025, type = "liberal")
 thresholdSceptical(level = 0.025, type = "controlled")
+thresholdSceptical(level = 0.025, type = "golden")
 }
