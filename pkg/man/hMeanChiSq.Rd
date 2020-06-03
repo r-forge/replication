@@ -26,8 +26,8 @@ hMeanChiSq(z, w=rep(1, length(z)), alternative="greater")
 \references{
 
 Held, L. (2020). The harmonic mean chi-squared test to substantiate scientific findings. 
-    \emph{Journal of the Royal Statistical Society, Series C (Applied Statistics)}, to appear.
-    \url{https://arxiv.org/abs/1911.10633}
+  \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, \bold{69}, 697-708.  
+\url{https://doi.org/10.1111/rssc.12410}
 }
 \author{
 Leonhard Held

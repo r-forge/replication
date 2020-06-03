@@ -34,11 +34,13 @@ The threshold for the sceptical p-value.
 }
 \references{
 Held, L. (2020). A new standard for the analysis and design of replication studies (with discussion). 
-  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 
+  \emph{Journal of the Royal Statistical Society: Series A (Statistics
+    in Society)}, \bold{183}, 431-448.  
   \url{https://doi.org/10.1111/rssa.12493}
 
-Held, L. (2019). The harmonic mean chi squared test to substantiate scientific findings. 
-  \url{https://arxiv.org/pdf/1911.10633.pdf}. Preprint.
+Held, L. (2020). The harmonic mean chi-squared test to substantiate scientific findings. 
+  \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, \bold{69}, 697-708.  
+\url{https://doi.org/10.1111/rssc.12410}
 }
 \author{
 Leonhard Held

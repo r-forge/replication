@@ -28,8 +28,9 @@ zSceptical(zo, zr, c)
 The z-value of the sceptical p-value. 
 }
 \references{
-Held, L. (2020). A new standard for the analysis and design of replication studies (with discussion). 183(2):431 - 448.
-  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 
+Held, L. (2020). A new standard for the analysis and design of replication studies (with discussion). 
+  \emph{Journal of the Royal Statistical Society: Series A (Statistics
+    in Society)}, \bold{183}, 431-448.  
   \url{https://doi.org/10.1111/rssa.12493}
 }
 \author{

@@ -36,11 +36,13 @@ The sceptical p-value.
 }
 \references{
 Held, L. (2020). A new standard for the analysis and design of replication studies (with discussion). 
-  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 183(2):431 - 448.
+  \emph{Journal of the Royal Statistical Society: Series A (Statistics
+    in Society)}, \bold{183}, 431-448.  
   \url{https://doi.org/10.1111/rssa.12493}
   
-  Held, L. (2020). The harmonic mean X2-test to substantiate scientific findings. 
-  \emph{Journal of the Royal Statistical Society Series C}. To appear.
+Held, L. (2020). The harmonic mean chi-squared test to substantiate scientific findings. 
+  \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, \bold{69}, 697-708.  
+\url{https://doi.org/10.1111/rssc.12410}
 }
 \author{
 Charlotte Micheloud

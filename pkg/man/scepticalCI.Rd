@@ -29,8 +29,9 @@ scepticalCI(thetao, thetar, se_thetao, se_thetar, alphas)
 The sceptical confidence interval. 
 }
 \references{
-  Held, L. (2020). The harmonic mean X2-test to substantiate scientific findings. 
-  \emph{Journal of the Royal Statistical Society Series C}. To appear.
+Held, L. (2020). The harmonic mean chi-squared test to substantiate scientific findings. 
+  \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, \bold{69}, 697-708.  
+\url{https://doi.org/10.1111/rssc.12410}
 }
 \author{
 Charlotte Micheloud
