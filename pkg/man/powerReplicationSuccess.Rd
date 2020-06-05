@@ -24,7 +24,7 @@ powerReplicationSuccess(zo,
     original study.
     }
   \item{level}{
-    Replication success level. Default is Default is the controlled level (0.0653).
+    Replication success level. Default is the controlled level (0.0653).
     }
   \item{designPrior}{
     Either \code{"conditional"} or \code{"predictive"}.  
