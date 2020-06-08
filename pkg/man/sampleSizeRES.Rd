@@ -29,7 +29,7 @@ sampleSizeRES(zo,
   }
 }
 \value{
-  The relative sample size to achieve replication success with the specified minimum relative sample size and at the specified level. 
+  The relative sample size to achieve replication success with the specified minimum relative effect size and at the specified level. 
   If the specified minimum relative effect size is smaller than the limiting relative 
   effect size at the specified level, then NA is returned. 
   If the p-value from the original study (calculated from the corresponding z-value)
