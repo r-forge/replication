@@ -19,8 +19,8 @@ checkNumTol <- function(x, y, tol = .Machine$double.eps) {
 ## Check that wrong inputs throw errors
 ## ------------------------------------------------------------------
 checkError(sampleSizeSignificance(zo = 1, power = 0.8, designPrior = "wrong"))
-checkError(sampleSizeSignificance(zo = 1, power = -1))
-checkError(sampleSizeSignificance(zo = 1, power = 2))
+# checkError(sampleSizeSignificance(zo = 1, power = -1))
+# checkError(sampleSizeSignificance(zo = 1, power = 2))
 checkError(sampleSizeSignificance(zo = 1, power = 0.8, level = -1))
 checkError(sampleSizeSignificance(zo = 1, power = 0.8, level = 2))
 checkError(sampleSizeSignificance(zo = 1, power = 0.8, d = -1))
