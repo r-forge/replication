@@ -20,3 +20,7 @@
 * After tutorial: vectorization of functions (+ add warnings when power is too large for sampleSizeSignificance)
 * names for theta: thetahat, thetao, thetar, thathato, thetahatr ????
 
+* shrinkage in functions `powerSignificance' and `sampleSizeSignificance': 
+	currently only allows original effect to be larger than replication effect: 
+	interesting to extend it for d > 1 (s < 0) ? 
+

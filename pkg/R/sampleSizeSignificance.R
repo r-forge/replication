@@ -34,8 +34,8 @@ sampleSizeSignificance <- function(zo,
             stop("level must be numeric and in (0, 1)")
         if (!is.numeric(d) || d < 0)
             stop("d must be numeric and cannot be negative")
-        if (!is.numeric(shrinkage)) 
-            stop("shrinkage must be numeric")
+        if (!is.numeric(shrinkage) || (shrinkage < 0 || shrinkage > 1)) 
+            stop("shrinkage must be numeric and in [0, 1]")
         
         # s is 1 - shrinkage
         s <- 1 - shrinkage
