@@ -12,13 +12,13 @@ hMeanChiSqMu <- function(thetahat, se, w = rep(1, length(thetahat)),
     res <- pchisq(zH2, df = 1, lower.tail = FALSE)
     check.greater <- (min(thetahat - mu) > 0)
     check.less <- (max(thetahat - mu) < 0)
-    break.p <- res/(2^n)
+    break.p <- 1/(2^n)
     if(alternative == "greater")
-        res <- ifelse(check.greater, break.p, paste(">", format(break.p, scientific = FALSE)))
+        res <- ifelse(check.greater, res/(2^n), paste(">", format(break.p, scientific = FALSE)))
     if(alternative == "less")
-        res <- ifelse(check.less, break.p, paste(">", format(break.p, scientific = FALSE)))
+        res <- ifelse(check.less, res/(2^n), paste(">", format(break.p, scientific = FALSE)))
     if(alternative == "two.sided")
-        res <- ifelse((check.greater | check.less), 2*break.p, paste(">", format(2*break.p, scientific = FALSE)))
+        res <- ifelse((check.greater | check.less), res/(2^(n-1)), paste(">", format(2*break.p, scientific = FALSE)))
     return(res)
 }
 

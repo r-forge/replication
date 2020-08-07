@@ -7,7 +7,7 @@
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-pSceptical(zo, zr, c, alternative = "one.sided")
+pSceptical(zo, zr, c, alternative = "one.sided", type="nominal")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,8 +25,16 @@ pSceptical(zo, zr, c, alternative = "one.sided")
     sceptical p-value is based on a one-sided assessment of replication
     success in the direction of the original effect estimate. If \code{"two.sided"} then the
     sceptical p-value is based on a two-sided assessment of replication
-    success regardless of the direction of the original and replication effect estimate.
+    success regardless of the direction of the original and replication
+    effect estimate.
   }
+\item{type}{
+Type of recalibration. Default is \code{"nominal"}, so no recalibration as in 
+  Held (2020). This ensures that the sceptical p-value is always larger
+  than both the original and replication p-values. A recalibration is
+  applied of \code{type} is \code{"liberal"}, \code{"controlled"} or
+  \code{"golden"}.
+}
 }
 \value{
 The sceptical p-value. 
