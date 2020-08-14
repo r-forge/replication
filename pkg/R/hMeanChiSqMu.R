@@ -10,8 +10,8 @@ hMeanChiSqMu <- function(thetahat, se, w = rep(1, length(thetahat)),
     z <- (thetahat - mu)/se
     zH2 <- sum(sqrt(w))^2/sum(w/z^2)
     res <- pchisq(zH2, df = 1, lower.tail = FALSE)
-    check.greater <- (min(thetahat - mu) > 0)
-    check.less <- (max(thetahat - mu) < 0)
+    check.greater <- (min(z) > 0)
+    check.less <- (max(z) < 0)
     break.p <- 1/(2^n)
     if(alternative == "greater")
         res <- ifelse(check.greater, res/(2^n), paste(">", format(break.p, scientific = FALSE)))
