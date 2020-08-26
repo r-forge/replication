@@ -21,21 +21,22 @@ hMeanChiSqCI <- function(thetahat, se, w = rep(1, length(thetahat)),
     alpha <- 1-level
     z <- -qnorm(alpha)
     eps <- 1e-6
+    factor <- 5
     if(alternative=="two.sided"){
         lower <- uniroot(target, thetahat=thetahat, se=se, w=w, alternative=alternative,
-                         alpha=alpha, lower=mint-5*z*minse, upper=mint-eps*minse)$root
+                         alpha=alpha, lower=mint-factor*z*minse, upper=mint-eps*minse)$root
         upper <- uniroot(target, thetahat=thetahat, se=se, w=w, alternative=alternative,
-                         alpha=alpha, lower=maxt+eps*maxse, upper=maxt+5*z*maxse)$root
+                         alpha=alpha, lower=maxt+eps*maxse, upper=maxt+factor*z*maxse)$root
     }
     if(alternative=="greater"){
         lower <- uniroot(target, thetahat=thetahat, se=se, w=w, alternative=alternative,
-                         alpha=alpha, lower=mint-5*z*minse, upper=mint-eps*minse)$root
+                         alpha=alpha, lower=mint-factor*z*minse, upper=mint-eps*minse)$root
         upper <- Inf
     }
     if(alternative=="less"){
         lower <- -Inf
         upper <- uniroot(target, thetahat=thetahat, se=se, w=w, alternative=alternative,
-                         alpha=alpha, lower=maxt+eps*maxse, upper=maxt+5*z*maxse)$root
+                         alpha=alpha, lower=maxt+eps*maxse, upper=maxt+factor*z*maxse)$root
     }
     return(c(lower, upper))
 }
