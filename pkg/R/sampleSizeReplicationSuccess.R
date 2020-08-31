@@ -1,8 +1,8 @@
 sampleSizeReplicationSuccess <- function(zo,
                                          power, 
                                          level = thresholdSceptical(level = 0.025, 
-                                                                    alternative = "one.sided", 
-                                                                    type = "controlled"),
+                                                                    alternative = alternative, 
+                                                                    type = "golden"),
                                          designPrior = "conditional",
                                          alternative = "one.sided"){
     

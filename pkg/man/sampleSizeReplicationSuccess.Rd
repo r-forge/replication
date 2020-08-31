@@ -9,8 +9,8 @@
 sampleSizeReplicationSuccess(zo, 
                              power, 
                              level = thresholdSceptical(level = 0.025, 
-                                                        alternative = "one.sided", 
-                                                        type = "controlled"),
+                                                        alternative = alternative, 
+                                                        type = "golden"),
                              designPrior = "conditional",
                              alternative = "one.sided")
 }
@@ -23,7 +23,8 @@ sampleSizeReplicationSuccess(zo,
   The power to achieve replication success.
   }
   \item{level}{
-  Replication success level. Default is the controlled level (0.0653).
+  Replication success level. Default is the golden level (0.062 for
+  one-sided level = 0.025).
   }
   \item{designPrior}{
   Either \code{"conditional"}, \code{"predictive"}, or \code{"EB"}.  

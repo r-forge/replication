@@ -16,7 +16,7 @@ thresholdSceptical <- function(level,
         res <- pIntrinsic(p = pI2, alternative = "one.sided", type = "Held")
     }
     if(type == "golden"){
-        res <- pIntrinsic(p =level, alternative = "one.sided", type = "Matthews")
+        res <- pIntrinsic(p = level, alternative = "one.sided", type = "Matthews")
     }
     if(alternative == "two.sided")
         res <- 2*res

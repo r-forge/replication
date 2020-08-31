@@ -32,7 +32,7 @@ pSceptical(zo, zr, c, alternative = "one.sided", type="nominal")
 Type of recalibration. Default is \code{"nominal"}, so no recalibration as in 
   Held (2020). This ensures that the sceptical p-value is always larger
   than both the original and replication p-values. A recalibration is
-  applied of \code{type} is \code{"liberal"}, \code{"controlled"} or
+  applied if \code{type} is \code{"liberal"}, \code{"controlled"} or
   \code{"golden"}.
 }
 }

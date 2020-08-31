@@ -21,7 +21,7 @@ hMeanChiSqCI <- function(thetahat, se, w = rep(1, length(thetahat)),
     alpha <- 1-level
     z <- -qnorm(alpha)
     eps <- 1e-6
-    factor <- 5
+    factor <- 10
     if(alternative=="two.sided"){
         lower <- uniroot(target, thetahat=thetahat, se=se, w=w, alternative=alternative,
                          alpha=alpha, lower=mint-factor*z*minse, upper=mint-eps*minse)$root

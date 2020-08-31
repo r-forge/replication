@@ -504,41 +504,46 @@ replication success and it has attractive properties. In particular, the sceptic
 the ordinary $p$-values from both studies and it also takes into account the size of 
 the effect estimates, \ie it becomes larger if the replication estimate is smaller than
 the original estimate. 
-\citet{Held2019b} further expanded on the calibration of the sceptical $p$-value. The function \texttt{thresholdSceptical} allows to compute different types of thresholds for the sceptical
-$p$-value with different type I error control properties.
+\citet{Held2020b} further expanded on the calibration of the sceptical $p$-value. The function \texttt{thresholdSceptical} allows to compute different types of thresholds. 
 
 << "threshold-p-sceptical" >>=
-## computing nominal, controlled, and liberal thresholds for one-sided sceptical p-value
+## computing nominal, controlled, liberal, and golden thresholds for one-sided sceptical p-value
 (thresh_nom <- thresholdSceptical(level = 0.025, alternative = "one.sided", 
                                   type = "nominal"))
 (thresh_contr <- thresholdSceptical(level = 0.025, alternative = "one.sided", 
                                     type = "controlled"))
 (thresh_lib <- thresholdSceptical(level = 0.025, alternative = "one.sided", 
                                   type = "liberal"))
+(thresh_gol <- thresholdSceptical(level = 0.025, alternative = "one.sided", 
+                                  type = "golden"))
 @
 
-In particular, $p_S$ = \Sexpr{round(thresh_contr,3)} is the threshold for one-sided type I error control at $0.025^2 = 0.000625$ if replication and original estimate have equal variances. 
+In particular, $\alpha_S$ = \Sexpr{round(thresh_gol,3)} is the threshold based on the golden level \citep{Held_etal2020}. This ensures that
+borderline original studies cannot lead to replication success if there is shrinkage of the replication effect estimate. 
+The alternative controlled threshold $\alpha_S$ = \Sexpr{round(thresh_contr,3)} is close in value and ensures
+one-sided type I error control at $0.025^2 = 0.000625$ if replication and original estimate have equal variances. 
 
 The sceptical $p$-value can be easily computed with the function \texttt{pSceptical}.
-For the analysis of replication studies, it is recommended to report the one-sided sceptical $p$-value. 
+For the analysis of replication studies, it is recommended to report the one-sided sceptical $p$-value and to apply
+a recalibration at the golden level (``\texttt{type = golden}''). We can then compare the sceptical $p$-value to the one-sided alpha level (0.025). 
 
 << "plot-pSceptical-projects", fig.height = 4 >>=
 ## computing one.sided sceptical p-value for replication projects
 RProjects$ps <- with(RProjects, 
                      pSceptical(zo = zo, zr = zr, c = c, 
-                                alternative = "one.sided"))
+                                alternative = "one.sided", type="golden"))
 boxplot(ps ~ project, data = RProjects, las = 1, cex.axis = 0.7, ylim = c(0, 1),
         xlab = "Project", ylab = expression(italic(p)[S]), outline = FALSE)
-abline(h = thresh_contr, lty = 3)
+abline(h = alpha/2, lty = 3)
 stripchart(ps ~ project, data = RProjects, vertical = TRUE, add = TRUE,
            pch = 19, method = "jitter", jitter = 0.2, cex = 0.6)
 
 for (p in unique(RProjects$project)) {
     data_project <- subset(RProjects, project == p)
     cat(paste0(p, ": \n"))
-    success_scept <- (data_project$ps < thresh_contr)
+    success_scept <- (data_project$ps < 0.025)
     cat(paste0(round(mean(success_scept)*100, 2), 
-               "% smaller than 0.0653 (one-sided sceptical p-value) \n"))
+               "% smaller than 0.025 (one-sided sceptical p-value) \n"))
     success_tradit <- (data_project$po1 < 0.025) & (data_project$pr1 < 0.025)
     cat(paste0(round(mean(success_tradit)*100, 2), 
                "% smaller than 0.025 (both one-sided traditional p-values) \n"))
@@ -553,9 +558,7 @@ for (p in unique(RProjects$project)) {
 }
 @ 
 
-Thresholding the one-sided traditional $p$-values and the one-sided
-sceptical $p$-values at the appropriate thresholds for type I error
-control, we can see some discrepencies between the two. In particular,
+We can see some discrepencies between the two approaches. In particular,
 the sceptical $p$-value may not indicate replication success 
 when there is substantial shrinkage of the replication 
 effect estimate relative to the original one, even if both estimates are significant. 
@@ -570,23 +573,23 @@ relative sample size $c = n_r/n_o$.
 The following code shows a few examples. 
 
 << >>=
-sampleSizeReplicationSuccess(zo = 2.5, power = 0.8, level = thresh_contr,
+sampleSizeReplicationSuccess(zo = 2.5, power = 0.8, level = thresh_gol,
                              alternative = "one.sided",
                              designPrior = "conditional")
-sampleSizeReplicationSuccess(zo = 2.5, power = 0.8, level = thresh_contr,
+sampleSizeReplicationSuccess(zo = 2.5, power = 0.8, level = thresh_gol,
                              alternative = "one.sided",
                              designPrior = "predictive")
 @
 
 Figure \ref{fig:powerReplicationSuccess} shows the power to achieve a one-sided 
-sceptical $p$-value smaller or equal 0.0653 as a function of the $p$-value or $z$-value
+sceptical $p$-value smaller or equal 0.062 as a function of the $p$-value or $z$-value
 of original study, assuming equal sample sizes in original and replication studies. The probability for replication success if the original study showed only weak evidence ($p_o = 0.05$) is now smaller than 0.5, which is reached for an original $p$-value of slightly above 0.03.
 \begin{figure}[!h]
 << "plot-powerReplicationSuccess", echo = FALSE, fig.height = 4 >>=
 ## plot power
 plot(po, powerReplicationSuccess(zo = p2z(po), 
                                  designPrior = "conditional",
-                                 level = thresh_contr, 
+                                 level = thresh_gol, 
                                  alternative = "one.sided")*100,
      type = "l", ylim = c(0, 100), lwd = 1.5, ylab = "Power (%)", las = 1,
      xlab = expression(italic(p)[o]))
@@ -595,7 +598,7 @@ axis(side = 3, at = seq(0.0, 0.05, by = 0.01),
 mtext(text = expression(paste("|", italic(z)[o], "|")), side = 3, line = 2)
 lines(po, powerReplicationSuccess(zo = p2z(po), 
                                   designPrior = "predictive",
-                                  level = thresh_contr, 
+                                  level = thresh_gol, 
                                   alternative = "one.sided")*100, 
       lwd = 2, lty = 2)
 legend("topright", legend = c("conditional", "predictive"), 
@@ -603,12 +606,12 @@ legend("topright", legend = c("conditional", "predictive"),
 abline(h = 50, lty = 3)
 @
 \caption{Power to achieve replication success 
-(at the one-sided 0.0653 level) as a function of the two-sided $p$-value or $z$-value of original study.}
+(at the one-sided 0.062 level) as a function of the two-sided $p$-value or $z$-value of original study.}
 \label{fig:powerReplicationSuccess}
 \end{figure}
 
 Figure \ref{fig:sampleSizeReplicationSuccess} shows the required sample size to achieve
-a one-sided sceptical $p$-value of $0.0653$ with 80\% power. The relative sample sizes consequently increase with increasing original $p$-value, with a dramatic increase for $p$-value larger than $0.023$ when the predictive design prior is used.
+a one-sided sceptical $p$-value of $0.062$ with 80\% power. The relative sample sizes consequently increase with increasing original $p$-value, with a dramatic increase for $p$-value larger than $0.023$ when the predictive design prior is used.
 \begin{figure}[!h]
 << "plot-sampleSizeReplicationSuccess", echo = FALSE, fig.height = 4 >>=
 po <- seq(0.0001, 0.05, 0.0001)
@@ -617,7 +620,7 @@ po <- seq(0.0001, 0.05, 0.0001)
 plot(po, 
      sampleSizeReplicationSuccess(zo = p2z(po), 
                                   designPrior = "conditional",
-                                  level = thresh_contr, 
+                                  level = thresh_gol, 
                                   alternative = "one.sided", 
                                   power = 0.8),
      type = "l", log = "y", lwd = 1.5, las = 1, ylim = c(0.5, 50),
@@ -631,7 +634,7 @@ axis(side = 3, at = seq(0.0, 0.05, by = 0.01),
 mtext(text = expression(paste("|", italic(z)[o], "|")), side = 3, line = 2)
 lines(po, sampleSizeReplicationSuccess(zo = p2z(po),
                                        designPrior = "predictive", 
-                                       level = thresh_contr, 
+                                       level = thresh_gol, 
                                        alternative = "one.sided", 
                                        power = 0.8), 
       lwd = 2, lty = 2)
@@ -639,7 +642,7 @@ legend("topleft", legend = c("conditional", "predictive"),
        title = "Design prior", lty = c(1, 2), lwd = 1.5, bty = "n")
 @
 \caption{Relative sample size to achieve replication success 
-  (at the one-sided 0.0653 level) with 80\% power as
+  (at the one-sided 0.062 level) with 80\% power as
   a function of (two-sided) $p$-value or $z$-value of original study.}
 \label{fig:sampleSizeReplicationSuccess}
 \end{figure}
