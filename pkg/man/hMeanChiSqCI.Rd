@@ -19,7 +19,7 @@ hMeanChiSqCI(thetahat, se, w=rep(1, length(thetahat)),
     A vector of weights. 
   }
   \item{alternative}{
-    Either \code{"greater"}, \code{"less"} or \code{"two.sided"}.
+    Either \code{"greater"}, \code{"less"}, \code{"two.sided"} or \code{"none"}.
     Defaults to \code{"two.sided"}. Specifies the alternative to
     be considered in the computation of the confidence interval. 
   }
@@ -30,6 +30,12 @@ hMeanChiSqCI(thetahat, se, w=rep(1, length(thetahat)),
 \value{
   The p-value from the harmonic mean chi-squared test
 }
+\details{
+  If \code{alternative} is \code{"none"}, then the function may return a
+  set of (non-overlapping) confidence intervals. The output then is a vector
+  of length 2n where n is the number of confidence intervals. 
+}
+
 \references{
   
 Held, L. (2020). The harmonic mean chi-squared test to substantiate scientific findings. 
