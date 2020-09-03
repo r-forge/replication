@@ -21,13 +21,13 @@ hMeanChiSqMu(thetahat, se, w=rep(1, length(thetahat)), mu=0, alternative="greate
     The null hypothesis value. Defaults to 0. 
   }
   \item{alternative}{
-    Either \code{"greater"}, \code{"less"} or \code{"two.sided"}.
+    Either \code{"greater"}, \code{"less"}, \code{"two.sided"} or \code{"none"}.
     Defaults to \code{"greater"}. Specifies the alternative to
     be considered in the computation of the p-value. 
     If alternative is two-sided, then a one-sided p-value for
     intrinsic credibility is computed.
   }
-  \item{bound}{Determines whether p-value that cannot be computed are
+  \item{bound}{Determines whether p-values that cannot be computed are
     reported as "> bound" (\code{"bound=TRUE"}) or as NA
     (\code{"bound=FALSE"})
   }

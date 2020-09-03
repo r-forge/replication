@@ -15,7 +15,7 @@ hMeanChiSq(z, w=rep(1, length(z)), alternative="greater", bound=TRUE)
     A vector of weights. 
   }
   \item{alternative}{
-    Either \code{"greater"}, \code{"less"} or \code{"two.sided"}.
+    Either \code{"greater"}, \code{"less"}, \code{"two.sided"} or \code{"none"}.
     Defaults to \code{"greater"}. Specifies the alternative to
     be considered in the computation of the p-value.
   }
@@ -27,7 +27,6 @@ hMeanChiSq(z, w=rep(1, length(z)), alternative="greater", bound=TRUE)
     The p-value from the harmonic mean chi-squared test
 }
 \references{
-
 Held, L. (2020). The harmonic mean chi-squared test to substantiate scientific findings. 
   \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, \bold{69}, 697-708.  
 \url{https://doi.org/10.1111/rssc.12410}
@@ -46,6 +45,12 @@ se <- ci2se(lower, upper, ratio=TRUE)
 estimate <- ci2estimate(lower, upper, ratio=TRUE)
 
 hMeanChiSq(p2z(pvalues, alternative="less"), alternative="less")
-hMeanChiSq(p2z(pvalues, alternative="less"), w=1/se^2, alternative="less")
+hMeanChiSq(p2z(pvalues, alternative="less"), alternative="two.sided")
+hMeanChiSq(p2z(pvalues, alternative="less"), alternative="none")
+
+hMeanChiSq(p2z(pvalues, alternative="less"),  w=1/se^2, alternative="less")
+hMeanChiSq(p2z(pvalues, alternative="less"),  w=1/se^2, alternative="two.sided")
+hMeanChiSq(p2z(pvalues, alternative="less"),  w=1/se^2, alternative="none")
+
 
 }

@@ -3,8 +3,8 @@
 
 hMeanChiSq <- function(z, w = rep(1, length(z)), alternative = "greater", bound=TRUE){
     stopifnot(min(w) > 0)
-    if (!(alternative %in% c("greater", "less", "two.sided")))
-        stop('alternative must be either "greater", "less" or "two.sided"')
+    if (!(alternative %in% c("greater", "less", "two.sided", "none")))
+        stop('alternative must be either "greater", "less", "two.sided" or "none"')
     n <- length(z)
     zH2 <- sum(sqrt(w))^2/sum(w/z^2)
     res <- pchisq(zH2, df = 1, lower.tail = FALSE)
@@ -29,6 +29,9 @@ hMeanChiSq <- function(z, w = rep(1, length(z)), alternative = "greater", bound=
         if(bound == FALSE)
             res <- ifelse((check.greater | check.less), res/(2^(n-1)), NA)
     }
+    if(alternative == "none"){
+        res <- res
+    }    
     return(res)
 }
 
