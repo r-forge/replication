@@ -9,7 +9,7 @@ hMeanChiSqCI <- function(thetahat, se, w = rep(1, length(thetahat)),
     stopifnot((level > 0) | (level < 1))
     ## target function to compute the limits of the CI
     target <- function(limit, thetahat, se, w=w, alternative=alternative, alpha){
-        res <- hMeanChiSqMu(thetahat, se, w=w, mu=limit, alternative=alternative)-alpha
+        res <- hMeanChiSqMu(thetahat, se, w=w, mu=limit, alternative=alternative, bound=FALSE)-alpha
         return(res)
     }
     mini <- which.min(thetahat)

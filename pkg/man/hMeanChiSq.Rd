@@ -5,19 +5,22 @@
 The p-value from the harmonic mean chi-squared test is computed based on study-specific z-values. 
 }
 \usage{
-hMeanChiSq(z, w=rep(1, length(z)), alternative="greater")
+hMeanChiSq(z, w=rep(1, length(z)), alternative="greater", bound=TRUE)
 }
 \arguments{
   \item{z}{
-  A vector of z-values. 
+    A vector of z-values. 
   }
   \item{w}{
-  A vector of weights. 
+    A vector of weights. 
   }
   \item{alternative}{
-      Either \code{"greater"}, \code{"less"} or \code{"two.sided"}.
-      Defaults to \code{"greater"}. Specifies the alternative to
-      be considered in the computation of the p-value. 
+    Either \code{"greater"}, \code{"less"} or \code{"two.sided"}.
+    Defaults to \code{"greater"}. Specifies the alternative to
+    be considered in the computation of the p-value.
+  }
+  \item{bound}{Determines whether p-value that cannot be computed are
+    reported as "> bound" (\code{"bound=TRUE"}) or as NA (\code{"bound=FALSE"})
   }
 }
 \value{

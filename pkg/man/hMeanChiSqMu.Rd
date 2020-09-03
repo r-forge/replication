@@ -5,27 +5,31 @@
 The p-value from the harmonic mean chi-squared test is computed based on study-specific estimates and standard errors. 
 }
 \usage{
-hMeanChiSqMu(thetahat, se, w=rep(1, length(thetahat)), mu=0, alternative="greater")
+hMeanChiSqMu(thetahat, se, w=rep(1, length(thetahat)), mu=0, alternative="greater", bound=TRUE)
 }
 \arguments{
   \item{thetahat}{
-  A vector of parameter estimates. 
+    A vector of parameter estimates. 
   }
   \item{se}{
-  A vector of standard errors. 
+    A vector of standard errors. 
   }
   \item{w}{
-  A vector of weights. 
+    A vector of weights. 
   }
   \item{mu}{
-      The null hypothesis value. Defaults to 0. 
+    The null hypothesis value. Defaults to 0. 
   }
   \item{alternative}{
-      Either \code{"greater"}, \code{"less"} or \code{"two.sided"}.
-      Defaults to \code{"greater"}. Specifies the alternative to
-      be considered in the computation of the p-value. 
-      If alternative is two-sided, then a one-sided p-value for
-      intrinsic credibility is computed.
+    Either \code{"greater"}, \code{"less"} or \code{"two.sided"}.
+    Defaults to \code{"greater"}. Specifies the alternative to
+    be considered in the computation of the p-value. 
+    If alternative is two-sided, then a one-sided p-value for
+    intrinsic credibility is computed.
+  }
+  \item{bound}{Determines whether p-value that cannot be computed are
+    reported as "> bound" (\code{"bound=TRUE"}) or as NA
+    (\code{"bound=FALSE"})
   }
 }
 \value{
