@@ -647,6 +647,10 @@ legend("topleft", legend = c("conditional", "predictive"),
 \label{fig:sampleSizeReplicationSuccess}
 \end{figure}
 
+\subsection{Relative effect size}
+\subsubsection*{Analysis}
+\subsubsection*{Design}
+
 
 \section{Special topics}
 

@@ -9,11 +9,11 @@ minRES <- function(zo, c, level = thresholdSceptical(level = 0.025,
       warning(paste("Replication success is not achievable at this level as", 
                     zo, " < ", round(p2z(level, alternative = "one.sided"), 
                                      3)))
-      s <- NA
+      d <- NA
     } else {
-    s <- ifelse(c<Inf, sqrt(1+c/(K-1))/(sqrt(K*c)), 1/sqrt(K*(K-1)))
+    d <- ifelse(c<Inf, sqrt(1+c/(K-1))/(sqrt(K*c)), 1/sqrt(K*(K-1)))
     }
-    return(s)
+    return(d)
   }, zo, c, level)
   return(mRV)
 }

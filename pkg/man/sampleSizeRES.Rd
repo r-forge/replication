@@ -4,7 +4,7 @@
   Computes the required relative sample size to achieve replication success based on the relative effect size
   }
 \description{
-  The relative sample size to achieve replication success is computed based on the z-value of the original study, the level for replication success and the specification of the relative effect size.
+  The relative sample size to achieve replication success is computed based on the z-value of the original study, the level for replication success and the specification of the minimum relative effect size.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
