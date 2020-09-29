@@ -13,11 +13,11 @@
 
 - modifications in the function: 
 
-before: 
-powerReplicationSuccess(zo, c, level = thresholdSceptical(level = 0.05, alternative = alternative, type = "golden"), designPrior, alternative = "one.sided)
+** before ** 
+powerReplicationSuccess(zo, c, level = thresholdSceptical(level = 0.025, alternative = alternative, type = "golden"), designPrior, alternative = "one.sided")
 
 						
-now: 
+** now **
 powerReplicationSuccess(zo, c, level = 0.025, designPrior, alternative = "one.sided", type = "golden") 
 
 
@@ -30,7 +30,7 @@ powerReplicationSuccess(zo, c, level = 0.025, designPrior, alternative = "one.si
 
 - interpretation of "alternative" is less confusing now than before for the functions
   about replication success. We now only have *one* "alternative" in the function.
-  But we have to be careful and check it carefully.
+  But we have to be careful and check it.
   
 - changed relative heterogeneity argument name from d to h in powerSignificance and sampleSizeSignificance 
 
