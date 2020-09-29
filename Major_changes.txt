@@ -1,0 +1,45 @@
+#################### Major modification of the package ##########################
+## Samuel and Charlotte
+## changes are visible in the svn repository RSRevolution 
+
+- naming: thresholdSceptical -> levelSceptical
+          minRES -> minRESReplicationSuccess
+	  sampleSizeRES -> sampleSizeRESReplicationSuccess
+
+- additions: minRESSignificance
+	     sampleSizeRESSignificance
+
+- default: type = "golden" is default everywhere
+
+- modifications in the function: 
+
+before: 
+powerReplicationSuccess(zo, c, level = thresholdSceptical(level = 0.05, alternative = alternative, type = "golden"), designPrior, alternative = "one.sided)
+
+						
+now: 
+powerReplicationSuccess(zo, c, level = 0.025, designPrior, alternative = "one.sided", type = "golden") 
+
+
+! DANGER: if the old formulation is used with the new function, it will work but the result will be wrong ! 
+
+- same modifications for 
+	- sampleSizeReplicationSuccess
+	- minRESReplicationSuccess
+	- sampleSizeRESReplicationSuccess
+
+- interpretation of "alternative" is less confusing now than before for the functions
+  about replication success. We now only have *one* "alternative" in the function.
+  But we have to be careful and check it carefully.
+
+- vignette: 
+	- modified accordingly
+	- new section (3.4) on relative effect sizes
+
+
+!! We have to inform the users (in particular Muradchanian)
+
+
+
+
+
