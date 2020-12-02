@@ -46,7 +46,7 @@ Leonhard Held
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 %}
 \seealso{
-  \code{\link{sampleSizeReplicationSuccess}}, \code{\link{powerReplicationSuccess}}, \code{\link{pSceptical}}, \code{\link{thresholdSceptical}}
+  \code{\link{sampleSizeReplicationSuccess}}, \code{\link{powerReplicationSuccess}}, \code{\link{pSceptical}}, \code{\link{levelSceptical}}
 }
 \examples{
 zSceptical(zo = 2, zr = 3, c = 2)

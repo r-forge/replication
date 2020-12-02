@@ -26,9 +26,10 @@ checkError(pSceptical(zo = 1, zr = 1, alternative = "wrong"))
 ## Check numerically some results from the paper
 ## ------------------------------------------------------------------
 checkNumTol(pSceptical(zo = sqrt(12.19), zr = sqrt(3.99), c = 1, 
-                       alternative = "two.sided"),
+                       alternative = "two.sided", type = "nominal"),
             0.083, tol = 0.01)
-checkNumTol(pSceptical(zo = 2.33, zr = 2.33, c = 1, alternative = "one.sided"),
+checkNumTol(pSceptical(zo = 2.33, zr = 2.33, c = 1, alternative = "one.sided",
+                       type = "nominal"),
             0.05, tol = 0.01)
 
 
@@ -44,6 +45,7 @@ for (i in seq(1, nrow(apply_grid))) {
   c <- pSceptical(zo = zo, 
                   zr = apply_grid$zr[i], 
                   c = 0.05,
-                  alternative = apply_grid$alt[i])
+                  alternative = apply_grid$alt[i],
+                  type = "nominal")
   print(round(c, digits = 5))
 }

@@ -1,0 +1,846 @@
+% \VignetteEngine{knitr::knitr}
+% \VignetteEncoding{UTF-8}
+% \VignetteIndexEntry{Testing scenarios in the replication setting}
+% \VignetteDepends{knitr}
+
+\documentclass[a4paper, 11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphics}
+\usepackage{amsmath, amssymb}
+ \usepackage[round]{natbib}
+% \bibliographystyle{plainnat}
+\bibliographystyle{apalikedoiurl}
+\usepackage{doi}
+\usepackage{color, colortbl}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{todonotes}
+\usepackage{booktabs}
+\usepackage{multirow}
+\input{newCommands.tex} 
+
+% margins %
+\usepackage[a4paper, total={6.5in, 10in}]{geometry}
+
+% title, author, date, etc.
+\title{Alternatives for the sceptical $p$-value and their error rates}
+\author{Samuel Pawel}
+% Epidemiology, Biostatistics and Prevention Institute (EBPI) \\
+% Center for Reproducible Science (CRS) \\
+% University of Zurich, Switzerland}
+\date{}%\today}
+
+% hyperref options
+\usepackage{hyperref}  
+\hypersetup{
+  bookmarksopen=true, 
+  breaklinks=true,
+  pdftitle={Alternatives for the sceptical p-value and their error rates}, 
+  pdfauthor={Samuel Pawel},
+  colorlinks=true,
+  linkcolor=BrickRed,
+  anchorcolor=black,
+  citecolor=BlueViolet,
+  urlcolor=BrickRed,
+}
+
+% color for table
+\definecolor{LRed}{rgb}{0.898, 0.629, 0.590}
+\definecolor{LGr}{rgb}{0.703, 0.898, 0.590}
+
+\begin{document}
+<< "knitr-options", echo = FALSE >>=
+library(knitr)
+opts_chunk$set(size = "small",
+               fig.height = 4,
+               fig.align = "center",
+               cache = FALSE,
+               message = FALSE,
+               warning = FALSE)
+@
+
+\maketitle
+
+% In the replication setting there are two stages at which data are obtained and
+% statistical assessments can be conducted, namely after the original and after the 
+% replication study. If one uses hypothesis testing, a null and an alternative 
+% hypothesis must be specified for each stage. Usually, a distinction is made 
+% between two-sided and one-sided alternatives. Let $\theta$ denote the underlying 
+% effect and let the reference value be zero. A two-sided test considers 
+% $H_0: \theta = 0$ vs. $H_1: \theta \neq 0$,
+% whereas a one sided-test considers either 
+% $H_0: \theta < 0$ vs. $H_1: \theta > 0$ or
+% $H_0: \theta > 0$ vs. $H_1: \theta < 0$, see Table \ref{tab:scenarios} 
+% for all possible combinations.
+% 
+% Since a replication study is usually conducted to confirm the finding of the
+% related original study, there are some testing scenarios which do not 
+% make sense for the replication setting (colored in red). 
+% For example, if the original study tests for an effect in positive
+% direction, testing in the replication whether 
+% the effect goes in the negative direction is not meaningful.
+% 
+% \begin{table}[!htb]
+%   \centering
+%   \caption{Possible testing scenarios in replication setting. Green color
+%   depicts scenarios that are reasonable, while red color depicts scenarios
+%   which do not make sense.}
+%   \begin{tabular}{llccc}
+%   \toprule
+%   & & \multicolumn{3}{c}{\textbf{Replication study}} \\
+%   % \cmidrule{3-5}
+%   & & \texttt{"two.sided"} & \texttt{"greater"} & \texttt{"less"} \\
+%   \multicolumn{2}{c}{\textbf{Original study}}
+%   & $H_1: \theta \neq 0$ & $H_1: \theta > 0$ & $H_1: \theta < 0$ \\
+%   % \cmidrule{1-2}
+%   \midrule
+%   % \texttt{"two.sided"} & $H_1: \theta \neq 0$ 
+%   % & 2 -- 2 & 2 -- $1^+$ & 2 -- $1^-$\\
+%   % \texttt{"greater"} & $H_1: \theta > 0$ 
+%   % & $1^+$ -- 2 & $1^+$ -- $1^+$ & $1^+$ -- $1^-$\\
+%   % \texttt{"less"} & $H_1: \theta < 0$ 
+%   % & $1^-$ -- 2 & $1^-$ -- $1^+$ & $1^-$ -- $1^-$\\
+%   \texttt{"two.sided"} & $H_1: \theta \neq 0$ 
+%   & \cellcolor{LGr}2--2 & \cellcolor{LGr}2--G & \cellcolor{LGr}2--L\\
+%   \texttt{"greater"} & $H_1: \theta > 0$ 
+%   & \cellcolor{LRed} \cellcolor{LRed}G--2 & \cellcolor{LGr}G--G &
+%   \cellcolor{LRed} G--L\\
+%   \texttt{"less"} & $H_1: \theta < 0$ 
+%   & \cellcolor{LRed} L--2 & \cellcolor{LRed} L--G & \cellcolor{LGr} L--L\\
+%   \bottomrule
+%   \end{tabular}
+%   \label{tab:scenarios}
+% \end{table}
+% 
+% Let $\hat{\theta}_o$ and $\hat{\theta}_r$ denote effect estimates from
+% original and replication study (indicated by the subscript) with 
+% corresponding standard errors $\sigma_o$ and $\sigma_r$ that are assumed to
+% be known. Also assume that (after a suitable transformation), the effect 
+% estimates are approximately normally distributed and denote the cumulative
+% distribution function of the standard normal distribution by $\Phi(\cdot)$
+% and the $\alpha$ quantile by $z_\alpha$.
+% 
+% In the the classical approach, one computes one- or 
+% two-sided $p$-values, depending on the testing scenario, and concludes 
+% replication success if they are smaller than some pre-specified significance 
+% level.
+% For example, in the scenario 2--2 the $p$-values are
+% $p_o = 2\{1 - \Phi(|\hat{\theta}_o|/\sigma_o)\}$, 
+% $p_r = 2\{1 - \Phi(|\hat{\theta}_r|/\sigma_r)\}$ and replication success is
+% achieved if both are smaller than the significance level $\alpha$. Note that
+% for 2--G and 2--L, one usually sets the significance level of the replication
+% $p$-value to $\alpha/2$, half the level $\alpha$ of the original $p$-value, to
+% ensure the same stringency for both tests.
+% 
+% \citet{Held2020} proposed a reverse-Bayes approach to quantify replication
+% success: The original effect estimate $\hat{\theta}_o$ 
+% is challenged with a sufficiently sceptical prior
+% $\theta \sim \Nor(0, \tau^2)$, normal and centered around zero,
+% whose variance $\tau^2$ is chosen 
+% such that the resulting posterior becomes just ``non-significant'' at 
+% level $\alpha$. Specification of the test based on the original
+% data determines what exactly this statement means. For example, if one considers
+% $H_0: \theta < 0$ vs. $H_1: \theta > 0$, one fixes the posterior tail probability
+% $\Pr(\theta < 0 \given \hat{\theta}_o) = \alpha$. Note, that this is equivalent 
+% to fixing the lower limit $L$ of a $(1 - \alpha)$ posterior credible interval
+% $[L, \infty)$ to zero, which exemplifies that all testing scenarios could also be 
+% formulated in terms of credible intervals.
+% In a second step, conflict between the sufficiently sceptical prior and the
+% replication data is quantified by computing the tail-probability of the
+% replication effect estimate $\hat{\theta}_o$ under its prior-predictive
+% distribution.
+% % $\hat{\theta}_r^* \sim \Nor(0, \sigma^2_r + \tau^2)$. 
+% If this
+% probability is smaller than $\alpha$, we declare replication success. 
+% Whether or not this tail-probability is two- or one-sided is determined
+% via the set of null and alternative hypothesis related to the replication study.
+% Finally, the smallest level where replication success can be established is 
+% called the sceptical $p$-value $p_\text{S}$. 
+% 
+% In past work 
+% \citep{Held2020, Held_etal2020} a two-sided alternative was used
+% for the original study stage and either a two- or one-sided alternative (in 
+% the same direction as the result in the original study) in the replication
+% stage, so scenarios 2--2, 2--L, and 2--G.
+% However, in practice, \citet{Held2020, Held_etal2020} recommend against
+% the use of 2--2 as the ``replication-paradox'' could occur: It is possible
+% to conclude replication success despite the effect estimates of original and
+% replication study going in different directions.
+% The purpose of this document is to review the approach also under the other
+% scenarios, so that the sceptical $p$-value can also be defined in more 
+% generality for scenarios G--G and L--L.
+% Furthermore, the calibration of the procedure using type I error rates as in
+% \citet{Held2020b} also requires knowledge of the exact testing scenario such 
+% that the type I error rate can be matched with the significance approach.
+
+\paragraph{Scenario 2--2 (alternative = "two.sided")} See \citet{Held2020}.
+
+\paragraph{Scenario G--G (alternative = "greater")}
+Recall that based on the sceptical prior
+$\theta \sim \Nor(0, \tau^2)$ and the observed effect estimate
+$\hat{\theta}_o \given \theta \sim \Nor(\theta, \sigma^2_o)$, the posterior 
+distribution of the effect is
+$\theta \given \hat{\theta}_o \sim \Nor(\tilde{\mu}, \tilde{\sigma}^2)$ with
+\begin{align*}
+  \tilde{\mu}
+  = \left(\frac{1}{\sigma^2_o} + \frac{1}{\tau^2}\right)^{-1}
+  \frac{\hat{\theta}_o}{\sigma^2_o}
+  &&
+  \tilde{\sigma}^2
+  = \left(\frac{1}{\sigma^2_o} + \frac{1}{\tau^2}\right)^{-1}.
+\end{align*}
+As in \citet{Held2020}, we first determine the prior variance 
+$\tau^2_\alpha$
+such that the posterior probability of $\theta < 0$ equals some 
+pre-specified level $\alpha$ (which is equivalent to fixing the 
+lower limit $L$ of a $(1 - \alpha)$ posterior credible interval 
+$[L, \infty)$ to zero, so making the posterior one-sided 
+``non-significant'' at level $\alpha$):
+$$\tau^2_\alpha = \left\{\tau^2 : 
+\Pr\left(\theta < 0 \given \hat{\theta}_o, \tau^2\right) = \alpha \right\}.$$
+It is clear that the posterior mean $\tilde{\mu} > 0$ if $\hat{\theta}_o > 0$
+and that $\tilde{\mu} < 0$ if $\hat{\theta}_o < 0$ for any $\tau^2 > 0$.
+Because the posterior is normal, the posterior mean is also the 0.5 quantile 
+and hence this implies that $\tau^2_\alpha$ only exists for $\alpha \in (0, 0.5)$ when
+$\hat{\theta}_o > 0$ and conversely, that $\tau^2_\alpha$ only exists for
+$\alpha \in (0.5, 1)$ when $\hat{\theta}_o < 0$.
+% We now determine the prior variance $\tau^2$ such that the
+% probability of $\theta < 0$ equals some pre-specified level $\alpha$:
+Setting $\Pr(\theta < 0 \given \hat{\theta}_o)$ equal to $\alpha$ and applying
+a few algebraic manipulations leads to 
+\begin{align}
+  \label{eq:condition}
+%   \Pr(\theta < 0 \given \hat{\theta}_o)
+%   &= \Phi\left(\frac{0 - \tilde{\mu} }{\tilde{\sigma}}\right)
+%   % &= \Phi\left(-\frac{\tilde{\mu} }{\tilde{\sigma}}\right)
+%   \overset{!}{=} \alpha \nonumber \\
+% \iff -\frac{\tilde{\mu} }{\tilde{\sigma}} &= z_{\alpha} \nonumber  \\
+% \iff
+%\left(\frac{1}{\sigma^2_o} + \frac{1}{\tau^2}\right)^{-1/2}
+% \frac{z_o}{\sigma_o} &= z_{1 - \alpha}
+  \frac{z_o}{z_{1 - \alpha}} &= \sqrt{1 + \sigma^2/\tau^2_\alpha}
+\end{align}
+where $z_o = \hat{\theta}_o/\sigma_o$. Equation \eqref{eq:condition}
+mathematically summarizes the previous observation: If $\hat{\theta}_o$
+(and hence $z_o$) is positive, \eqref{eq:condition} can only 
+be fulfilled for $\alpha \in (p_o, 0.5)$ (so that $z_{1 - \alpha}$ is positive 
+and not larger than $z_o$), whereas for negative $\hat{\theta}_o$ it can only 
+be fulfilled for $\alpha \in (0.5, p_o)$ with $p_o = 1 - \Phi(z_o)$, 
+the one-sided $p$-value. 
+Squaring and solving under the condition 
+\eqref{eq:condition} leads to 
+\begin{equation}
+\label{eq:tau2ss}
+\tau^2_\alpha =
+\begin{cases}
+\dfrac{\sigma^2_o}{(z_o/z_{1 - \alpha})^2 - 1}
+& \text{if} ~ z_o/z_{1 - \alpha} > 1 \\
+\text{undefined} & \text{else.}
+\end{cases}
+\end{equation}
+
+In the next step, we assess conflict between the replication effect estimate 
+$\hat{\theta}_r \given \theta \sim \Nor(\theta, \sigma^2_r)$
+and the sceptical prior $\theta \sim \Nor(0, \tau^2)$ with a prior-predictive
+check \citep{Box1980, Bayarri2000}. To do so, we compute the tail-probability
+$\Pr(\hat{\theta}_r^* \geq \hat{\theta}_r \given \tau^2)$
+under the prior-predictive distribution
+$\hat{\theta}_r^* \given \tau^2 \sim \Nor(0, \sigma^2_r + \tau^2)$. 
+Replication success at level $\alpha$ is then declared if 
+\begin{align}
+  \label{eq:rs}
+  \Pr\left(\hat{\theta}_r^* \geq \hat{\theta}_r \given \tau^2_\alpha\right)
+  \leq \alpha.
+\end{align}
+Since, the prior-predictive distribution is symmetric around zero, it is also 
+clear that \mbox{$\Pr(\hat{\theta}_r^* \geq \hat{\theta}_r \given \tau^2) < 0.5$}
+if $\hat{\theta}_r > 0$ and that 
+$\Pr(\hat{\theta}_r^* \geq \hat{\theta}_r \given \tau^2) > 0.5$ if
+$\hat{\theta}_r < 0$ for any $\tau^2 > 0$. Applying some algebra to
+\eqref{eq:rs} leads to
+\begin{align}
+  \label{eq:condition2}
+  % \Pr(\hat{\theta}_r^* \geq \hat{\theta}_r)
+  % &= 1 - \Pr(\hat{\theta}_r^* < \hat{\theta}_r) \nonumber \\
+  % &= 1 - \Phi\left(\frac{\hat{\theta}_r - 0}{\sqrt{\sigma^2_r + \tau^2}}\right)
+  %  \nonumber \\
+  % &= \Phi\left(\frac{-\hat{\theta}_r}{\sqrt{\sigma^2_r + \tau^2}}\right)
+  % \leq \alpha  \nonumber \\
+  % \iff \frac{-\hat{\theta}_r}{\sqrt{\sigma^2_r + \tau^2}} &\leq z_\alpha
+  % \nonumber \\
+  % % \iff \frac{\hat{\theta}_r}{\sqrt{\sigma^2_r + \tau^2}} &\geq z_{1 -\alpha}
+  % %  \nonumber \\
+  \frac{z_r}{z_{1 -\alpha}} &\geq \sqrt{1 + \tau^2_\alpha/\sigma^2_r},
+\end{align}
+with $z_r = \hat{\theta}_r/\sigma_r$. From \eqref{eq:condition2}
+we can also see mathematically that for any $\tau^2_\alpha > 0$,
+\eqref{eq:rs} can only hold true
+for $\alpha \in (p_r,0.5)$ if $\hat{\theta}_r$ is positive, while it can only hold
+true for $\alpha \in (0.5, p_r)$ if $\hat{\theta}_r$ is negative, with 
+$p_r = 1 - \Phi(z_r)$, the one-sided $p$-value from the replication.
+
+\citet{Held2020} defined the sceptical $p$-value as the smallest $\alpha$ at 
+which replication success can be declared, which means:
+$$p_\text{S} = \inf_{\alpha \in (0, 1)} 
+\left\{\alpha : 
+\Pr\left(\hat{\theta}_r^* \geq \hat{\theta}_r \given \tau^2_\alpha\right)
+\leq \alpha\right\}.$$
+To find $p_\text{S}$, we cannot just solve for the $z_{1 - \alpha}$ where this
+holds with equality (as was possible for the two-sided sceptical $p$-value), but
+we need also to take into account the side-conditions \eqref{eq:condition} and 
+\eqref{eq:condition2}. Let us consider all four combinations for the 
+signs of $\hat{\theta}_o$ and $\hat{\theta}_r$ and start with the 
+pathological ones:
+\begin{itemize}
+  \item $\hat{\theta}_o > 0$ and $\hat{\theta}_r < 0$:
+  $\tau^2_\alpha$ exists only for $\alpha \in (p_o, 0.5)$ due to 
+  \eqref{eq:condition}, but for negative $\hat{\theta}_r$ the prior-predictive
+  tail-probability is always larger than 0.5. %due to \eqref{eq:condition2}.
+  Hence, $p_\text{S}$ is not defined.
+  
+  \item $\hat{\theta}_o < 0$ and $\hat{\theta}_r > 0$: Because $\hat{\theta}_r$
+  is positive, the prior-predictive tail-probability will be strictly smaller 
+  than 0.5 for any $\tau^2_\alpha$, %due to \eqref{eq:condition2}, 
+  whereas $\tau^2_\alpha$ only exists for $\alpha \in (0.5, p_o)$
+  because $\hat{\theta}_o$ is negative. Thus, as we fix $\alpha \downarrow 0.5$ 
+  we have that $\tau^2_\alpha \downarrow 0$  and therefore 
+  $\Pr\left(\hat{\theta}_r^* \geq \hat{\theta}_r \given \tau^2_\alpha\right)
+  \downarrow p_r$. Hence, in the limit $p_\text{S} = 0.5$ (I am not 100\% sure
+  that this is correct) 
+\end{itemize}
+For the other two cases, there exists an $\alpha$ for which \eqref{eq:rs}
+holds with equality and defines the sceptical $p$-value.
+Setting equality in \eqref{eq:condition2}, plugging in
+the expression from \eqref{eq:tau2ss} and squaring both sides, leads to a 
+quadratic equation in $z_{1 - \alpha}^2$. As already known from 
+\citet{Held2020}, the solution is given by
+\begin{align*}
+  % z_{1 - p_\text{S}}^2 =
+  z_{\text{S}}^2 =
+  \begin{cases}
+    z_H^2 /2
+    & \text{if} ~ c = 1 \\
+    \frac{1}{c - 1} \left\{\sqrt{z_A^2 (z_A^2 + (c - 1) z_H^2)} - z_A^2\right\}
+    & \text{if} ~ c \neq 1  \\
+  \end{cases}
+\end{align*}
+where $c = \sigma^2_o/\sigma^2_r$ the variance ratio, 
+$z_H^2 = 2/(1/z_o^2 + 1/z_r^2)$ the harmonic and $z_A^2 = (z_o^2 + z_r^2)/2$ 
+the arithmetic mean of the squared $z$-values. Keeping in mind the conditions 
+\eqref{eq:condition} and \eqref{eq:condition2}, we obtain 
+\begin{align*}
+  p_{\text{S}} =
+  \begin{cases}
+    1 - \Phi\left(|z_{\text{S}}|\right)
+    & \text{if $\hat{\theta}_o > 0$ and $\hat{\theta}_r > 0$} \\
+    \Phi\left(|z_{\text{S}}|\right)
+    & \text{if $\hat{\theta}_o < 0$ and $\hat{\theta}_r < 0$} \\
+    0.5
+    & \text{if $\hat{\theta}_o < 0$ and $\hat{\theta}_r > 0$} \\
+    \text{undefined}
+    & \text{if $\hat{\theta}_o > 0$ and $\hat{\theta}_r < 0$}. \\
+  \end{cases}
+\end{align*}
+
+<< echo = FALSE, eval = FALSE >>=
+library(ReplicationSuccess)
+postProb <- function(sigma2o, tau2, thato) {
+  s2p <- 1/(1/sigma2o + 1/tau2)
+  mup <- s2p*thato/sigma2o
+  pnorm(q = 0, mean = mup, sd = sqrt(s2p), lower.tail = TRUE)
+}
+
+plotPostdens <- function(sigma2o, tau2, thato, ...) {
+  s2p <- 1/(1/sigma2o + 1/tau2)
+  mup <- s2p*thato/sigma2o
+  f <- function(x) dnorm(x = x, mean = mup, sd = sqrt(s2p))
+  return(f)
+}
+
+plotPriorpredict <- function(sigma2r, tau2) {
+  f <- function(x) dnorm(x = x, mean = 0, sd = sqrt(sigma2r + tau2))
+  return(f)
+}
+
+tau2ss <- function(zo, alpha) {
+  za <- qnorm(p = 1 - alpha)
+  ifelse(zo/za <= 1, NaN, sigma2o/(zo^2/za^2 - 1))
+}
+
+pboxPos <- function(thatr, sigma2r, tau2) {
+  zr <- thatr/sqrt(sigma2r)
+  tbox1p <- zr/sqrt(1 + tau2/sigma2r)
+  pnorm(q = tbox1p, lower.tail = FALSE)
+}
+
+pScepticalPos <- function(zo, zr, c) {
+  if (sign(zo) == sign(zr)) {
+    zs <- sign(zo)*zSceptical(zo = zo, zr = zr, c = c)
+    ps <- pnorm(q = zs, lower.tail = FALSE)
+  } else if (sign(zr) > 0) {
+    ps <- 0.5
+  } else {
+    ps <- NaN
+  }
+  return(ps)
+}
+
+## try out whether correct
+x <- seq(-5, 5, 0.01)
+thato <- c(-2, 3)
+thatr <- c(-3, 2)
+sigma2o <- 1
+sigma2r <- 1
+c <- sigma2o/sigma2r
+
+## non-pathological case where thato, thatr > 0 and alternative "greater"
+to <- thato[2]
+tr <- thatr[2]
+zo <- to/sqrt(sigma2o)
+zr <- tr/sqrt(sigma2r)
+ps <- pScepticalPos(zo = zo, zr = zr, c = c)
+tau2 <- tau2ss(zo = zo, alpha = ps)
+postdens <- plotPostdens(sigma2o = sigma2o, tau2 = tau2, thato = to)
+priorpred <- plotPriorpredict(sigma2r = sigma2r, tau2 = tau2)
+plot(x = x, y = postdens(x), type = "l", 
+     main = bquote(hat(theta)[o] == .(to) *","~ hat(theta)[r] == .(tr) *","~ italic(c) == .(c)))
+polygon(x = c(0, x[x <= 0]), y = c(0, postdens(x[x <= 0])), 
+        col = ggplot2::alpha(2, 0.3), border = NA)
+lines(x = x, y = priorpred(x), lty = 2)
+polygon(x = c(tr, x[x >= tr], 0), y = c(0, priorpred(x[x >= tr]), 0), 
+        col = ggplot2::alpha(3, 0.3), border = NA)
+legend("topleft", legend = c("posterior", "prior-predictive"), lty = c(1, 2), bty = "n")
+postProb(sigma2o = sigma2o, tau2 = tau2, thato = to)
+pboxPos(thatr = tr, sigma2r = sigma2r, tau2 = tau2)
+
+
+## pathological case where thato, thatr < 0 and alternative "greater"
+to <- thato[1]
+tr <- thatr[1]
+zo <- to/sqrt(sigma2o)
+zr <- tr/sqrt(sigma2r)
+ps <- pScepticalPos(zo = zo, zr = zr, c = c)
+tau2 <- tau2ss(zo = zo, alpha = ps)
+postdens <- plotPostdens(sigma2o = sigma2o, tau2 = tau2, thato = to)
+priorpred <- plotPriorpredict(sigma2r = sigma2r, tau2 = tau2)
+plot(x = x, y = postdens(x), type = "l", 
+     main = bquote(hat(theta)[o] == .(to) *","~ hat(theta)[r] == .(tr) *","~ italic(c) == .(c)))
+polygon(x = c(0, x[x <= 0]), y = c(0, postdens(x[x <= 0])), 
+        col = ggplot2::alpha(2, 0.3), border = NA)
+lines(x = x, y = priorpred(x), lty = 2)
+polygon(x = c(tr, x[x >= tr], 0), y = c(0, priorpred(x[x >= tr]), 0), 
+        col = ggplot2::alpha(3, 0.3), border = NA)
+legend("topleft", legend = c("posterior", "prior-predictive"), lty = c(1, 2), bty = "n")
+postProb(sigma2o = sigma2o, tau2 = tau2, thato = to)
+pboxPos(thatr = tr, sigma2r = sigma2r, tau2 = tau2)
+
+## pathological case where thato < 0 and thatr > 0 and alternative "greater"
+## ps = 0.5? ps undefined?
+to <- thato[1]
+tr <- thatr[2]
+zo <- to/sqrt(sigma2o)
+zr <- tr/sqrt(sigma2o)
+ps <- 0.7#pScepticalPos(zo = zo, zr = zr, c = c)
+tau2 <- tau2ss(zo = zo, alpha = ps)
+postdens <- plotPostdens(sigma2o = sigma2o, tau2 = tau2, thato = to)
+priorpred <- plotPriorpredict(sigma2r = sigma2r, tau2 = tau2)
+plot(x = x, y = postdens(x), type = "l",
+     main = bquote(hat(theta)[o] == .(to) *","~ hat(theta)[r] == .(tr) *","~ italic(c) == .(c)))
+polygon(x = c(0, x[x <= 0]), y = c(0, postdens(x[x <= 0])), 
+        col = ggplot2::alpha(2, 0.3), border = NA)
+lines(x = x, y = priorpred(x), lty = 2)
+polygon(x = c(tr, x[x >= tr], 0), y = c(0, priorpred(x[x >= tr]), 0), 
+        col = ggplot2::alpha(3, 0.3), border = NA)
+legend("topleft", legend = c("posterior", "prior-predictive"), lty = c(1, 2), bty = "n")
+postProb(sigma2o = sigma2o, tau2 = tau2, thato = to)
+pboxPos(thatr = tr, sigma2r = sigma2r, tau2 = tau2)
+
+## pathological case where thato > 0 and thatr < 0 and alternative "greater"
+## ps undefined? 
+to <- thato[2]
+tr <- thatr[1]
+zo <- to/sqrt(sigma2o)
+zr <- tr/sqrt(sigma2o)
+ps <- 0.05#pScepticalPos(zo = zo, zr = zr, c = c)
+tau2 <- tau2ss(zo = zo, alpha = ps)
+postdens <- plotPostdens(sigma2o = sigma2o, tau2 = tau2, thato = to)
+priorpred <- plotPriorpredict(sigma2r = sigma2r, tau2 = tau2)
+plot(x = x, y = postdens(x), type = "l",
+     main = bquote(hat(theta)[o] == .(to) *","~ hat(theta)[r] == .(tr) *","~ italic(c) == .(c)))
+polygon(x = c(0, x[x <= 0]), y = c(0, postdens(x[x <= 0])), 
+        col = ggplot2::alpha(2, 0.3), border = NA)
+lines(x = x, y = priorpred(x), lty = 2)
+polygon(x = c(tr, x[x >= tr], 0), y = c(0, priorpred(x[x >= tr]), 0), 
+        col = ggplot2::alpha(3, 0.3), border = NA)
+legend("topleft", legend = c("posterior", "prior-predictive"), lty = c(1, 2), bty = "n")
+postProb(sigma2o = sigma2o, tau2 = tau2, thato = to)
+pboxPos(thatr = tr, sigma2r = sigma2r, tau2 = tau2)
+@
+
+
+\paragraph{Scenario L--L (alternative = "less")}
+By symmetry of the normal distribution all results from scenario G--G also 
+hold for scenario L--L just with inequalities reversed.
+
+\paragraph{Scenario 2--1 (alternative = "one.sided")}
+\citet{Held2020} defined the one-sided sceptical $p$-value $\tilde{p}_\text{S}$ 
+as 
+\begin{equation}
+  \tilde{p}_\text{S}
+  = \begin{cases}
+    1 - \Phi(|z_\text{S}|) & ~\text{if}~ \text{sign}(z_o) = \text{sign}(z_r) \\
+    \Phi(|z_\text{S}|) & ~\text{if}~ \text{sign}(z_o) \neq \text{sign}(z_r)
+  \end{cases}
+\end{equation}
+However, if the replication effect estimate goes in the wrong direction and 
+thus $\tilde{p}_\text{S} \in (0.5, 1)$, there exists, strictly speaking,
+no $\tau^2_{\tilde{p}_\text{S}}$ such that 
+\begin{align*}
+\P(\theta < 0 \given \hat{\theta}_o, \tau^2_{\tilde{p}_\text{S}}) = \tilde{p}_\text{S}
+~\text{if}~ \hat{\theta}_o > 0 
+&&\text{or}&& 
+\P(\theta > 0 \given \hat{\theta}_o, \tau^2_{\tilde{p}_\text{S}}) = \tilde{p}_\text{S}
+~\text{if}~ \hat{\theta}_o < 0
+\end{align*}
+because of the same arguments as before. 
+
+<< eval = FALSE, echo = FALSE >>=
+pSceptical2 <- function(zo,
+                        zr,
+                        c, 
+                        alternative = "one.sided",
+                        type = "golden") {
+    
+    ## vectorize function in all arguments
+    resV <- mapply(FUN = function(zo, zr, c, alternative, type) {
+        ## sanity checks
+        if (!(alternative %in% c("one.sided", "two.sided", "less", "greater")))
+            stop('alternative must be either"less", "greater", "one.sided", or "two.sided"')
+        if (!is.numeric(c) || c < 0)
+            stop("c must be numeric and larger than 0")
+        if (!(type %in% c("nominal", "liberal", "controlled", "golden")))
+            stop('type must be either "nominal", "liberal", "controlled", or "golden"')
+        
+        ## computing |zs|
+        zs <- zSceptical(zo = zo, zr = zr, c = c)
+        
+        ## applying recalibration to zs
+        if (type == "golden") {
+            ## golden ratio 
+            phi <- (sqrt(5) + 1)/2  
+            zsR <- zs*sqrt(phi)
+        } else if (type == "nominal") { 
+            zsR <- zs
+        } else if (type == "liberal") {
+            zsR <- zs*sqrt(2)
+        } else if (type == "controlled") { ##?
+            zsR <- p2z(p = sqrt((1 - pnorm(q = 2*zs))/2), alternative = "greater")
+        } 
+        
+        ## computing sceptical p-value
+        if (alternative == "two.sided") {
+            ps <- z2p(z = zsR, alternative = "two.sided")
+        } else if (alternative == "one.sided") {
+            if (sign(zo) == sign(zr)) {
+                  ps <- z2p(z = zsR, alternative = "greater")
+              } else {
+                  ps <- z2p(z = -zsR, alternative = "greater") ## ?
+              }
+        } else if (alternative == "greater") {
+            if (zo > 0 & zr < 0) {
+                ps <- NaN
+            } else if (zo < 0 & zr > 0) {
+                ps <- 0.5 ## ?
+            } else if (zo < 0 & zr < 0) {
+                ps <- z2p(z = -zsR, alternative = "greater")
+            } else if (zo > 0 & zr > 0) {
+                ps <- z2p(z = zsR, alternative = "greater")
+            }
+        } else if (alternative == "less") { 
+            if (zo < 0 & zr > 0) {
+                ps <- NaN
+            } else if (zo > 0 & zr < 0) {
+                ps <- 0.5 ## ?
+            } else if (zo > 0 & zr > 0) {
+                ps <- z2p(z = zsR, alternative = "less")
+            } else if (zo < 0 & zr < 0) {
+                ps <- z2p(z = -zsR, alternative = "less")
+            }
+        }
+        
+        return(ps)
+    }, zo, zr, c, alternative, type)
+    
+    return(resV)
+}
+
+@
+
+
+\newpage
+\section*{Type I error rates and the sceptical $p$-value}
+\paragraph{"two.sided" case}
+\citet{Held2020b} showed that when $c = 1$, the statistic
+$$X^2 = 2 z^2_H = \frac{4}{1/z^2_o + 1/z^2_r} = 4 \left\{\Phi^{-1}(1 - p_S/2 )\right\}^2$$
+has a $\chi^2_1$ distribution under the null hypothesis $H_0\colon \theta = 0$ with
+$p_S = 2\left\{1 - \Phi(z_H/\sqrt 2 )\right\}$ the two-sided sceptical $p$-value.
+Therefore, the type I error as a function of $p_S$  is given by
+\begin{align}
+  \label{t1:err}
+  \text{T1E}(p_S)
+  &= \Pr(\chi^2_1 \geq X^2) \nonumber \\
+  &= 2\left\{1 - \Phi \left(2\Phi^{-1}[1 - p_S/2]\right)\right\}.
+  % = \frac{1 - \Phi\left(2 \left[1 - \Phi^{-1}(p_S/2)\right]\right)}{2}.
+\end{align}
+\citet{Held2020b} also showed that equation \eqref{t1:err} can be inverted to
+obtain a critical value $p_S^*$ such that when $p_S$ is thresholded by this value,
+the type I error is controlled at a specified level $\alpha_S$, \ie
+\begin{equation}
+  p_S^*
+  = 2\left\{ 1 - \Phi\left( \frac{\Phi^{-1} [1 - \alpha_S/2]}{2} \right)\right\}.
+\end{equation}
+<< >>=
+## type I error for two-sided sceptical p-value
+t1errps22 <- function(ps22) {
+  x2 <- 4*qnorm(p = 1 - ps22/2)^2
+  pchisq(q = x2, df = 1, lower.tail = FALSE)
+  # 2*(1 - pnorm(q = sqrt(x2)))
+}
+
+## two-sided sceptical p-value threshold such that t1 error controlled for c = 1
+ps22controlled <- function(t1) 2*(1 - pnorm(q = qnorm(p = 1 - t1/2)/2))
+
+ps22controlled(t1 = 0.05^2)
+t1errps22(ps22 = ps22controlled(t1 = 0.05^2))
+@
+
+Note that for all calculations concering the two-sided sceptical $p_S$, one does 
+not need to make any assumptions about the direction of the effects
+(in contrast to what was done for the effects in the harmonic mean $\chi^2$ 
+test in \citet{Held2020b}). Things are more complicated for the one-sided case.
+
+
+\paragraph{"one.sided" case} 
+For $c = 1$, the one-sided (2--1) sceptical $p$-value $\tilde{p}_S$ as defined
+in \citet{Held2020} is given by
+\begin{equation}
+  \tilde{p}_S
+  = \begin{cases}
+    1 - \Phi(z_H/\sqrt 2) & ~\text{if}~ \text{sign}(z_o) = \text{sign}(z_r) \\
+    \Phi(z_H/\sqrt 2) & ~\text{if}~ \text{sign}(z_o) \neq \text{sign}(z_r)
+  \end{cases}
+\end{equation}
+From this we can see that
+\begin{align*}
+  X^2
+  &= 2 z_H^2 \\
+  &= \begin{cases}
+    4 \Phi^{-1}(1 - \tilde{p}_S)^2 & ~\text{if}~ \text{sign}(z_o) = \text{sign}(z_r) \\
+    4 \underbrace{\Phi^{-1}(\tilde{p}_S)^2}_{[-\Phi^{-1}(1 - \tilde{p}_S)]^2}
+    & ~\text{if}~ \text{sign}(z_o) \neq \text{sign}(z_r)
+  \end{cases} \\
+  &= 4 \Phi^{-1}(1 - \tilde{p}_S)^2.
+\end{align*}
+We know that under the null hypothesis 
+$$\Pr\left\{\text{sign}(z_o) = \text{sign}(z_r)\right\} 
+= \Pr\left\{\text{sign}(z_o) \neq \text{sign}(z_r)\right\} = \frac{1}{2}$$ and usually
+we are only interested in the case $\text{sign}(z_o) = \text{sign}(z_r)$ as
+this implies that $\tilde{p}_S \in (0, 0.5]$, whereas for the case 
+$\text{sign}(z_o) \neq \text{sign}(z_r)$ we have 
+$\tilde{p}_S \in (0.5, 1)$. 
+%due to the property that $\tilde{p}_S$
+% is bounded from below by the maximum of one-sided $p$-values of both studies.
+Thus, to compute the type I error for a $\tilde{p}_S \in (0, 0.5]$ 
+we need to compute the joint probability:
+\begin{align}
+  \label{t1:err21}
+  \text{T1E}(p_S)
+  &= \Pr\left\{\chi^2_1 \geq X^2, \text{sign}(z_o) = \text{sign}(z_r)\right\} \nonumber \\
+  &= \Pr\left\{\chi^2_1 \geq X^2 \given \text{sign}(z_o) = \text{sign}(z_r)\right\} 
+  \cdot \Pr\left\{\text{sign}(z_o) = \text{sign}(z_r)\right\} \nonumber \\
+  &= 2\left\{1 - \Phi \left(2\Phi^{-1}[1 - \tilde{p}_S]\right)\right\} \cdot 
+  \frac{1}{2} \nonumber \\
+  &= 1 - \Phi \left(2\Phi^{-1}[1 - \tilde{p}_S]\right).
+\end{align}
+Equation \eqref{t1:err21} differs by a factor 2 from equation (4)
+in \citet{Held2020b} because the conditioning is different: here, both studies 
+only need to go in the same direction, whereas in \citet{Held2020b} both are 
+assumed to be positive. 
+Inverting equation \eqref{t1:err21} leads to the critical value
+\begin{equation}
+  \label{crit:err21}
+  \tilde{p}_S^*
+  = 1 - \Phi\left( \frac{\Phi^{-1} [1 - \alpha_S]}{2} \right).
+\end{equation}
+Note that \eqref{t1:err21} and \eqref{crit:err21} can also be used for type I 
+error calculations for $\tilde{p}_S \in (0.5, 1)$ because 
+$\Pr\left\{\chi^2_1 \geq X^2, \text{sign}(z_o) \neq \text{sign}(z_r)\right\}$ and
+$\Pr\left\{\text{sign}(z_o) \neq \text{sign}(z_r)\right\}$ are the same as when
+$\text{sign}(z_o) = \text{sign}(z_r)$, however, this is not of much practical
+importance.
+<< >>=
+## type I error for one-sided (2-1) sceptical p-value
+t1errps21 <- function(ps21) {
+  x2 <- 4*qnorm(p = 1 - ps21)^2
+  pchisq(q = x2, df = 1, lower.tail = FALSE)/2
+  # 1 - pnorm(q = sqrt(x2))
+}
+
+## one-sided (2-1) sceptical p-value threshold such that t1 error controlled for c = 1
+ps21controlled <- function(t1) 1 - pnorm(q = qnorm(p = 1 - t1)/2)
+
+ps21controlled(t1 = 0.05*0.025)
+t1errps21(ps21 = ps21controlled(t1 = 0.05*0.025))
+@
+
+If we simulate a large number of $z_o$, $z_r$ under the null hypothesis
+and compute the empirical type I error rates for $p_S$ and $\tilde{p}_S$,
+we see that all the formulas seem to hold.
+<< cache = TRUE >>=
+## simulate z-statistics under the null
+set.seed(123)
+n <- 10^4#10^6
+zo <- rnorm(n = n, mean = 0, sd = 1)
+zr <- rnorm(n = n, mean = 0, sd = 1)
+
+## compute two-sided sceptical p-value
+library(ReplicationSuccess)
+c <- 1
+ps22 <- pSceptical(zo = zo, zr = zr, c = c, alternative = "two.sided",
+                   type = "nominal")
+
+## compute one-sided (2-1) sceptical p-value
+ps21 <- pSceptical(zo = zo, zr = zr, c = c, alternative = "one.sided", 
+                   type = "nominal")
+@
+<< >>=
+## plot simulations
+par(mfrow = c(1, 2))
+bks <- 50
+hist(x = ps21, breaks = bks, probability = TRUE, xlim = c(0, 1), 
+     main = "one-sided (2-1)", xlab = bquote(italic(tilde(p)[S])))
+lines(density(ps21))
+hist(x = ps22, breaks = bks, probability = TRUE, xlim = c(0, 1), 
+     main = "two-sided (2-2)", xlab = bquote(italic(p[S])))
+lines(density(ps22))
+
+## empirically calibrate ps to control type I error at alpha
+calibps <- function(alpha, H0sample) {
+  uniroot(f = function(as) mean(H0sample < as) - alpha, interval = c(0, 1))$root
+}
+calibps(alpha = 0.05^2, H0sample = ps22)
+calibps(alpha = 0.05*0.025, H0sample = ps21)
+
+## compare to theoretical thresholds
+ps22controlled(t1 = 0.05^2)
+ps21controlled(t1 = 0.05*0.025)
+
+## check that calibration also works for ps21 > 0.5
+ps21controlled(t1 = 0.8)
+calibps(alpha = 0.8, H0sample = ps21)
+@
+
+<< echo = FALSE, eval = FALSE >>=
+## I suggest to change the function like this
+levelSceptical2 <- function(level, 
+                           alternative = "one.sided", 
+                           type = "golden"){
+    if (!(type %in% c("nominal", "liberal", "controlled", "golden")))
+        stop('type must be either "nominal", "liberal", "controlled", or "golden"')
+    if (!(alternative %in% c("one.sided", "two.sided")))
+        stop('type must be either "one.sided" or "two.sided"')
+    
+    if(type == "nominal")
+        res <- level
+    
+    if(type == "liberal")
+        res <- pIntrinsic(p = level, alternative = alternative, type = "Held")
+    
+    if(type == "controlled"){
+        if (alternative == "two.sided") {
+          t1 <- level^2 ## level is two-sided significance level
+          # t1 <- (2*level)^2 ## level is a one-sided significance level
+          res <- 2*(1 - pnorm(q = qnorm(p = 1 - t1/2)/2))
+        } 
+        if (alternative == "one.sided") {
+          # t1 <- level*(level/2) ## level is a two-sided significance level
+          t1 <- 2*level^2 ## level is a one-sided significance level
+          res <- 1 - pnorm(q = qnorm(p = 1 - t1)/2)
+        }
+        if (alternative == "less") {
+          ## TODO implement this
+        }
+        if (alternative == "greater") {
+          ## TODO implement this
+        }
+    }
+    
+    if(type == "golden"){
+        res <- pIntrinsic(p = level, alternative = alternative, type = "Matthews")
+    }
+    
+    return(res)
+}
+
+@
+
+
+<< fig.height = 4.5, echo = FALSE, eval = FALSE >>=
+t1pSceptical <- function(alpha, c, alternative = "two.sided") {  
+  zas <- ReplicationSuccess::p2z(p = alpha, alternative = alternative)
+  
+  if (alternative == "two.sided") {
+    if (c == 1) {
+      t1err <- 2*(1 - pnorm(q = 2*zas))
+      return(t1err)
+    } else {
+      intFun <- function(zo) {
+        K <- zo^2/zas^2
+        zrmin <- zas*sqrt(1 + c/(K - 1))
+        2*(1 - pnorm(q = zrmin))*dnorm(x = zo)
+      } 
+    }
+  }
+  if (alternative == "one.sided") {
+    if (c == 1) {
+      t1err <- 1 - pnorm(q = 2*zas)
+      return(t1err)
+    } else {
+      intFun <- function(zo) {
+        K <- zo^2/zas^2
+        zrmin <- zas*sqrt(1 + c/(K - 1))
+        (1 - pnorm(q = zrmin))*dnorm(x = zo)
+      }
+    }
+  }
+  ## the integral is symmetric around zero
+  t1err <- 2*integrate(f = intFun, lower = zas, upper = Inf)$value
+  return(t1err)
+}
+
+t1pSceptical(alpha = 0.13, c = 1, alternative = "two.sided")
+t1pSceptical(alpha = 0.0653, c = 1, alternative = "one.sided")
+
+
+thresh <- c("nominal" = 0.025, 
+            "golden" = ReplicationSuccess::levelSceptical(level = 0.025, type = "golden"),
+            "controlled" = ReplicationSuccess::levelSceptical(level = 0.025, type = "controlled"))
+c <- seq(0.25^2, 10, by = 0.01)
+t1 <- sapply(X = thresh, FUN = function(a) {
+  sapply(X = c, FUN = function(c) t1pSceptical(alpha = a, c = c, 
+                                               alternative = "one.sided"))
+})
+matplot(x = c, y = t1*100, type = "l", lty = 1, lwd = 2, log = "x", las = 1,
+        xlab = bquote(italic(c)), ylab = "Type-I error (%)", ylim = c(0, 0.2),
+        xlim = c(0.2, 10))
+abline(v = 1, lty = 2)
+abline(h = 0.025*0.05*100, lty = 3)
+text(x = 0.25, y = 0.025*0.05*100, labels = expression(0.5 %*% 2.5))
+legend("topright", legend = names(thresh), lty = 1, lwd = 2, col = seq_along(thresh))
+@
+
+\newpage
+\bibliography{bibliography}
+
+\end{document}

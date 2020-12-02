@@ -73,7 +73,7 @@ pi_cond <- predictionInterval(thetao = thetao, seo = 1, ser = 1,
                               designPrior = "conditional")
 pi_eb <- predictionInterval(thetao = thetao, seo = 1, ser = 1, designPrior = "EB")
 plot(thetao - 0.03, pi_pred$mean, xlim = c(1, 3.5), ylim = c(-2, 7), pch = 20, xaxt = "n",
-     xlab = expression(italic(y)[o]), ylab = expression(italic(y)[r]), las = 2)
+     xlab = expression(hat(theta)[o]), ylab = expression(hat(theta)[r]), las = 2)
 axis(side = 1, at = thetao)
 abline(h = 0, lty = 2, col = "gray70")
 arrows(thetao - 0.03, pi_pred$lower, thetao - 0.03, pi_pred$upper, 

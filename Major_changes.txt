@@ -33,6 +33,8 @@ powerReplicationSuccess(zo, c, level = 0.025, designPrior, alternative = "one.si
   But we have to be careful and check it.
   
 - changed relative heterogeneity argument name from d to h in powerSignificance and sampleSizeSignificance 
+  
+- changed relative heterogeneity argument name from d to h in powerSignificance and sampleSizeSignificance 
 
 - vignette: 
 	- modified accordingly

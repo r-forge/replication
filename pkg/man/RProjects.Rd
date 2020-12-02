@@ -58,7 +58,7 @@
 %%  ~~ If necessary, more details than the __description__ above ~~
   Two-sided p-values were calculated assuming normality of Fisher-z transformed effect estimates.
   From the RPP only the \emph{meta-analytic subset} is included, which consists of 73 out of 100 study pairs for which the standard error of the z-transformed correlation coeffient can be computed. 
-  For the RPP also sample sizes were recalculated from standard errors of fisher z-transformed correlation coefficients.
+  For the RPP also sample sizes were recalculated from standard errors of Fisher z-transformed correlation coefficients.
   From the EPRP only 31 out of 40 study pairs are included where effective sample size for original and replication study are available simultaneously.
   For details about how the the data was preprocessed see supplement S1 of Pawel and Held (2020).
 }

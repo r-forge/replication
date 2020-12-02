@@ -49,10 +49,10 @@ Charlotte Micheloud
 %\seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 %}
-\examples{
-scepticalCI(thetao = 0.4, thetar = 0.2, se_thetao = 0.1, se_thetar = 0.1, 
-alphas = thresholdSceptical(level = 0.05, type = "controlled", alternative = "two.sided"))
-}
+% \examples{
+% scepticalCI(thetao = 0.4, thetar = 0.2, se_thetao = 0.1, se_thetar = 0.1, 
+% alphas = thresholdSceptical(level = 0.05, type = "controlled", alternative = "two.sided"))
+% }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 %\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")

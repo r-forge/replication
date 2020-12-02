@@ -2,16 +2,16 @@
 \alias{powerReplicationSuccess}
 \title{Computes the power for replication success}
 \description{
-  The power for replication success is computed based on the result of the original study, the corresponding variance ratio and the design prior. 
+  The power for replication success is computed based on the result of the 
+  original study, the corresponding variance ratio and the design prior. 
 }
 \usage{
 powerReplicationSuccess(zo, 
                         c = 1, 
-                        level = thresholdSceptical(level = 0.025, 
-                                                   alternative = alternative,
-                                                   type = "golden"),
+                        level = 0.025,
                         designPrior = "conditional", 
-                        alternative = "one.sided")
+                        alternative = "one.sided",
+                        type = "golden")
 }
 \arguments{
   \item{zo}{
@@ -24,36 +24,53 @@ powerReplicationSuccess(zo,
     original study.
     }
   \item{level}{
-    Replication success level. Default is the golden level (0.062 for
-    one-sided level = 0.025).
+    Replication success level. The default is 0.025.
     }
   \item{designPrior}{
     Either \code{"conditional"} or \code{"predictive"}.  
     Defaults to \code{"conditional"}. 
 }
   \item{alternative}{
-  Either \code{"one.sided"} or \code{"two.sided"}.  Defaults to \code{"one.sided"}. Specifies if the p-value is one-sided or two-sided. If \code{"one.sided"}, then power calculations are based on a one-sided assessment of replication success in the direction of the original effect estimate.
+ either \code{"one.sided"} or \code{"two.sided"}.
+Defaults to \code{"one.sided"}.  Specifies if the replication success level
+is one-sided or two-sided. If the replication success level level is one-sided, 
+then power calculations are based on a 
+  one-sided assessment of replication success in the direction of the 
+  original effect estimate.
+}
+  \item{type}{
+  Type of recalibration. Can be either \code{"nominal"} (no recalibration), 
+  \code{"liberal"}, \code{"controlled"} or \code{"golden"}.
+  The default is \code{"golden"} which ensures that 
+  for an original study just significant at the specified \code{level}, 
+  replication success is only possible if the replication effect estimate 
+  larger than the original one. See \code{?levelSceptical} for details
+  about recalibration types.
 }
 }
 \value{
   The power for replication success. 
 }
 \references{
-Held, L. (2020). A new standard for the analysis and design of replication studies (with discussion). 
-  \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}. 183(2):431 - 448.
-  \url{https://doi.org/10.1111/rssa.12493}
+Held, L. (2020). A new standard for the analysis and design of replication 
+studies (with discussion). \emph{Journal of the Royal Statistical Society:
+Series A (Statistics in Society)}. 183(2):431 - 448. \url{https://doi.org/10.1111/rssa.12493}
+
+Held, L., Micheloud, C. & Pawel, S. (2020). The assessment of replication success 
+based on relative effect size. \url{https://arxiv.org/abs/2009.07782}
 }
 \author{
   Leonhard Held
 }
 \seealso{
-  \code{\link{sampleSizeReplicationSuccess}}, \code{\link{pSceptical}}, \code{\link{thresholdSceptical}}
+  \code{\link{sampleSizeReplicationSuccess}}, \code{\link{pSceptical}}, 
+  \code{\link{levelSceptical}}
 }
 \examples{
 
 powerReplicationSuccess(zo = p2z(0.005), c = 2)
 powerReplicationSuccess(zo = p2z(0.005), c = 2, designPrior = "predictive")
-thresNominal <- thresholdSceptical(0.025, type = "nominal")
+thresNominal <- levelSceptical(0.025, type = "nominal")
 powerReplicationSuccess(zo = p2z(0.005), c = 2, level = thresNominal)
 powerReplicationSuccess(zo = p2z(0.005), c = 2, level = thresNominal, 
                         designPrior = "predictive")

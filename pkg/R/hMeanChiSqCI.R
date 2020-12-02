@@ -1,5 +1,5 @@
 ## confidence interval based on harmonic mean chi-squared test
-require(rootSolve)
+# require(rootSolve) # Samuel: should never load libraries in R packages
 hMeanChiSqCI <- function(thetahat, se, w = rep(1, length(thetahat)),
                          alternative = "two.sided", level = 0.95){
     stopifnot(min(w) > 0)
@@ -23,8 +23,10 @@ hMeanChiSqCI <- function(thetahat, se, w = rep(1, length(thetahat)),
     eps <- 1e-6
     factor <- 5
     if(alternative=="none"){
-        CI <- uniroot.all(target, thetahat=thetahat, se=se, w=w, alternative=alternative,
-                          alpha=alpha, lower=mint-factor*z*minse, upper=maxt+factor*z*maxse)
+        CI <- rootSolve::uniroot.all(target, thetahat=thetahat, se=se, w=w, 
+                                     alternative=alternative, alpha=alpha, 
+                                     lower=mint-factor*z*minse, 
+                                     upper=maxt+factor*z*maxse)
     }
     if(alternative=="two.sided"){
         lower <- uniroot(target, thetahat=thetahat, se=se, w=w, alternative=alternative,

@@ -5,7 +5,8 @@
 The p-value from the harmonic mean chi-squared test is computed based on study-specific estimates and standard errors. 
 }
 \usage{
-hMeanChiSqMu(thetahat, se, w=rep(1, length(thetahat)), mu=0, alternative="greater", bound=TRUE)
+hMeanChiSqMu(thetahat, se, w=rep(1, length(thetahat)), mu=0, 
+             alternative="greater", bound=TRUE)
 }
 \arguments{
   \item{thetahat}{

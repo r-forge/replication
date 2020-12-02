@@ -28,22 +28,25 @@ zr2.quantile <- function(zo,
 
 powerReplicationSuccess <- function(zo,
                                     c = 1, 
-                                    level = thresholdSceptical(level = 0.025, 
-                                                               alternative = alternative, 
-                                                               type = "golden"),
+                                    level = 0.025,
                                     designPrior = "conditional",
-                                    alternative = "one.sided"){
+                                    alternative = "one.sided",
+                                    type = "golden"){
     
-    targetPower <- function(power, zo, c, level, designPrior, alternative){
+    targetPower <- function(power, zo, c, level, designPrior, alternative, type){
         zr2 <- zr2.quantile(zo = zo, c = c, p = 1 - power, 
                             designPrior = designPrior)
-        pC <- pSceptical(zo = zo, zr = sqrt(zr2), c = c, 
-                         alternative = alternative)
+        pC <- pSceptical(zo = zo, zr = sqrt(zr2), c = c,
+                         alternative = alternative, type = type)
         return(pC - level)
+        # pC <- pSceptical(zo = zo, zr = sqrt(zr2), c = c, 
+        #                  alternative = alternative)
+        # return(pC - levelSceptical(level = level, alternative = alternative,
+        #                                type = type))
     }
     
     # vectorize function in all arguments
-    resV <- mapply(FUN = function(zo, c, level, designPrior, alternative) {
+    resV <- mapply(FUN = function(zo, c, level, designPrior, alternative, type) {
         
         # sanity checks
         if (is.na(zo))
@@ -53,7 +56,7 @@ powerReplicationSuccess <- function(zo,
         if (!is.numeric(c) || c < 0)
             stop("c must be numeric and larger than 0")
         if (!is.numeric(level) || (level <= 0 || level >= 1))
-            stop("level must be numeric and in (0,1)!")
+            stop("level must be numeric and in (0, 1)!")
         
         # check if original study was not significant, then power is zero
         zo <- abs(zo)
@@ -62,20 +65,24 @@ powerReplicationSuccess <- function(zo,
         mylower <- eps
         myupper <- 1 - eps
         
-        if (p > level) res <- 0
+        if (p > levelSceptical(level = level, 
+                                   alternative = alternative, 
+                                   type = type)) res <- 0
         else {
             target.l <- targetPower(power = mylower, 
                                     zo = zo, 
                                     c = c, 
                                     level = level,
                                     designPrior = designPrior,
-                                    alternative = alternative)
+                                    alternative = alternative,
+                                    type = type)
             target.u <- targetPower(power = myupper, 
                                     zo = zo, 
                                     c = c, 
                                     level = level,
                                     designPrior = designPrior,
-                                    alternative = alternative)
+                                    alternative = alternative,
+                                    type = type)
             if (sign(target.l) == sign(target.u)) {
                 if ((sign(target.l) >= 0) & (sign(target.u) >= 0))
                     res <- 0
@@ -90,11 +97,12 @@ powerReplicationSuccess <- function(zo,
                                c = c, 
                                level = level,
                                designPrior = designPrior,
-                               alternative = alternative)$root
+                               alternative = alternative,
+                               type = type)$root
             }
         }
         return(res)
-    }, zo, c, level, designPrior, alternative)
+    }, zo, c, level, designPrior, alternative, type)
     
     return(resV)
 }

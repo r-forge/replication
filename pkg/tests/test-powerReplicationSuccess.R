@@ -29,11 +29,13 @@ checkError(powerReplicationSuccess(zo = 1, c = 1, alternative = "wrong"))
 ## ------------------------------------------------------------------
 checkNumTol(powerReplicationSuccess(zo = qnorm(p = 1 - 0.05/2),
                                     c = 1, level = 0.05,
-                                    alternative = "two.sided"), 
+                                    alternative = "two.sided",
+                                    type = "nominal"), 
             0)
 checkNumTol(powerReplicationSuccess(zo = qnorm(p = 1 - 0.0056/2),
                                     c = 1, level = 0.05,
-                                    alternative = "two.sided"), 
+                                    alternative = "two.sided",
+                                    type = "nominal"), 
             0.5, tol = 0.01)
 
 ## Apply over a grid of values
@@ -50,6 +52,7 @@ for (i in seq(1, nrow(apply_grid))) {
                                c = apply_grid$c[i],
                                level = 0.05,
                                designPrior = apply_grid$priors[i],
-                               alternative = apply_grid$alt[i])
+                               alternative = apply_grid$alt[i],
+                               type = "nominal")
   print(round(p, digits = 5))
 }
