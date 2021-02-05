@@ -43,12 +43,10 @@ powerSignificanceInterim <- function(zo,
       pSig <- pnorm(term1 + term2 - term3)
     }
     else if (analysisPrior == "original") {
-      term1 <- sqrt(1 + (c * (1 - c*f)) / (f * (c*f + 1)))
-      term2 <- sqrt(f / (c*f * (1 - f))) * zo
-      term3 <- sqrt(f / (1 - f)) * zi
-      term4 <- sqrt((f * (c*f + 1)) / (c*f * (1 - f))) * v
-      
-      pSig <-  pnorm(term1 * (term2 + term3) - term4)
+      term1 <- sqrt(1 + (c*(1-f)/(c*f + 1))) * sqrt(1/(c*(1-f)))*zo
+      term2 <- sqrt(1 + (c*(1-f)/(c*f + 1))) * sqrt(f/(1-f)) * zi
+      term3 <- sqrt((c*f + 1)/(c*(1-f))) * v
+      pSig = pnorm(term1 + term2 - term3)
     }
   }
   
