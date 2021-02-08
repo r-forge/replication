@@ -39,6 +39,5 @@ levelSceptical <- function(level,
     if(type == "golden"){
         res <- pIntrinsic(p = level, alternative = alternative, type = "Matthews")
     }
-    
     return(res)
 }
