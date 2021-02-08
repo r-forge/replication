@@ -28,7 +28,7 @@ hMeanChiSqCI(thetahat, se, w=rep(1, length(thetahat)),
   }
 }
 \value{
-  The p-value from the harmonic mean chi-squared test
+  The confidence interval(s) from inverting the harmonic mean chi-squared test
 }
 \details{
   If \code{alternative} is \code{"none"}, then the function may return a

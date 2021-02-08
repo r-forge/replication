@@ -5,7 +5,7 @@ levelSceptical <- function(level,
     if (!(type %in% c("nominal", "liberal", "controlled", "golden")))
         stop('type must be either "nominal", "liberal", "controlled", or "golden"')
     if (!(alternative %in% c("one.sided", "two.sided")))
-        stop('type must be either "one.sided" or "two.sided"')
+        stop('alternative must be either "one.sided" or "two.sided"')
     
     if(type == "nominal")
         res <- level

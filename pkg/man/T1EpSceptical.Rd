@@ -9,7 +9,7 @@
 }
 
 \usage{
-T1EpSceptical(level, c, alternative = "one.sided")
+T1EpSceptical(level, c, alternative = "one.sided", type = "golden")
 }
 
 \arguments{
@@ -23,14 +23,25 @@ T1EpSceptical(level, c, alternative = "one.sided")
     original study.
   }
   \item{alternative}{
-    Either \code{"one.sided"} or \code{"two.sided"}.  
+    Either \code{"one.sided"} or \code{"two.sided"} or \code{"greater"} or \code{"less"}.  
     Defaults to \code{"one.sided"}. If \code{"one.sided"} then the
-    type-I error rate is computed for the sceptical p-value based on a 
-    one-sided assessment of replication success in the direction of the 
-    original effect estimate. 
-    If \code{"two.sided"} then the type-I error rate is computed for the 
-    sceptical p-value based on a two-sided assessment of replication success
+    type-I error rate is computed based on a one-sided assessment of
+    replication success in the direction of the original effect estimate. 
+    If \code{"two.sided"} then the type-I error rate is computed based
+    on a two-sided assessment of replication success
     regardless of the direction of the original and replication effect estimate.
+    If \code{"greater"} or \code{"less"} then the type-I error rate is
+    computed based on a one-sided assessment of replication success
+    in the pre-specified direction of the original and replication effect estimate.
+  }
+  \item{type}{
+    Type of recalibration. Can be either \code{"nominal"} (no recalibration), 
+    \code{"liberal"}, \code{"controlled"} or \code{"golden"}.
+    The default is \code{"golden"} which ensures that 
+    for an original study just significant at the specified \code{level}, 
+    replication success is only possible if the replication effect estimate is at
+    least as large as the original one. See \code{?levelSceptical} for details
+    about recalibration types.
   }
 }
 
@@ -48,7 +59,7 @@ based on relative effect size. \url{https://arxiv.org/abs/2009.07782}
 }
 
 \author{
-Samuel Pawel
+Samuel Pawel, Leonhard Held
 }
 
 \seealso{

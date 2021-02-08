@@ -2,29 +2,51 @@
 ## level of replication success, variance ratio, alternative hypothesis,
 ## type-I error and power of original study
 ## TODO need to implement alternative "less" and "greater"
+## LH 8.2.2021: I have added type="golden" as default
+## LH 8.2.2021: I have added alternative "less" and "greater"
 
-PPpSceptical <- function(level, c, alpha, power, alternative = "one.sided") {  
-  
-  ## vectorize function in all arguments
-  ppV <- mapply(FUN = function(level, c, alpha, power, alternative) {
-    ## sanity checks
-    if (!(alternative %in% c("one.sided", "two.sided")))
-      stop('alternative must be either "one.sided" or "two.sided"')
-    if (!is.numeric(c) || c < 0)
-      stop("c must be numeric and larger than 0")
-    if (!is.numeric(level) || (level <= 0 || level >= 1))
-      stop("level must be numeric and in (0, 1)!")
-    if (!is.numeric(alpha) || (alpha <= 0 || alpha >= 1))
-      stop("alpha must be numeric and in (0, 1)!")
-    if (!is.numeric(power) || (power <= 0 || power >= 1))
-      stop("power must be numeric and in (0, 1)!")
+PPpSceptical <- function(level, c, alpha, power, alternative = "one.sided", type = "golden") {  
+    ## vectorize function in all arguments
+    ppV <- mapply(FUN = function(level, c, alpha, power, alternative, type) {
+        ## sanity checks
+        if (!(alternative %in% c("one.sided", "two.sided", "greater", "less")))
+            stop('alternative must be either "one.sided", "two.sided", "greater" or "less"')
+        ## if (!(alternative %in% c("one.sided", "two.sided")))
+        ##     stop('alternative must be either "one.sided" or "two.sided"')
+        if (!is.numeric(c) || c < 0)
+            stop("c must be numeric and larger than 0")
+        if (!is.numeric(level) || (level <= 0 || level >= 1))
+            stop("level must be numeric and in (0, 1)!")
+        if (!is.numeric(alpha) || (alpha <= 0 || alpha >= 1))
+            stop("alpha must be numeric and in (0, 1)!")
+        if (!is.numeric(power) || (power <= 0 || power >= 1))
+            stop("power must be numeric and in (0, 1)!")
+        if (!(type %in% c("nominal", "liberal", "controlled", "golden")))
+            stop('type must be either "nominal", "liberal", "controlled", or "golden"')
     
-    ## compute normal quantile corresponding to level
-    zas <- p2z(p = level, alternative = alternative)
-    
+        ## compute normal quantile corresponding to level and type
+        if (alternative %in% c("one.sided", "two.sided")) {
+            alphas <- levelSceptical(level = level, 
+                                     alternative = alternative, 
+                                     type = type)
+            zas <- p2z(alphas, alternative = alternative)
+        }
+        ## LH: not very elegant, levelSceptical needs to be updated 
+        if (alternative %in% c("greater", "less")) {
+            alphas <- levelSceptical(level = level, 
+                                     alternative = "one.sided", 
+                                     type = type)
+            zas <- p2z(alphas, alternative = "one.sided")
+        }
+        
     ## compute mean based on alpha and power 
-    mu <- p2z(p = alpha, alternative = alternative) + stats::qnorm(p = power)
-    
+        ## LH: not very elegant, needs to be updated 
+       if (alternative %in% c("one.sided", "two.sided")) 
+           mu <- p2z(p = alpha, alternative = alternative) + stats::qnorm(p = power)
+       if (alternative %in% c("greater", "less")) 
+           mu <- p2z(p = alpha, alternative = "one.sided") + stats::qnorm(p = power)
+
+           
     ## compute project power with numerical integration
     if (alternative == "two.sided") {
       ## define function to integrate over zo
@@ -48,7 +70,7 @@ PPpSceptical <- function(level, c, alpha, power, alternative = "one.sided") {
       } 
     }
     
-    if (alternative == "one.sided") {
+    if (alternative %in% c("one.sided", "greater", "less")) {
       # define function to integrate over zo
       intFun <- function(zo) {
         ## compute minimal zr to achieve replication success given zo and level
@@ -68,17 +90,21 @@ PPpSceptical <- function(level, c, alpha, power, alternative = "one.sided") {
           )
       }
     }
-    
-    if (alternative %in% c("one.sided", "two.sided")) {
-      ## integrate zo, zr over region where replication succcess possible
-      pp <- stats::integrate(f = intFun, lower = zas, upper = Inf)$value +
+        
+        if (alternative %in% c("one.sided", "two.sided")) {
+            ## integrate zo, zr over region where replication succcess possible
+            pp <- stats::integrate(f = intFun, lower = zas, upper = Inf)$value +
             stats::integrate(f = intFun, lower = -Inf, upper = -zas)$value
       return(pp)
-    }
-
+        }
+        if (alternative %in% c("greater", "less")) {
+            ## integrate zo, zr over region where replication succcess possible
+            pp <- stats::integrate(f = intFun, lower = zas, upper = Inf)$value
+            return(pp)
+        }
     
     return(pp)
-  }, level, c, alpha, power, alternative)
+  }, level, c, alpha, power, alternative, type)
   
   return(ppV)
 }
