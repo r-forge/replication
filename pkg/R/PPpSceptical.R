@@ -3,7 +3,7 @@
 ## type-I error and power of original study
 ## TODO need to implement alternative "less" and "greater"
 ## LH 8.2.2021: I have added type="golden" as default
-## LH 8.2.2021: I have added alternative "less" and "greater"
+## LH 9.2.2021: I have added alternative "less" and "greater"
 
 PPpSceptical <- function(level, c, alpha, power, alternative = "one.sided", type = "golden") {  
     ## vectorize function in all arguments
@@ -11,8 +11,6 @@ PPpSceptical <- function(level, c, alpha, power, alternative = "one.sided", type
         ## sanity checks
         if (!(alternative %in% c("one.sided", "two.sided", "greater", "less")))
             stop('alternative must be either "one.sided", "two.sided", "greater" or "less"')
-        ## if (!(alternative %in% c("one.sided", "two.sided")))
-        ##     stop('alternative must be either "one.sided" or "two.sided"')
         if (!is.numeric(c) || c < 0)
             stop("c must be numeric and larger than 0")
         if (!is.numeric(level) || (level <= 0 || level >= 1))
@@ -25,28 +23,16 @@ PPpSceptical <- function(level, c, alpha, power, alternative = "one.sided", type
             stop('type must be either "nominal", "liberal", "controlled", or "golden"')
     
         ## compute normal quantile corresponding to level and type
-        if (alternative %in% c("one.sided", "two.sided")) {
-            alphas <- levelSceptical(level = level, 
-                                     alternative = alternative, 
-                                     type = type)
-            zas <- p2z(alphas, alternative = alternative)
-        }
-        ## LH: not very elegant, levelSceptical needs to be updated 
-        if (alternative %in% c("greater", "less")) {
-            alphas <- levelSceptical(level = level, 
-                                     alternative = "one.sided", 
-                                     type = type)
-            zas <- p2z(alphas, alternative = "one.sided")
-        }
+        alphas <- levelSceptical(level = level, 
+                                 alternative = alternative, 
+                                 type = type)
+        ## abs(.) is needed to deal with alternative="less"
+        zas <- abs(p2z(alphas, alternative = alternative))
         
-    ## compute mean based on alpha and power 
-        ## LH: not very elegant, needs to be updated 
-       if (alternative %in% c("one.sided", "two.sided")) 
-           mu <- p2z(p = alpha, alternative = alternative) + stats::qnorm(p = power)
-       if (alternative %in% c("greater", "less")) 
-           mu <- p2z(p = alpha, alternative = "one.sided") + stats::qnorm(p = power)
-
-           
+        ## compute mean based on alpha and power
+        ## abs(.) is needed to deal with alternative="less"
+        mu <- abs(p2z(p = alpha, alternative = alternative)) + stats::qnorm(p = power)
+        
     ## compute project power with numerical integration
     if (alternative == "two.sided") {
       ## define function to integrate over zo

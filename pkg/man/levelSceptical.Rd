@@ -16,7 +16,7 @@ levelSceptical(level, alternative = "one.sided", type = "golden")
   The required significance level. This can be a vector.
 }
 \item{alternative}{
-  Either \code{"one.sided"} or \code{"two.sided"}.
+    Either \code{"one.sided"} or \code{"two.sided"} or \code{"greater"} or \code{"less"}.  
   Defaults to \code{"one.sided"}. Specifies if the significance level
   is one-sided or two-sided. If the significance level is one-sided, 
   then a one-sided level for the sceptical p-value is computed.
