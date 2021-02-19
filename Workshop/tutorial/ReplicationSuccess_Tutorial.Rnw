@@ -915,12 +915,19 @@ for (p in unique(RProjects$project)) {
 
 
 \begin{frame}
+\vspace{2cm}
   % \begin{block}{}
   \begin{center}
   \color{uzh@blue}{\Huge \textbf{Exercise Session 2}} 
   \\~\\
   {\LARGE Design based on significance}
    \end{center}
+   
+   \vspace{2cm}
+   \begin{center}
+{\color{red} \small \emph{Poll: how should we choose the sample size of 
+  the replication study?}}
+  \end{center}
   % \end{block}
 \end{frame}
 
@@ -1210,7 +1217,7 @@ Main arguments (\texttt{default}):
 \item \texttt{power}
 \item \texttt{designPrior} (\texttt{"conditional"})
 \item \texttt{shrinkage} (\texttt{0})
-\item \texttt{level} (\texttt{0.065})
+\item \texttt{level} (\texttt{0.025})
 \item \texttt{alternative} (\texttt{"one.sided"})
 \end{itemize}
 
@@ -1229,7 +1236,8 @@ Main arguments (\texttt{default}):
 <<>>=
 
 # power calculation
-powerSignificance(zo = p2z(0.004, alternative = "one.sided"), c = 3, 
+powerSignificance(zo = p2z(0.004, alternative = "one.sided"), 
+                  c = 3, 
                   designPrior = "conditional")
 @
   
@@ -1246,7 +1254,7 @@ $0.0001$, $0.001$, $0.005$, $0.01$, and $0.025$, respectively.
 We decide to use the same sample size as in the original study ($c = 1$). 
 \begin{itemize}
 \item Compute and plot the conditional and predictive power of the five replication studies. Use the function \texttt{powerSignificance()} % Goal: bordeline significant original study: very low power with both methods
-\item Shrink the original effect estimate by a factor of 25\% and use a conditonal design prior. How does the power compare to the conditional power without shrinkage?  
+\item Shrink the original effect estimate by a factor of 25\% and use a conditonal design prior. How does the power compare to the conditional power without shrinkage? {\color{red} remove exercise for time reason if needed} 
 \end{itemize}
   \end{block}
 <<echo = FALSE, eval = F>>=
@@ -1368,11 +1376,12 @@ legend("topright",
 We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
 \begin{itemize}
 \item Compute and plot the relative sample sizes of the five studies to achieve a power of 80\% with the conditional and the predictive design prior. Use the function \texttt{sampleSizeSignificance()}
-\item Shrink the original effect estimate to 75\% of the reported value and use a conditonal design prior. How does the required relative sample size change compared to not shrinking the estimate?
+\item Shrink the original effect estimate to 75\% of the reported value and use a conditonal design prior. How does the required relative sample size change compared to not shrinking the estimate? {\color{red} remove exercise for time reason if needed} 
 \end{itemize}
   \end{block}
 
 \end{frame}
+
 
 \begin{frame}{Solution: Exercise 2.2}
 <<echo = FALSE, fig.height = 8>>=
@@ -1437,28 +1446,28 @@ legend("topleft",
   
 \end{frame}
 
+% 19.02.2021 : removed exercises 2.3 and 2.4 for time reason
+%\begin{frame}[fragile]{Exercises}
+% \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+% 
+%   \begin{block}{Exercise 2.3}
+%   For the experimental economics replication project
+%   \begin{itemize}
+%   \item Calculate the conditional power for significance of each study.
+%     \item Calculate now the predictive power and compare.
+%   \end{itemize}
 
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
-
-  \begin{block}{Exercise 2.3}
-  For the experimental economics replication project
-  \begin{itemize}
-  \item Calculate the conditional power for significance of each study.
-    \item Calculate now the predictive power and compare.
-  \end{itemize}
-
-<<>>=
+<<echo = F, eval = F>>=
 eco <- subset(RProjects, project == "Experimental Economics")
 @
 
-  \end{block}
-\end{frame}
+%   \end{block}
+% \end{frame}
 
 
-\begin{frame}[fragile]{Solution: Exercise 2.3}
+% \begin{frame}[fragile]{Solution: Exercise 2.3}
 
-<<echo = FALSE, fig.height=8>>=
+<<echo = FALSE, fig.height=8, eval = F>>=
 library("lattice")
 
 pow_c1 <- powerSignificance(zo = p2z(eco$po),
@@ -1515,35 +1524,35 @@ bwplot(power~group, data=mat1, groups = ID, panel = panel_bw,
 
 @
 
-\end{frame}
+% \end{frame}
 
 
-\begin{frame}{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+% \begin{frame}{Exercises}
+% \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+% 
+%   \begin{block}{Exercise 2.4}
+%   For the experimental philosophy replicability project
+%   \begin{itemize}
+%   \item Calculate for each study the required relative sample size to reach a power for significance of 95\%. Use the conditional design prior.
+%   \item Compare them to the actually used relative sample sizes.
+%   \end{itemize}
 
-  \begin{block}{Exercise 2.4}
-  For the experimental philosophy replicability project
-  \begin{itemize}
-  \item Calculate for each study the required relative sample size to reach a power for significance of 95\%. Use the conditional design prior.
-  \item Compare them to the actually used relative sample sizes.
-  \end{itemize}
-
-<<size = "scriptsize">>=
+<<size = "scriptsize", echo = F, eval = F>>=
 philo <- subset(RProjects, 
                  project == "Experimental Philosophy")
 @
 
   
-  \end{block}
-\end{frame}
+%   \end{block}
+% \end{frame}
 
 
 
 
-\begin{frame}[fragile]{Solution: Exercise 2.4}
+% \begin{frame}[fragile]{Solution: Exercise 2.4}
 
 
-<<fig.height = 7, echo = FALSE>>=
+<<fig.height = 7, echo = FALSE, eval = F>>=
 par(mai = c(1,1.5,1,1))
 ss_aut <- philo$se_fiso^2/philo$se_fisr^2
 ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
@@ -1570,7 +1579,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 @
 
-\end{frame}
+% \end{frame}
 
 
 \begin{frame}
@@ -1598,8 +1607,9 @@ Main arguments (\texttt{default}):
 \item \texttt{c} (\texttt{1})
 \item \texttt{power}
 \item \texttt{designPrior} (\texttt{"conditional"})
-\item \texttt{level} (\texttt{0.065})
+\item \texttt{level} (\texttt{0.025})
 \item \texttt{alternative} (\texttt{"one.sided"})
+\item \texttt{type} (\texttt{"golden"})
 \end{itemize}
 
 \end{block}
@@ -1611,10 +1621,12 @@ Main arguments (\texttt{default}):
       \item relative sample size $c = $ \Sexpr{round(c,1)}
     \end{itemize}
 <<>>=
-# sample size calculation
+# power calculation
 powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"), 
                         c = 3, 
-                        designPrior = "conditional")
+                        designPrior = "conditional", 
+                        level = 0.025, 
+                        type = "golden")
 
 @
 
@@ -1625,8 +1637,9 @@ powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"),
 \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
   \begin{block}{Exercise 3.1}
     \begin{itemize}
-    \item Compute and plot the conditional and predictive power for replication success 
-      using the controlled ($\alpha$ = 0.065) threshold. Use the function
+    \item Compute and plot the conditional and predictive power for replication success. 
+      % using the controlled ($\alpha$ = 0.065) threshold. 
+      Use the function
     \texttt{powerReplicationSuccess()} with
    $c = 1$ and $p_o = 0.0001, 0.001, 0.005, 0.01$ and $0.025$.
     \item Compare conditional power for replication success with conditional power for significance (exercise 2.1).
@@ -1721,22 +1734,115 @@ legend("topright",
   @
 \end{frame}
 
-
-
 \begin{frame}[fragile]{Exercises}
 \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
   \begin{block}{Exercise 3.2}
-  For the experimental economics replication project
-  \begin{itemize}
-  \item Calculate the conditional power for replication success of each study with the controlled threshold
-    \item Compare it to the predictive power for replication success
+\begin{itemize}
+  \item Compute and plot the relative sample sizes of the five
+studies to achieve a power of 80\% with the conditional
+and the predictive design prior. Use the function
+\texttt{sampleSizeReplicationSuccess()}.
+
+    \item Compare the relative sample sizes with the ones
+    obtained in exercise 2.2 (only for the conditional 
+    design prior)
   \end{itemize}
   \end{block}
 \end{frame}
 
+\begin{frame}[fragile]{Solution: Exercise 3.2}
+
+<<echo = F, fig.height = 7>>=
+par(mfrow = c(1,1), 
+    las = 1)
+
+ss.cond2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
+                                         power = 0.8, 
+                                         alternative = "one.sided", 
+                                         type = "golden", 
+                                         designPrior = "conditional",
+                                         level = 0.025)
+
+ss.pred2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"), 
+                                         power = 0.8, 
+                                         alternative = "one.sided", 
+                                         designPrior = "predictive",
+                                         type = "golden", 
+                                         level = 0.025)
+plot(po.plot, 
+     ss.cond2, 
+     type = "l", 
+     col = "red", 
+     ylim = c(0, 10), 
+     cex.lab = 1.5, 
+     cex.axis = 1.5, 
+     ylab = "Relative sample size", 
+      xlab = "One-sided original p-value", 
+     lwd = 2)
+
+lines(po.plot, 
+      ss.pred2, 
+      type = "l", 
+      col = "blue", 
+      lwd = 2)
+
+legend("topleft", 
+       c("Conditional", "Predictive"), 
+       col = c("red", "blue"), 
+       lty = 1, 
+       bty = "n", 
+       cex = 1.5, 
+       lwd = 2)
+@
+\end{frame}
+
 
 \begin{frame}[fragile]{Solution: Exercise 3.2}
-<<echo = FALSE, fig.height=8 >>=
+
+
+<<echo = F, fig.height = 7>>=
+
+par(mfrow = c(1,1), 
+    las = 1)
+plot(po.plot, ss.cond1, type = "l", ylim = c(0, 10), col = "red", 
+     xlab = "One-sided original p-value", 
+     ylab = "Relative sample size", 
+     lwd = 2,
+     cex.lab = 1.5, 
+     cex.axis = 1.5, 
+     lty = 2)
+
+lines(po.plot, ss.cond2, 
+      col = "red", 
+      lty = 1, 
+      lwd = 2)
+
+legend("topleft", 
+       c("Replication Success", "Significance"),
+       lty = c(1, 2), 
+       col = "red",
+       bty = "n", 
+       cex = 1.5, 
+       lwd = 2)
+
+@
+
+\end{frame}
+% 19.2.2021 Removed from time reason
+% \begin{frame}[fragile]{Exercises}
+% \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+%   \begin{block}{Exercise 3.2}
+%   For the experimental economics replication project
+%   \begin{itemize}
+%   \item Calculate the conditional power for replication success of each study with the controlled threshold
+%     \item Compare it to the predictive power for replication success
+%   \end{itemize}
+%   \end{block}
+% \end{frame}
+
+
+% \begin{frame}[fragile]{Solution: Exercise 3.2}
+<<echo = FALSE, fig.height=8, eval = F >>=
 pow_c2 <- powerReplicationSuccess(zo = p2z(eco$po),
                                   c = eco$se_fiso^2/eco$se_fisr^2, 
                                   alternative = "one.sided",
@@ -1762,24 +1868,24 @@ bwplot(power~group, data=mat2, groups = ID, panel = panel_bw,
         between = list(x = 1), scales = list(x = "free", y="free", rot=0, cex =2),
         pch = "|")
 @
-\end{frame}
+% \end{frame}
 
-\begin{frame}{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
-  \begin{block}{Exercise 3.3}
-  For the experimental philosophy replicability project
-  \begin{itemize}
-  \item Calculate for each study the required relative sample size to reach a power for replication success of 95\%. Use the  function \texttt{sampleSizeReplicationSuccess()} with conditional design prior and the controlled threshold ($\alpha$ = 0.065). 
-  \item Compare the results to the actually used relative sample sizes.
-  \end{itemize}
-  \end{block}
-\end{frame}
+% \begin{frame}{Exercises}
+% \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+%   \begin{block}{Exercise 3.3}
+%   For the experimental philosophy replicability project
+%   \begin{itemize}
+%   \item Calculate for each study the required relative sample size to reach a power for replication success of 95\%. Use the  function \texttt{sampleSizeReplicationSuccess()} with conditional design prior and the controlled threshold ($\alpha$ = 0.065). 
+%   \item Compare the results to the actually used relative sample sizes.
+%   \end{itemize}
+%   \end{block}
+% \end{frame}
+% 
+% 
+% \begin{frame}[fragile]{Solution: Exercise 3.3}
+% \framesubtitle{Replication success}
 
-
-\begin{frame}[fragile]{Solution: Exercise 3.3}
-\framesubtitle{Replication success}
-
-<<fig.height = 7, echo = F>>=
+<<fig.height = 7, echo = F, eval = F>>=
 par(mai = c(1,1.5,1,1))
 
 ss_c2 <- sampleSizeReplicationSuccess(zo = p2z(philo$po), power = 0.95, 
@@ -1803,12 +1909,12 @@ axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"), cex.axis = 1.4)
 @
 
-\end{frame}
+% \end{frame}
+% 
+% \begin{frame}[fragile]{Solution: Exercise 2.4}
+% \framesubtitle{Significance}
 
-\begin{frame}[fragile]{Solution: Exercise 2.4}
-\framesubtitle{Significance}
-
-<<fig.height = 7, echo = FALSE>>=
+<<fig.height = 7, echo = FALSE, eval = F>>=
 par(mai = c(1,1.5,1,1))
 ss_aut <- philo$se_fiso^2/philo$se_fisr^2
 ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
@@ -1835,7 +1941,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 @
 
-\end{frame}
+% \end{frame}
 
 
 
@@ -1852,6 +1958,8 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
   
   \item \alert{Interim analysis} \\
   $\rightarrow$ \texttt{powerSignificanceInterim()}
+  
+  \item Sample size based on \alert{relative effect size}
 \end{itemize}
 \end{frame}
 
