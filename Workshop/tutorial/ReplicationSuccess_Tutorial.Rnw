@@ -32,7 +32,7 @@
 \author{Leonhard Held, Charlotte Micheloud, Samuel Pawel}
 \institute{Department of Biostatistics, Center for Reproducible Science}
 \titlegraphic{\vspace{-1em}\flushright\includegraphics[width=0.4\textwidth]{images_presentation/CRS_Hexasticker7.pdf}}
-\date{06.02.2020}
+\date{12.03.2021}
 
 % ----------------------------------------------------------------------------
 << include = FALSE, purl = FALSE >>=
@@ -364,8 +364,16 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 
 \begin{frame}{4. Sceptical $p$-value}
 \framesubtitle{New definition of replication success}
-  \centering
-\includegraphics[width=0.9\textwidth]{images_presentation/Held2020.png}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+  % \centering
+\includegraphics[width=1.1\textwidth]{images_presentation/Held2020.png}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\includegraphics[width=1.1\textwidth]{images_presentation/Heldetal2020.png}
+\end{column}
+\end{columns}
 \end{frame}
 
 
@@ -379,10 +387,11 @@ the original study not significant?}}
 
 $\rightarrow$ \texttt{pSceptical()} %% \\
 %%$\rightarrow$ 
-returns one-sided sceptical $p$-value \\ % per default \\
-%% \vspace{-.5cm}
+returns one-sided sceptical $p$-value % per default \\
+ \vspace{.15cm}
 \begin{center}
-{\color{red} If $p_S \leq \alpha$ we have replication success at level $\alpha$}
+{\color{red} If $p_S \leq \alpha$ we have replication success at level $\alpha$} \\
+{\color{red} Recalibrated} {\color{orange} (golden)} $p_S$ are computed by default
 \end{center}
 \end{block}
 \end{minipage}
@@ -394,14 +403,20 @@ ssv <- function(zo, so, a) {
 }
 S <- function(U, L) (U - L)^2/(4*sqrt(U*L))
 
+ps_uncalibrated <- pSceptical(zo = study$fiso/study$se_fiso, 
+                              zr = study$fisr/study$se_fisr, 
+                              c = study$se_fiso^2/study$se_fisr^2,
+                              alternative = "one.sided", 
+                              type = "nominal")
 ps <- pSceptical(zo = study$fiso/study$se_fiso, 
                  zr = study$fisr/study$se_fisr, 
                  c = study$se_fiso^2/study$se_fisr^2,
                  alternative = "one.sided")
+
 s <- S(U = study$fiso + qnorm(0.975)*study$se_fiso,
        L = study$fiso - qnorm(0.975)*study$se_fiso)
 tau2 <- ssv(zo = study$fiso/study$se_fiso, 
-            so = study$se_fiso, a = ps*2)
+            so = study$se_fiso, a = ps_uncalibrated*2)
 sprior_df <- data.frame(x = 1.5, mu = 0,
                         upper = qnorm(p = 0.975)*sqrt(tau2),
                         lower = qnorm(p = 0.025)*sqrt(tau2))
@@ -444,25 +459,26 @@ scept_plot
 \end{minipage}
 \end{frame}
 
-\begin{frame}{4. Sceptical $p$-value}
-\framesubtitle{New definition of replication success}
-
-\begin{minipage}[t][2.7cm][t]{\textwidth}
-\vspace{-1em}
-\begin{block}{Which threshold?}
-  \begin{itemize}
-    \item nominal: $\alpha = 0.025$
-    \item controlled: $\alpha = 0.065$
-    \item[$\rightarrow$] function \texttt{thresholdSceptical()}
-  \end{itemize}
-\end{block}
-\end{minipage}
-\begin{minipage}[t][6cm][t]{\textwidth}
-<< fig.height = 4.5, echo = FALSE >>=
-scept_plot
-@
-\end{minipage}
-\end{frame}
+% Removed for tutorial in Frankfurt
+% \begin{frame}{4. Sceptical $p$-value}
+% \framesubtitle{New definition of replication success}
+% 
+% \begin{minipage}[t][2.7cm][t]{\textwidth}
+% \vspace{-1em}
+% \begin{block}{Which threshold?}
+%   \begin{itemize}
+%     \item nominal: $\alpha = 0.025$
+%     \item controlled: $\alpha = 0.065$
+%     \item[$\rightarrow$] function \texttt{thresholdSceptical()}
+%   \end{itemize}
+% \end{block}
+% \end{minipage}
+% \begin{minipage}[t][6cm][t]{\textwidth}
+% << fig.height = 4.5, echo = FALSE >>=
+% scept_plot
+% @
+% \end{minipage}
+% \end{frame}
 
 
 \begin{frame}{Discussion of different approaches}
@@ -1624,9 +1640,7 @@ Main arguments (\texttt{default}):
 # power calculation
 powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"), 
                         c = 3, 
-                        designPrior = "conditional", 
-                        level = 0.025, 
-                        type = "golden")
+                        designPrior = "conditional")
 
 @
 
