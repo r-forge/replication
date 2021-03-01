@@ -266,8 +266,16 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \begin{frame}{2. Compatibility of effect estimates}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-{\large \textit{Is the replication estimate contained in its prediction interval?}} \\
-$\rightarrow$ function: \texttt{predictionInterval()}
+\vspace{-2em}
+% {\large \textit{Is the replication estimate contained in its prediction interval?}} \\
+{\large \textit{Are the effect estimates statistically compatible?}} \\
+
+% $\rightarrow$ function: \texttt{predictionInterval()} \\
+% $\rightarrow$ function: \texttt{Qtest()}
+Replication effect contained in prediction interval? \\ 
+$\rightarrow$ function \texttt{predictionInterval()} \\
+$p$-value from meta-analytic $Q$-test statistically significant? \\ 
+$\rightarrow$ function \texttt{Qtest()}
 \end{block}
 \end{minipage}
 \begin{minipage}[t][6cm][t]{\textwidth}
@@ -276,6 +284,9 @@ pi_df <- predictionInterval(thetao = study$fiso,
                             seo = study$se_fiso,
                             ser = study$se_fisr)
 pi_df <- tanh(pi_df)
+q_pval <- Qtest(thetao = study$fiso, thetar = study$fisr, 
+                seo = study$se_fiso, ser = study$se_fisr)
+
 ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
@@ -288,6 +299,9 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
             aes(x = 1.8, y = mean,
                 label = "95% prediction interval"), 
             nudge_y = 0.4, size = 14) +
+  annotate(geom = "text", x = 1.5, y = 0.25, 
+           label = paste("italic(p)[Q] ==~", formatPval(q_pval)),
+           color = "springgreen4", size = 14, parse = TRUE) +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10) +
@@ -387,11 +401,12 @@ the original study not significant?}}
 
 $\rightarrow$ \texttt{pSceptical()} %% \\
 %%$\rightarrow$ 
-returns one-sided sceptical $p$-value % per default \\
+returns one-sided sceptical $p$-value \\% per default \\
+$\rightarrow$ recalibrated $p_S$ computed by default
  \vspace{.15cm}
 \begin{center}
-{\color{red} If $p_S \leq \alpha$ we have replication success at level $\alpha$} \\
-{\color{red} Recalibrated} {\color{orange} (golden)} $p_S$ are computed by default
+{\color{red} If $p_S \leq \alpha$ we have replication success at level $\alpha$} 
+% Recalibrated $p_S$ are computed by default
 \end{center}
 \end{block}
 \end{minipage}
@@ -411,7 +426,8 @@ ps_uncalibrated <- pSceptical(zo = study$fiso/study$se_fiso,
 ps <- pSceptical(zo = study$fiso/study$se_fiso, 
                  zr = study$fisr/study$se_fisr, 
                  c = study$se_fiso^2/study$se_fisr^2,
-                 alternative = "one.sided")
+                 alternative = "one.sided",
+                 type = "golden")
 
 s <- S(U = study$fiso + qnorm(0.975)*study$se_fiso,
        L = study$fiso - qnorm(0.975)*study$se_fiso)
@@ -474,14 +490,14 @@ scept_plot
 % \end{block}
 % \end{minipage}
 % \begin{minipage}[t][6cm][t]{\textwidth}
-% << fig.height = 4.5, echo = FALSE >>=
-% scept_plot
-% @
+<< fig.height = 4.5, echo = FALSE, eval = FALSE >>=
+scept_plot
+@
 % \end{minipage}
 % \end{frame}
 
 
-\begin{frame}{Discussion of different approaches}
+\begin{frame}{Assessement of replication success}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \vspace{-1.5em}
 \begin{block}{}
@@ -505,6 +521,14 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
             aes(x = x, y = y, 
                 label = paste("italic(p)[S] ==~", ps, sep = "")),
             parse = TRUE, size = 10, color = "purple3") +
+  geom_text(data = ma_data, color = "tan3",
+          aes(x = 1.4, y = ma_estimate_r, 
+              label = paste("italic(p)[m]", p_ma)),
+          nudge_y = -0.31, nudge_x = 0.12, 
+          size = 10, parse = TRUE) +
+    annotate(geom = "text", x = 1.5, y = 0.65, 
+             label = paste("italic(p)[Q] ==~", formatPval(q_pval)),
+             color = "springgreen4", size = 10, parse = TRUE) +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
             nudge_x = c(-0.3, 0.3), nudge_y = 0.3, size = 10,

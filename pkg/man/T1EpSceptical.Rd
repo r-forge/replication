@@ -74,7 +74,7 @@ levels <- c("nominal" = levelSceptical(level = 0.025, type = "nominal"),
             "golden" = levelSceptical(level = 0.025, type = "golden"))
 c <- seq(0.2, 5, by = 0.05)
 t1 <- sapply(X = levels, FUN = function(l) {
-  T1EpSceptical(level = l, c = c, alternative = "one.sided")
+  T1EpSceptical(level = l, c = c, alternative = "one.sided", type = "nominal")
 })
 matplot(x = c, y = t1*100, type = "l", lty = 1, lwd = 2, las = 1, log = "x",
         xlab = bquote(italic(c)), ylab = "Type-I error (\%)", xlim = c(0.2, 5))
@@ -84,5 +84,5 @@ legend("topright", legend = names(levels), lty = 1, lwd = 2, col = seq_along(lev
 ## at alpha = 0.05*0.025 = 0.00125
 T1EpSceptical(level = levelSceptical(level = 0.025, alternative = "one.sided", 
                                      type = "controlled"), 
-              c = 1, alternative = "one.sided")
+              c = 1, alternative = "one.sided",  type = "nominal")
 }

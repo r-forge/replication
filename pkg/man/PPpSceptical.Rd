@@ -90,7 +90,7 @@ c <- seq(0.4, 5, by = 0.01)
 alpha <- 0.025
 power <- 0.9
 pp <- sapply(X = levels, FUN = function(l) {
-  PPpSceptical(level = l, c = c, alpha, power, alternative = "one.sided")
+  PPpSceptical(level = l, c = c, alpha, power, alternative = "one.sided", type = "nominal")
 })
 
 ## compute project power of 2 trials rule
