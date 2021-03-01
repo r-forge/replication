@@ -238,7 +238,8 @@ for (p in unique(RProjects$project)) {
     plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), col = significant,
          xlim = c(-0.1, 1), main = p, xlab = expression(italic(r)[o]), 
          cex = 0.7, pch = 19, ylab = expression(italic(r)[r]))
-    legend("topleft", legend = "significant", pch = 20, col = "#DF536BCC", bty = "n")
+    legend("topleft", legend = "replication significant", cex = 0.8, pch = 20, 
+           col = "#DF536BCC", bty = "n")
     abline(h = 0, lty = 2)
     abline(a = 0, b = 1, col = "grey")
 }
@@ -421,18 +422,30 @@ original study.}
 
 \subsection{Compatibility of effect size}
 \paragraph{Analysis}
-Another analysis approach is to examine the statistical compatibility
-of original and replication effect estimate. A popular way of doing this
-is to check whether the replication
-estimate is contained within its prediction interval based on the original
-estimate \citep{Patil2016, Pawel2020}. With the function \texttt{predictionInterval}, a prediction
-interval of the replication effect estimate can be computed under different predictive
-distributions which depend on the design prior. The default design prior
-\texttt{"predictive"} is likely the choice most people would want to use as it takes
-into account the uncertainty of the original estimate without shrinking it.
+Another way for analysing a replication study is to examine the statistical compatibility
+between original and replication effect estimate. A popular approach is to check 
+whether the replication estimate is contained within a prediction interval 
+based on the original estimate \citep{Patil2016, Pawel2020}. 
+This approach based on a $(1 - \alpha)$
+prediction interval is in fact equivalent to conducting a meta-analytic $Q$-test 
+with the two estimates, and rejecting compatibility when the corresponding $p$-value
+$p_Q < \alpha$ \citep{Hedges2019b}. The $p$-value from the $Q$-test is usually
+preferred, since it tells quantitatively how compatible the estimates. In contrast,
+a prediction interval can give a better idea about the range of plausible 
+replication effect estimates besides the observed one. Both approaches are
+available in  \texttt{ReplicationSuccess}: The function \texttt{Qtest} returns
+the $p$-value from the meta-analytic $Q$-test, whereas the function
+\texttt{predictionInterval} returns a prediction interval for the replication 
+effect based on the original counterpart (see the documentation of the functions 
+for further details).
+% , a prediction interval of the replication effect
+% estimate can be computed under different predictive
+% distributions which depend on the design prior. The default design prior
+% \texttt{"predictive"} is likely the choice most people would want to use as it takes
+% into account the uncertainty of the original estimate without shrinking it.
 
-For the four data sets, we can easily compute 95\% prediction intervals and then check 
-whether the replication estimates are contained within them. For easier visual 
+For the four data sets, we can easily compute $p$-values from $Q$-test, as well
+as 95\% prediction intervals. For easier visual 
 assessment we transform the intervals and estimates back to the correlation scale.
 
 << "plot-predictionInterval", fig.height = 6 >>=
@@ -440,28 +453,40 @@ assessment we transform the intervals and estimates back to the correlation scal
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(RProjects$project)) {
     data_project <- subset(RProjects, project == p)
+    pQ <- Qtest(thetao = data_project$fiso, 
+                thetar = data_project$fisr,
+                seo = data_project$se_fiso, 
+                ser = data_project$se_fisr)
     PI <- predictionInterval(thetao = data_project$fiso, 
                              seo = data_project$se_fiso, 
                              ser = data_project$se_fisr)
     ## transforming back to correlation scale 
     PI <- tanh(PI)
-    within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
-    coverage <- mean(within)
-    color <- ifelse(within == TRUE, "#00000099", "#DF536BCC")
+    incompatible <- pQ < 0.05
+    color <- ifelse(incompatible == FALSE, "#00000099", "#DF536BCC")
     study <- seq(1, nrow(data_project))
     plot(data_project$rr, study, col = color, pch = 20, cex = 0.5,
          xlim = c(-0.5, 1), xlab = expression(italic(r)[r]), ylab = "Study",
-         main = paste0(p, ": ", round(coverage*100, 0), "% coverage"))
+         main = paste0(p, ": ", round(mean(incompatible)*100, 0), "% incompatible"))
     arrows(PI$lower, study, PI$upper, study, length = 0.02, angle = 90, code = 3, col = color)
     abline(v = 0, lty = 3)
 }
 @
-The criticism that this approach receives is that for studies which are
-underpowered, the prediction intervals will become very wide.
-This in turn can lead to very different effect estimates being compatible, 
-\eg even ones that go in the opposite direction, ultimately providing 
-no information about the effect itself (which actually happens in some 
-cases in the economics and philosophy data sets). 
+
+While both approaches enable statements about compatibility of original 
+and replication effect estimates, they carry a fundamental problem due to the
+structure of the underlying hypothesis test: If $p_Q < \alpha$ (or equivalently
+the $(1- \alpha)$ prediction interval does not contain the replication estimate)
+one has established incompatibility/non-replication. If, however, one fails to 
+establish incompatibility, it remains unclear whether this is due to small power
+or true compatibility of both estimates \citep{Hedges2019b}. 
+
+% The criticism that this approach receives is that for studies which are
+% underpowered, the prediction intervals will become very wide.
+% This in turn can lead to very different effect estimates being compatible, 
+% \eg even ones that go in the opposite direction, ultimately providing 
+% no information about the effect itself (which actually happens in some 
+% cases in the economics and philosophy data sets). 
 
 
 \subsection{The sceptical $p\,$-value}
