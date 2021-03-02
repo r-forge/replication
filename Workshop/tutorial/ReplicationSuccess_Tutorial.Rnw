@@ -63,6 +63,7 @@ opts_chunk$set(fig.path = "figures/fig",
 \maketitle
 
 \begin{frame}
+\section{Introduction}
   \begin{block}{}
   \begin{center}
   \color{uzh@blue}{\Huge \textbf{Introduction}}
@@ -220,6 +221,7 @@ study_plot
 \end{frame}
 
 \begin{frame}{When is a replication successful?}
+\section{When is a replication successful?}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \vspace{-1.5em}
 \begin{block}{Some proposed criteria}
@@ -560,6 +562,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \end{frame}
 
 \begin{frame}
+\section{Exercise 1 -- Analysis of replication studies}
   % \begin{block}{}
   \begin{center}
   \color{uzh@blue}{\Huge \textbf{Exercise Session 1}} 
@@ -1073,6 +1076,7 @@ print(discTab, include.rownames = FALSE, booktabs = TRUE,
 
 \begin{frame}
 \vspace{2cm}
+\section{Exercise 2 -- Design of replication studies}
   % \begin{block}{}
   \begin{center}
   \color{uzh@blue}{\Huge \textbf{Exercise Session 2}} 
@@ -1740,6 +1744,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 
 \begin{frame}
+  \section{Exercise 3 -- Design of replication studies}
   % \begin{block}{}
   \begin{center}
   \color{uzh@blue}{\Huge \textbf{Exercise Session 3}}
@@ -2102,6 +2107,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 
 \begin{frame}{Outlook}
+\section{Outlook}
 \begin{itemize}
   
   \item \alert{Between-study heterogeneity} \\
