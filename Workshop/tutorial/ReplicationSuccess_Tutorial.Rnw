@@ -7,6 +7,12 @@
 % nicer tables
 \usepackage{booktabs}
 
+% define same colors as in plots
+\definecolor{purple3}{RGB}{125,38,205}
+\definecolor{springgreen4}{RGB}{0, 139, 69}
+\definecolor{Rred}{RGB}{255,0,0}
+\definecolor{tan3}{RGB}{205,133,63}
+
 % citing
 \usepackage[round]{natbib}
 
@@ -236,7 +242,10 @@ study_plot
 \begin{frame}{1. Statistical significance}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-{\large \textit{Are both estimates statistically significant?}}
+{\large \textit{Are both estimates statistically significant in the same direction?}} 
+
+$\rightarrow$ Which threshold? \\
+$\rightarrow$ one-sided $\alpha = 0.025$ 
 \end{block}
 \end{minipage}
 \begin{minipage}[t][6cm][t]{\textwidth}
@@ -269,16 +278,15 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \begin{frame}{2. Compatibility of effect estimates}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-\vspace{-2em}
 % {\large \textit{Is the replication estimate contained in its prediction interval?}} \\
-{\large \textit{Are the effect estimates statistically compatible?}} \\
+{\large \textit{Is the meta-analytic $Q$-test of the estimates statistically 
+significant?}} 
 
-% $\rightarrow$ function: \texttt{predictionInterval()} \\
-% $\rightarrow$ function: \texttt{Qtest()}
-Replication effect contained in prediction interval? \\ 
-$\rightarrow$ function \texttt{predictionInterval()} \\
-$p$-value from meta-analytic $Q$-test statistically significant? \\ 
-$\rightarrow$ function \texttt{Qtest()}
+% Replication effect contained in its prediction interval? \\ 
+% $\rightarrow$ function \texttt{predictionInterval()} \\
+% $\rightarrow$ $Q$-test statistically significant at two-sided $\alpha = 0.05$? \\ 
+$\rightarrow$ Which threshold? \\
+$\rightarrow$ two-sided $\alpha = 0.05$ 
 \end{block}
 \end{minipage}
 \begin{minipage}[t][6cm][t]{\textwidth}
@@ -295,14 +303,14 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_pointrange(aes(ymin = tanh(z - qnorm(0.975)*se), 
                       ymax = tanh(z + qnorm(0.975)*se)),
                   size = 1.5) +
-  geom_pointrange(data = pi_df, size = 1.5, color = "springgreen4",
-                  aes(x = 1.9, y = mean, 
-                      ymin = lower, ymax = upper)) + 
-  geom_text(data = pi_df, color = "springgreen4",
-            aes(x = 1.8, y = mean,
-                label = "95% prediction interval"), 
-            nudge_y = 0.4, size = 14) +
-  annotate(geom = "text", x = 1.5, y = 0.25, 
+  # geom_pointrange(data = pi_df, size = 1.5, color = "springgreen4",
+  #                 aes(x = 1.9, y = mean, 
+  #                     ymin = lower, ymax = upper)) + 
+  # geom_text(data = pi_df, color = "springgreen4",
+  #           aes(x = 1.8, y = mean,
+  #               label = "95% prediction interval"), 
+  #           nudge_y = 0.4, size = 14) +
+  annotate(geom = "text", x = 1.47, y = 0.7,
            label = paste("italic(p)[Q] ==~", formatPval(q_pval)),
            color = "springgreen4", size = 14, parse = TRUE) +
   geom_text(aes(label = paste("italic(p) ==~", 
@@ -327,9 +335,10 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \begin{frame}{3. Meta-analysis of effect estimates}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-{\large \textit{Is a meta-analytic estimate statistically significant?}} \\
+{\large \textit{Is a meta-analytic estimate statistically significant?}} 
+
 $\rightarrow$ Which threshold? \\
-$\rightarrow$ $\alpha = 0.025^2 = 0.000625$
+$\rightarrow$ one-sided $\alpha = 0.025^2 = 0.000625$ \\
 \end{block}
 \end{minipage}
 \begin{minipage}[t][6cm][t]{\textwidth}
@@ -358,7 +367,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_text(data = ma_data, color = "tan3",
             aes(x = 1.4, y = ma_estimate_r, 
                 label = paste("italic(p)[m]", p_ma)),
-            nudge_y = -0.31, nudge_x = 0.12, 
+            nudge_y = 0.31, nudge_x = 0.12, 
             size = 15, parse = TRUE) +
   geom_text(aes(label = paste("italic(p) ==~", 
                               p, sep = "")), parse = TRUE, 
@@ -385,10 +394,20 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \begin{column}{0.5\textwidth}
   % \centering
 \includegraphics[width=1.1\textwidth]{images_presentation/Held2020.png}
+
+\vspace{6em}
+\begin{center}
+{\scriptsize \url{https://doi.org/10.1111/rssa.12493}}
+\end{center}
 \end{column}
 
 \begin{column}{0.5\textwidth}
 \includegraphics[width=1.1\textwidth]{images_presentation/Heldetal2020.png}
+
+\vspace{0.8em}
+\begin{center}
+{\scriptsize \url{https://arxiv.org/abs/2009.07782}}
+\end{center}
 \end{column}
 \end{columns}
 \end{frame}
@@ -397,19 +416,19 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 \begin{frame}{4. Sceptical $p$-value}
 \framesubtitle{New definition of replication success}
 \begin{minipage}[t][2.7cm][t]{\textwidth}
-\vspace{-2em}
+\vspace{-2.5em}
 \begin{block}{}
 {\large \textit{Can we convince a sceptic whose priof beliefs make
 the original study not significant?}}
+\vspace{0.5em}
 
-$\rightarrow$ \texttt{pSceptical()} %% \\
-%%$\rightarrow$ 
-returns one-sided sceptical $p$-value \\% per default \\
-$\rightarrow$ recalibrated $p_S$ computed by default
- \vspace{.15cm}
+$\rightarrow$ \texttt{pSceptical()} returns one-sided sceptical $p$-value $p_S$ \\
+% per default 
+$\rightarrow$ recalibration by default
+
+\vspace{.15cm}
 \begin{center}
 {\color{red} If $p_S \leq \alpha$ we have replication success at level $\alpha$} 
-% Recalibrated $p_S$ are computed by default
 \end{center}
 \end{block}
 \end{minipage}
@@ -478,37 +497,17 @@ scept_plot
 \end{minipage}
 \end{frame}
 
-% Removed for tutorial in Frankfurt
-% \begin{frame}{4. Sceptical $p$-value}
-% \framesubtitle{New definition of replication success}
-% 
-% \begin{minipage}[t][2.7cm][t]{\textwidth}
-% \vspace{-1em}
-% \begin{block}{Which threshold?}
-%   \begin{itemize}
-%     \item nominal: $\alpha = 0.025$
-%     \item controlled: $\alpha = 0.065$
-%     \item[$\rightarrow$] function \texttt{thresholdSceptical()}
-%   \end{itemize}
-% \end{block}
-% \end{minipage}
-% \begin{minipage}[t][6cm][t]{\textwidth}
-<< fig.height = 4.5, echo = FALSE, eval = FALSE >>=
-scept_plot
-@
-% \end{minipage}
-% \end{frame}
-
 
 \begin{frame}{Assessement of replication success}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \vspace{-1.5em}
 \begin{block}{}
   \begin{itemize}
-    \item Significance can always be achieved by increasing sample size
-    \item $Q$-test: Can only quantify evidence \emph{for} incompatibility
-    \item Meta-analysis: Exchangability assumption questionable
-    \item Sceptical $p$-value penalizes effect size shrinkage
+    \item {\color{Rred}Significance} doesn't take into account effect size
+    \item {\color{springgreen4}$Q$-test} doesn't take into account significance
+    \item {\color{tan3}Meta-analysis} assumes exchangeability
+    \item {\color{purple3}Sceptical $p$-value} takes into account effect size
+    and significance
 %%    \item Estimates can be compatible but provide no information about true effect
   \end{itemize} 
 \end{block}
@@ -530,7 +529,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
               label = paste("italic(p)[m]", p_ma)),
           nudge_y = -0.31, nudge_x = 0.12, 
           size = 10, parse = TRUE) +
-    annotate(geom = "text", x = 1.5, y = 0.65, 
+    annotate(geom = "text", x = 1.47, y = 0.7, 
              label = paste("italic(p)[Q] ==~", formatPval(q_pval)),
              color = "springgreen4", size = 10, parse = TRUE) +
   geom_text(aes(label = paste("italic(p) ==~", 
@@ -544,8 +543,8 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
   geom_text(aes(label = paste("italic(n) ==~", n, sep = "")),
             parse = TRUE, 
             nudge_x = c(-0.36, 0.23), nudge_y = -0.1, size = 10) +
-  geom_pointrange(data = pi_df, size = 1.5, color = "springgreen4",
-                  aes(x = 1.9, y = mean, ymin = lower, ymax = upper)) +
+  # geom_pointrange(data = pi_df, size = 1.5, color = "springgreen4",
+  #                 aes(x = 1.9, y = mean, ymin = lower, ymax = upper)) +
   geom_pointrange(data = ma_data,
                   aes(x = 1.5, y = ma_estimate_r, 
                       ymin = tanh(ma_estimate - qnorm(0.975)*se),
@@ -658,7 +657,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
                               round(z, 2), 
                               sep = "")), parse = TRUE, 
             nudge_x = c(-0.31, 0.27), nudge_y = -0.1, size = 10) +
-  scale_y_continuous(limits = c(-0.05, 1), 
+  scale_y_continuous(limits = c(-0.05, 1.2), 
                      breaks = seq(0, 2.5, 0.5),
                      sec.axis = sec_axis(trans = ~tanh(.), 
                                          breaks = lims_r,
@@ -753,13 +752,13 @@ For all studies from the replication projects investigate
 \end{block}
   \begin{block}{Exercise 1.1}
      How many study pairs fulfill the \emph{significance} criterion for 
-     replication success? Use a cut-off of $0.025$ for the one-sided 
+     replication success? Use a threshold of $\alpha = 0.025$ for the one-sided 
      $p$-values.
   \end{block}
   \begin{block}{Exercise 1.2}
     How many study pairs show \emph{compatible effect estimates} (on Fisher 
     $z$-scale)? Use the function
-    \texttt{Qtest()} and a cut-off of 0.05 for the resulting $p$-value.
+    \texttt{Qtest()} and a threshold of $\alpha = 0.05$ for the resulting $p$-value.
   \end{block}
 \end{frame}
 
@@ -1522,7 +1521,7 @@ legend("topright",
 \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
 
   \begin{block}{Exercise 2.2}
-We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
+% We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
 \begin{itemize}
 \item Compute and plot the relative sample sizes of the five studies to achieve a power of 80\% with the conditional and the predictive design prior. Use the function \texttt{sampleSizeSignificance()}
 \item Shrink the original effect estimate to 75\% of the reported value and use a conditonal design prior. How does the required relative sample size change compared to not shrinking the estimate? {\color{red} remove exercise for time reason if needed} 
@@ -2112,7 +2111,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 
 % ============================================================================
-\nocite{Pawel2019, Held2020, Opensc2015, Camerer2016, Camerer2018, Cova2018, Morewedge2010}
+\nocite{Morewedge2010, Opensc2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, Held2020, Held2020c}
 \begin{frame}{References}
   \tiny
   \bibliographystyle{apalike}
