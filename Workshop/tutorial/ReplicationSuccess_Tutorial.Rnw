@@ -756,8 +756,8 @@ For all studies from the replication projects investigate
      $p$-values.
   \end{block}
   \begin{block}{Exercise 1.2}
-    How many study pairs show \emph{compatible effect estimates} (on Fisher 
-    $z$-scale)? Use the function
+    For how many study pairs do you find evidence for \emph{incompatible effect 
+    estimates} (on Fisher $z$-scale)? Use the function
     \texttt{Qtest()} and a threshold of $\alpha = 0.05$ for the resulting $p$-value.
   \end{block}
 \end{frame}
@@ -828,7 +828,10 @@ for (p in unique(RProjects$project)) {
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = col_success, pch = 20,
        cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
-  legend("topleft", c("both significant", "not both significant"), 
+  legend("topleft", 
+         legend = c(expression(paste("both ", italic(p), "-values < 0.025")), 
+                    expression(paste("not both ", italic(p), "-values < 0.025"))),
+         # c("both significant", "not both significant"), 
          pch = 20, pt.cex = 2, cex = 1.4,
          # title = "signficant in same direction (5%)",
          col = c("#8B0000B3", "#333333B3"), bty = "n")
@@ -850,21 +853,20 @@ RProjects$c <- with(RProjects, se_fiso^2/se_fisr^2)
 ## compute for all projects
 RProjects$pQ <- Qtest(thetao = RProjects$fiso, thetar = RProjects$fisr,
                       seo = RProjects$se_fiso, ser = RProjects$se_fisr)
-## "technically" not a success but just a failure to reject the null
-RProjects$Qsuccess <- RProjects$pQ >= 0.05
-allQDF <- data.frame(project = "all", success = mean(RProjects$Qsuccess)*100, 
+RProjects$Qincompatible <- RProjects$pQ <= 0.05
+allQDF <- data.frame(project = "all", incomp = mean(RProjects$Qincompatible)*100, 
                      type = "Q-test",
-                     successFormat = paste0(round(mean(RProjects$Qsuccess)*100, 0),
-                                           "\\% (", sum(RProjects$Qsuccess),
-                                           "/", length(RProjects$Qsuccess), ")"))
+                     incompFormat = paste0(round(mean(RProjects$Qincompatible)*100, 0),
+                                           "\\% (", sum(RProjects$Qincompatible),
+                                           "/", length(RProjects$Qincompatible), ")"))
 
 ## compute for each project
 QList <- lapply(X = unique(RProjects$project), FUN = function(p) {
   data_project <- subset(RProjects, project == p)
-  data.frame(project = p, success = mean(data_project$Qsuccess)*100, type = "Q-test",
-             successFormat = paste0(round(mean(data_project$Qsuccess)*100, 0), 
-                                    "\\% (", sum(data_project$Qsuccess), "/", 
-                                    length(data_project$Qsuccess), ")"))
+  data.frame(project = p, incomp = mean(data_project$Qincompatible)*100, type = "Q-test",
+             incompFormat = paste0(round(mean(data_project$Qincompatible)*100, 0), 
+                                    "\\% (", sum(data_project$Qincompatible), "/", 
+                                    length(data_project$Qincompatible), ")"))
 })
 QDF <- do.call("rbind", QList)
 
@@ -872,7 +874,8 @@ QDF <- do.call("rbind", QList)
 ## table
 dfTable2 <- rbind(QDF, allQDF)[,c(1, 4)]
 Table2 <- xtable(dfTable2, digits = 1)
-colnames(Table2) <- c("Project", "Estimates ``compatible'' ($p_Q \\geq 0.05$)")
+colnames(Table2) <- c("Project", 
+                      "Incompatible estimates ($p_Q < 0.05$)")
 print(Table2, include.rownames = FALSE, booktabs = TRUE,
       add.to.row = list(pos = list(4), command = "\\midrule \n"),
       sanitize.text.function = function(x) {x}, floating = FALSE)
@@ -883,17 +886,23 @@ print(Table2, include.rownames = FALSE, booktabs = TRUE,
 
 \begin{frame}[fragile]{Solution: Exercise 1.2}
 << echo = FALSE >>=
-## compute prediction intervals for replication projects
 par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
-  PI <- predictionInterval(thetao = data_project$fiso,
-                           seo = data_project$se_fiso,
-                           ser = data_project$se_fisr)
-  PI <- tanh(PI) # transforming back to correlation scale
-  within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
-  coverage <- mean(within)
-  color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
+  pval_Q_project <- Qtest(thetao = data_project$fiso,
+                          thetar = data_project$fisr,
+                          seo = data_project$se_fiso,
+                          ser = data_project$se_fisr)
+  incompatible <- pval_Q_project < 0.05
+  PropIncomp <- mean(incompatible)
+  color <- ifelse(incompatible == FALSE, "#333333B3", "#8B0000B3")
+  # PI <- predictionInterval(thetao = data_project$fiso,
+  #                          seo = data_project$se_fiso,
+  #                          ser = data_project$se_fisr)
+  # PI <- tanh(PI) # transforming back to correlation scale
+  # within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
+  # coverage <- mean(within)
+  # color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
   # studynr <- seq(1, nrow(data_project))
   # plot(data_project$rr, studynr, col = color, pch = 20,
   #      xlim = c(-0.5, 1), xlab = expression(italic(r)[r]),
@@ -903,13 +912,13 @@ for (p in unique(RProjects$project)) {
   # arrows(PI$lower, studynr, PI$upper, studynr, length = 0.02,
   #        angle = 90, code = 3, col = color)
   # abline(v = 0, lty = 3)
-  title <- paste0(p, ": ", round(coverage*100, 0), '% "compatible"')
+  title <- paste0(p, ": ", round(PropIncomp*100, 0), '% incompatible')
   plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = color, pch = 20,
        cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
   legend("topleft", #c("incompatible", "compatible"), 
-         c(expression(italic(p)[Q] >= 0.05), expression(italic(p)[Q] < 0.05)),
+         c(expression(italic(p)[Q] < 0.05), expression(italic(p)[Q] >= 0.05)),
          pch = 20, pt.cex = 2, cex = 1.4,
          # title = "signficant in same direction (5%)",
          col = c("#8B0000B3", "#333333B3"), bty = "n")
@@ -985,10 +994,10 @@ for (p in unique(RProjects$project)) {
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = col_success, pch = 20,
        cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
-  legend("topleft", c(expression(italic(p)[s] >= 0.025),
-                      expression(italic(p)[s] < 0.025)),
+  legend("topleft", c(expression(italic(p)[s] < 0.025),
+                      expression(italic(p)[s] >= 0.025)),
          pch = 20, pt.cex = 2, cex = 1.4,
-         col = c("#333333B3", "#8B0000B3"), bty = "n")
+         col = c("#8B0000B3", "#333333B3"), bty = "n")
   abline(h = 0, lty = 2)
   abline(a = 0, b = 1, col = "grey")
 }
