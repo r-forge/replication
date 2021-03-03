@@ -3,8 +3,9 @@
 \title{Computes the level for the sceptical p-value}
 
 \description{
-  The level for the sceptical p-value is computed based on the specified
-  alternative and calibration type.
+  The equivalent level for the sceptical p-value is computed based on
+  the specified limiting relative effect size, the original level and
+  the alternative. 
 }
 
 \usage{
@@ -13,11 +14,12 @@ levelEquivalent(dinf, level=.025, alternative = "one.sided")
 
 \arguments{
 \item{dinf}{
-  The relative effect size bound below which replication success is
-  impossible for borderline significant original studies. 
+  The limiting relative effect size bound below which replication success is
+  deemed to be impossible for borderline significant original studies
+  with p-values equal to \code{level}. 
 }
 \item{level}{
-  The required significance level. This can be a vector. Defaults to
+  The original significance level. This can be a vector. Defaults to
   0.025. 
 }
 \item{alternative}{
@@ -28,11 +30,10 @@ levelEquivalent(dinf, level=.025, alternative = "one.sided")
 }
 }
 
-\value{
-The equivalent level where \code{dmin}=1, so at which replication success is
-  impossible for borderline significant original studies and
-  shrinkage of the replication effect estimate. 
-}
+\value{ The equivalent level corresponds to \code{dmin}=1, so at the
+  equivalent level
+replication success is impossible for borderline significant original
+studies and shrinkage of the replication effect estimate.  }
 
 \references{
 Held, L. (2020). A new standard for the analysis and design of replication studies (with discussion). 
@@ -40,16 +41,12 @@ Held, L. (2020). A new standard for the analysis and design of replication studi
     in Society)}, \bold{183}, 431-448.  
   \url{https://doi.org/10.1111/rssa.12493}
 
-Held, L. (2020). The harmonic mean chi-squared test to substantiate scientific findings. 
-  \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, \bold{69}, 697-708.  
-\url{https://doi.org/10.1111/rssc.12410}
-
 Held, L., Micheloud, C. & Pawel, S. (2020). The assessment of replication success 
 based on relative effect size. \url{https://arxiv.org/abs/2009.07782}
 }
 
 \seealso{
-  \code{\link{pSceptical}}, \code{\link{T1EpSceptical}}
+  \code{\link{pSceptical}}, \code{\link{levelSceptical}}
 }
 
 \author{
