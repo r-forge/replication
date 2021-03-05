@@ -368,7 +368,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
                   size = 1.5, color = "tan3") +
   geom_text(data = ma_data, color = "tan3",
             aes(x = 1.4, y = ma_estimate_r, 
-                label = paste("italic(p)[m]", p_ma)),
+                label = paste("italic(p)[M]", p_ma)),
             nudge_y = 0.31, nudge_x = 0.12, 
             size = 15, parse = TRUE) +
   geom_text(aes(label = paste("italic(p) ==~", 
@@ -528,7 +528,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
             parse = TRUE, size = 10, color = "purple3") +
   geom_text(data = ma_data, color = "tan3",
           aes(x = 1.4, y = ma_estimate_r, 
-              label = paste("italic(p)[m]", p_ma)),
+              label = paste("italic(p)[M]", p_ma)),
           nudge_y = -0.31, nudge_x = 0.12, 
           size = 10, parse = TRUE) +
     annotate(geom = "text", x = 1.47, y = 0.7, 
@@ -587,7 +587,7 @@ ggplot(data = plot_df, aes(x = Study, y = r)) +
 %% \begin{frame}[fragile]{Installation}
   \begin{block}{}
     \begin{itemize}
-      \item Statistical methods and functionality for the design and analysis of replication studies (work in progress!)
+      %% \item Statistical methods and functionality for the design and analysis of replication studies (work in progress!)
       \item Installation
 << eval = FALSE, size = "small" >>=
 # Linux / Windows
