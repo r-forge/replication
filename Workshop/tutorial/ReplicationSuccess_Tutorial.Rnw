@@ -118,7 +118,8 @@ opts_chunk$set(fig.path = "figures/fig",
 << size = "normalsize" >>=
 library(ReplicationSuccess)
 data("RProjects")
-social <- subset(RProjects, project == "Social Sciences")
+social <- subset(RProjects, 
+                 project == "Social Sciences")
 @
 \end{frame}
 
@@ -656,7 +657,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
                               round(r, 2), 
                               sep = "")), parse = TRUE, 
             nudge_x = c(-0.31, 0.27), nudge_y = 0.1, size = 10) +
-  geom_text(aes(label = paste("italic(z) ==~", 
+  geom_text(aes(label = paste("italic(fis) ==~", 
                               round(z, 2), 
                               sep = "")), parse = TRUE, 
             nudge_x = c(-0.31, 0.27), nudge_y = -0.1, size = 10) +
@@ -754,13 +755,13 @@ RProjects$pr1 <- z2p(RProjects$zr,
 For all studies from the replication projects investigate
 \end{block}
   \begin{block}{Exercise 1.1}
-     How many study pairs fulfill the \emph{significance} criterion for 
+     How many study pairs fulfill the \textbf{significance} criterion for 
      replication success? Use a threshold of $\alpha = 0.025$ for the one-sided 
      $p$-values.
   \end{block}
   \begin{block}{Exercise 1.2}
-    For how many study pairs do you find evidence for \emph{incompatible effect 
-    estimates} (on Fisher $z$-scale)? Use the function
+    For how many study pairs do you find evidence for \textbf{incompatible} effect 
+    estimates (on Fisher $z$-scale)? Use the function
     \texttt{Qtest()} and a threshold of $\alpha = 0.05$ for the resulting $p$-value.
   \end{block}
 \end{frame}
@@ -889,7 +890,7 @@ print(Table2, include.rownames = FALSE, booktabs = TRUE,
 
 \begin{frame}[fragile]{Solution: Exercise 1.2}
 << echo = FALSE >>=
-par(mfrow = c(2, 2), las = 1, mai = rep(0.65, 4))
+par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
   pval_Q_project <- Qtest(thetao = data_project$fiso,
@@ -919,7 +920,7 @@ for (p in unique(RProjects$project)) {
   plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = color, pch = 20,
-       cex.main = 1.5, cex.axis = 1.5, cex.lab = 1.5)
+       cex.main = 1.7, cex.axis = 1.5, cex.lab = 1.5)
   legend("topleft", #c("incompatible", "compatible"), 
          c(expression(italic(p)[Q] < 0.05), expression(italic(p)[Q] >= 0.05)),
          pch = 20, pt.cex = 2, cex = 1.4,
@@ -936,12 +937,12 @@ for (p in unique(RProjects$project)) {
 
 For all studies from the replication projects investigate
   \begin{block}{Exercise 1.3}
-    Compute the one-sided \emph{sceptical $p$-value}. How many replication 
+    Compute the one-sided \textbf{sceptical $p$-value}. How many replication 
     studies are successful at $0.025$? 
       Use the function \texttt{pSceptical()}
   \end{block}
   \begin{block}{Exercise 1.4}
-    Look closer at the studies which show discrepancies in terms of replication 
+    Look closer at the studies which show \textbf{discrepancies} in terms of replication 
     success based on significance and the sceptical $p$-value. How do their 
     effect estimates and sample sizes compare?
   \end{block}
