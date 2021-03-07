@@ -43,6 +43,7 @@
 \titlegraphic{\vspace{-1em}\flushright\includegraphics[width=0.4\textwidth]{images_presentation/CRS_Hexasticker7.pdf}}
 \date{12.03.2021}
 
+
 % ----------------------------------------------------------------------------
 << include = FALSE, purl = FALSE >>=
 library(knitr)
@@ -62,11 +63,13 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{document}
 \maketitle
 
+
+
 \begin{frame}
 \section{Introduction}
   \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Introduction}}
+  \color{uzh@blue}{\Huge \textbf{Introduction}}   \footnote{Poll 1}  
    \end{center}
   \end{block}
 \end{frame}
@@ -174,7 +177,7 @@ ggplot(data = SSRP, aes(x = ro, y = rr)) +
 \begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{Original discovery}
 \begin{itemize}
-  \item[] ``Repeatedly imagining eating a food subsequently reduces the actual consumption of that food''
+  \item[] ``Repeatedly imagining eating a food subsequently reduces the actual consumption of that food'' 
   % \item $ro = 0.45, p_o = 0.009$
   % \item $rr = 0.35, p_r = 0.0006$
 \end{itemize}
@@ -218,6 +221,8 @@ study_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
         axis.title = element_text(size = 30)) 
 study_plot
 @
+\vspace{-0.5cm}
+{\tiny Poll 2}
 \end{minipage}
 \end{frame}
 
@@ -764,6 +769,7 @@ For all studies from the replication projects investigate
     estimates (on Fisher $z$-scale)? Use the function
     \texttt{Qtest()} and a threshold of $\alpha = 0.05$ for the resulting $p$-value.
   \end{block}
+  {\tiny Poll 3}
 \end{frame}
 
 \begin{frame}[fragile]{Solution: Exercise 1.1}  
@@ -1080,16 +1086,11 @@ print(discTab, include.rownames = FALSE, booktabs = TRUE,
 \section{Exercise 2 -- Design of replication studies}
   % \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Exercise Session 2}} 
+  \color{uzh@blue}{\Huge \textbf{Exercise Session 2}} \footnote{  {Poll 4}}
   \\~\\
   {\LARGE Design based on significance}
    \end{center}
    
-   \vspace{2cm}
-   \begin{center}
-{\color{red} \small \emph{Poll: how should we choose the sample size of 
-  the replication study?}}
-  \end{center}
   % \end{block}
 \end{frame}
 
@@ -1418,6 +1419,7 @@ We decide to use the same sample size as in the original study ($c = 1$).
 \item Compute and plot the conditional and predictive power of the five replication studies. Use the function \texttt{powerSignificance()} % Goal: bordeline significant original study: very low power with both methods
 \item Shrink the original effect estimate by a factor of 25\% and use a conditonal design prior. How does the power compare to the conditional power without shrinkage? {\color{red} remove exercise for time reason if needed} 
 \end{itemize}
+{\tiny Poll 5}
   \end{block}
 <<echo = FALSE, eval = F>>=
 
@@ -1806,6 +1808,7 @@ powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"),
     \item Compare conditional power for replication success with conditional power for significance (exercise 2.1).
     \end{itemize}
   \end{block}
+  {\tiny Poll 6}
 \end{frame}
 
 
