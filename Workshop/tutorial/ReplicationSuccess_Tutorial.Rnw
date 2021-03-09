@@ -63,13 +63,19 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{document}
 \maketitle
 
-
+\begin{frame}
+\begin{block}{}
+  \begin{center}
+    \color{red}{\Huge \textbf{Poll 1}} 
+  \end{center}
+\end{block}
+\end{frame}
 
 \begin{frame}
 \section{Introduction}
   \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Introduction}}   \footnote{Poll 1}  
+  \color{uzh@blue}{\Huge \textbf{Introduction}} 
    \end{center}
   \end{block}
 \end{frame}
@@ -174,6 +180,18 @@ ggplot(data = SSRP, aes(x = ro, y = rr)) +
 
 \begin{frame}{\citet{Morewedge2010}. Science}
 % \framesubtitle{Thought for Food: Imagined Consumption Reduces Actual Consumption}
+
+\only<2>{
+\begin{minipage}[t][8cm][t]{\textwidth}
+\begin{block}{}
+  \begin{center}
+    \vspace{2.5cm}
+    \color{red}{\Huge \textbf{Poll 2}} 
+  \end{center}
+\end{block}
+\end{minipage}
+}
+
 \begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{Original discovery}
 \begin{itemize}
@@ -222,7 +240,6 @@ study_plot <- ggplot(data = plot_df, aes(x = Study, y = r)) +
 study_plot
 @
 \vspace{-0.5cm}
-{\tiny Poll 2}
 \end{minipage}
 \end{frame}
 
@@ -662,7 +679,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
                               round(r, 2), 
                               sep = "")), parse = TRUE, 
             nudge_x = c(-0.31, 0.27), nudge_y = 0.1, size = 10) +
-  geom_text(aes(label = paste("italic(fis) ==~", 
+  geom_text(aes(label = paste("'fis' ==~", 
                               round(z, 2), 
                               sep = "")), parse = TRUE, 
             nudge_x = c(-0.31, 0.27), nudge_y = -0.1, size = 10) +
@@ -769,7 +786,33 @@ For all studies from the replication projects investigate
     estimates (on Fisher $z$-scale)? Use the function
     \texttt{Qtest()} and a threshold of $\alpha = 0.05$ for the resulting $p$-value.
   \end{block}
-  {\tiny Poll 3}
+\end{frame}
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+
+\only<2>{
+\begin{minipage}[t][8cm][t]{\textwidth}
+\begin{block}{}
+  \begin{center}
+    \vspace{2.5cm}
+    \color{red}{\Huge \textbf{Poll 3 \& 4}} 
+  \end{center}
+\end{block}
+\end{minipage}
+}
+
+For all studies from the replication projects investigate
+  \begin{block}{Exercise 1.3}
+    Compute the one-sided \textbf{sceptical $p$-value}. How many replication 
+    studies are successful at $0.025$? 
+      Use the function \texttt{pSceptical()}
+  \end{block}
+  \begin{block}{Exercise 1.4}
+    Look closer at the studies which show \textbf{discrepancies} in terms of replication 
+    success based on significance and the sceptical $p$-value. How do their 
+    effect estimates and sample sizes compare?
+  \end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Solution: Exercise 1.1}  
@@ -938,23 +981,6 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
-
-For all studies from the replication projects investigate
-  \begin{block}{Exercise 1.3}
-    Compute the one-sided \textbf{sceptical $p$-value}. How many replication 
-    studies are successful at $0.025$? 
-      Use the function \texttt{pSceptical()}
-  \end{block}
-  \begin{block}{Exercise 1.4}
-    Look closer at the studies which show \textbf{discrepancies} in terms of replication 
-    success based on significance and the sceptical $p$-value. How do their 
-    effect estimates and sample sizes compare?
-  \end{block}
-\end{frame}
-
-
 \begin{frame}[fragile]{Solution: Exercise 1.3}
 << echo = FALSE, fig.height = 4, results = "asis" >>=
 ## computing one.sided sceptical p-value for replication projects
@@ -1082,16 +1108,23 @@ print(discTab, include.rownames = FALSE, booktabs = TRUE,
 \end{frame}
 
 \begin{frame}
-\vspace{2cm}
 \section{Exercise 2 -- Design of replication studies}
   % \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Exercise Session 2}} \footnote{  {Poll 4}}
+  \color{uzh@blue}{\Huge \textbf{Exercise Session 2}}
   \\~\\
   {\LARGE Design based on significance}
    \end{center}
-   
   % \end{block}
+\end{frame}
+
+
+\begin{frame}
+\begin{block}{}
+  \begin{center}
+    \color{red}{\Huge \textbf{Poll 5}}
+  \end{center}
+\end{block}
 \end{frame}
 
 
@@ -1411,6 +1444,18 @@ powerSignificance(zo = p2z(0.004, alternative = "one.sided"),
 
 \begin{frame}{Exercises}
 \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+
+\only<2>{
+\begin{minipage}[t][8cm][t]{\textwidth}
+\begin{block}{}
+  \begin{center}
+    \vspace{2.5cm}
+    \color{red}{\Huge \textbf{Poll 6}}
+  \end{center}
+\end{block}
+\end{minipage}
+}
+
   \begin{block}{Exercise 2.1}
 We have five original studies that we want to replicate. The one-sided $p$-values are 
 $0.0001$, $0.001$, $0.005$, $0.01$, and $0.025$, respectively. 
@@ -1419,7 +1464,6 @@ We decide to use the same sample size as in the original study ($c = 1$).
 \item Compute and plot the conditional and predictive power of the five replication studies. Use the function \texttt{powerSignificance()} % Goal: bordeline significant original study: very low power with both methods
 \item Shrink the original effect estimate by a factor of 25\% and use a conditonal design prior. How does the power compare to the conditional power without shrinkage? {\color{red} remove exercise for time reason if needed} 
 \end{itemize}
-{\tiny Poll 5}
   \end{block}
 <<echo = FALSE, eval = F>>=
 
@@ -1798,6 +1842,18 @@ powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"),
 
 \begin{frame}[fragile]{Exercises}
 \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+
+\only<2>{
+\begin{minipage}[t][8cm][t]{\textwidth}
+\begin{block}{}
+  \begin{center}
+    \vspace{2.5cm}
+    \color{red}{\Huge \textbf{Poll 7}}
+  \end{center}
+\end{block}
+\end{minipage}
+}
+
   \begin{block}{Exercise 3.1}
     \begin{itemize}
     \item Compute and plot the conditional and predictive power for replication success. 
@@ -1808,7 +1864,6 @@ powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"),
     \item Compare conditional power for replication success with conditional power for significance (exercise 2.1).
     \end{itemize}
   \end{block}
-  {\tiny Poll 6}
 \end{frame}
 
 
