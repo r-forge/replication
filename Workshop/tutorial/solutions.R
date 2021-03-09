@@ -191,7 +191,7 @@ pow.cond <- powerSignificance(zo = p2z(po.plot, alternative = "one.sided"),
                               c = 1, designPrior = "conditional")
 pow.condshrink <- powerSignificance(zo = p2z(po.plot, alternative = "one.sided"), 
                                     c = 1, designPrior = "conditional", 
-                                    shrinkage = 0.75)
+                                    shrinkage = 0.25)
 plot(po.plot, pow.cond*100, col = "red", ylim = c(0, 100), type = "l", 
      xlab = "One-sided original p-value", ylab = "Power (in %)")
 lines(po.plot, pow.condshrink*100, col = "red", lty = 2)
@@ -220,7 +220,7 @@ ss.cond <- sampleSizeSignificance(zo = p2z(po.plot, alternative = "one.sided"),
                                   power = 0.8, designPrior = "conditional")
 ss.condshrink <- sampleSizeSignificance(zo = p2z(po.plot, alternative = "one.sided"), 
                                         power = 0.8, designPrior = "conditional", 
-                                        shrinkage = 0.75)
+                                        shrinkage = 0.25)
 plot(po.plot, ss.cond, type = "l", ylim = c(0, 4), col = "red", 
      xlab = "One-sided original p-value", ylab = "Relative sample size")
 lines(po.plot, ss.condshrink, col = "red", lty = 2)
@@ -229,85 +229,16 @@ legend("topleft",
        col = c("red", "red"), lty = c(1, 2), bty = "n")
 
 
-# Exercise 2.3
-# ----------------------------------------------------------------------
-library("lattice")
-library("ggplot2")
-eco <- subset(RProjects, project == "Experimental Economics")
-pow_c1 <- powerSignificance(zo = p2z(eco$po), c = eco$c, level = 0.025, 
-                            alternative = "one.sided", designPrior = "conditional")
-
-pow_p1 <- powerSignificance(zo = p2z(eco$po), c = eco$c, level = 0.025, 
-                            alternative = "one.sided", designPrior = "predictive")
-
-mat1 <- matrix(c(rep(eco$study, times = 2), pow_c1*100, pow_p1*100,
-                 rep(c("Conditional","Predictive"), times = c(nrow(eco), nrow(eco)))), 
-               ncol = 3)
-
-colnames(mat1) <- c("ID", "power", "group")
-mat1 <- as.data.frame(mat1)
-mat1$ID <- as.factor(mat1$ID)
-mat1$group <- factor(mat1$group, levels = c("Conditional", "Predictive"), 
-                     order = TRUE)
-mat1$power <- as.numeric(as.character(mat1$power))
-
-trellis.par.set(
-  list(
-    plot.symbol = list(col = 1, pch = 20, cex = 0.7),
-    box.rectangle = list(col = alpha("black", 0.5)),
-    box.umbrella = list(lty = 1, col = alpha("black", 0.5)),
-    strip.background = list(col = "white")
-  )
-)
-panel_bw <- function(x, y, groups, subscripts, ...) {
-  panel.bwplot(x = x, y = y, ...)
-  tapply(1:length(y), groups[subscripts], function(i) {
-    llines(
-      x = 1:nlevels(x),
-      y = y[i][order(x[i])],
-      col = rgb(.2, .2, .2, .2)
-    )
-    lpoints(
-      x = 1:nlevels(x),
-      y = y[i][order(x[i])],
-      col = rgb(.2, .2, .2, .2),
-      pch = 16,
-      cex = 1.2
-    )
-  })
-  panel.abline(h = 50, col="red", lty=2)
-}
-bwplot(power~group, data = mat1, groups = ID, panel = panel_bw, 
-       xlab = list(""), ylab = list("Power (in %)"),
-       between = list(x = 1), scales = list(x = "free", y = "free", rot = 0),
-       pch = "|")
-
-
-# Exercise 2.4
-# ----------------------------------------------------------------------
-philo <- subset(RProjects, project == "Experimental Philosophy")
-ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
-                                   designPrior = "conditional")
-plot(philo$c, ss_cond1,  xlim = c(0.01, 50), ylim = c(0.01, 50), 
-     xlab = "Reported relative sample size", 
-     ylab = "Calculated relative sample size", 
-     pch = 20, log = "xy", xaxt = "n", yaxt = "n")
-abline(a = 0, b = 1, col = "lightpink")
-axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), 
-     labels = c("1/100", "1/10", "1", "10", "50"))
-axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), 
-     labels = c("1/100", "1/10", "1", "10", "50"))
-
 
 # Exercise 3.1
 # ----------------------------------------------------------------------
 pow.cond2 <- powerReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
                                      c = 1, designPrior = "conditional", 
-                                     level  = 0.065, alternative = "one.sided")
+                                     level  = 0.025, alternative = "one.sided")
 
 pow.pred2 <- powerReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
                                      c = 1, designPrior = "predictive", 
-                                     level = 0.065, alternative = "one.sided")
+                                     level = 0.025, alternative = "one.sided")
 
 plot(po.plot, pow.cond2*100, type = "l", col = "red", ylim = c(0, 100),
      xlab = "One-sided original p-value", ylab = "Power (in %)", lty = 1)
@@ -323,37 +254,48 @@ legend("bottomleft", c("Replication success", "Significance"),
 
 # Exercise 3.2
 # ----------------------------------------------------------------------
-pow_c2 <- powerReplicationSuccess(zo = p2z(eco$po), c = eco$c, level = 0.065, 
-                                  alternative = "one.sided", designPrior = "conditional")
-pow_p2 <- powerReplicationSuccess(zo = p2z(eco$po), c = eco$c, level = 0.065, 
-                                  alternative = "one.sided", designPrior = "predictive")
-mat2 <- matrix(c(rep(eco$study, times = 2),
-                 pow_c2*100, pow_p2*100, 
-                 rep(c("Conditional", "Predictive"), times=c(nrow(eco),nrow(eco)))),
-               ncol = 3)
-colnames(mat2) <- c("ID", "power", "group")
-mat2 <- as.data.frame(mat2)
-mat2$ID <- as.factor(mat2$ID)
-mat2$group <- factor(mat2$group, levels = c("Conditional", "Predictive"), order = TRUE)
-mat2$power <- as.numeric(as.character(mat2$power))
-bwplot(power~group, data = mat2, groups = ID, panel = panel_bw, 
-       xlab = list(""), ylab = list("Power (in %)"),
-       between = list(x = 1), scales = list(x = "free", y = "free", rot = 0),
-       pch = "|")
+ss.cond2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
+                                         power = 0.8, 
+                                         alternative = "one.sided", 
+                                         type = "golden", 
+                                         designPrior = "conditional",
+                                         level = 0.025)
 
+ss.pred2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"), 
+                                         power = 0.8, 
+                                         alternative = "one.sided", 
+                                         designPrior = "predictive",
+                                         type = "golden", 
+                                         level = 0.025)
 
-# Exercise 3.3
-# ----------------------------------------------------------------------
-ss_c2 <- sampleSizeReplicationSuccess(zo = p2z(philo$po), power = 0.95, 
-                                      level = 0.065, 
-                                      alternative = "one.sided",
-                                      designPrior = "conditional")
-plot(philo$c, ss_c2, xlim = c(0.01, 50), ylim = c(0.01, 50), 
-     xlab = "Reported relative sample size", 
-     ylab = "Calculated relative sample size", 
-     pch = 20, log = "xy", xaxt = "n", yaxt = "n")
-abline(a = 0, b = 1, col = "lightpink")
-axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), 
-     labels = c("1/100", "1/10", "1", "10", "50"))
-axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), 
-     labels = c("1/100", "1/10", "1", "10", "50"))
+plot(po.plot, ss.cond2, type = "l", col = "red", ylim = c(0, 10), 
+     cex.lab = 1.5, cex.axis = 1.5, ylab = "Relative sample size", 
+     xlab = "One-sided original p-value", 
+     lwd = 2)
+
+lines(po.plot, ss.pred2, type = "l", col = "blue", lwd = 2)
+
+legend("topleft", c("Conditional", "Predictive"), col = c("red", "blue"), 
+      lty = 1, bty = "n", cex = 1.5, lwd = 2)
+
+plot(po.plot, ss.cond, type = "l", ylim = c(0, 10), col = "red", 
+     xlab = "One-sided original p-value", 
+     ylab = "Relative sample size", 
+     lwd = 2,
+     cex.lab = 1.5, 
+     cex.axis = 1.5, 
+     lty = 2)
+
+lines(po.plot, ss.cond2, 
+      col = "red", 
+      lty = 1, 
+      lwd = 2)
+
+legend("topleft", 
+       c("Replication Success", "Significance"),
+       lty = c(1, 2), 
+       col = "red",
+       bty = "n", 
+       cex = 1.5, 
+       lwd = 2)
+
