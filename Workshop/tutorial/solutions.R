@@ -11,7 +11,6 @@ data("RProjects")
 
 # Some data manipulations
 # ----------------------------------------------------------------------
-
 # computing z-values and variance ratio c
 RProjects$zo <- RProjects$fiso/RProjects$se_fiso
 RProjects$zr <- RProjects$fisr/RProjects$se_fisr
@@ -22,148 +21,139 @@ RProjects$po1 <- z2p(RProjects$zo, alternative = "greater")
 RProjects$pr1 <- z2p(RProjects$zr, alternative = "greater")
 
 
-# Exercise 1.1
+# Exercise 1.1 (Success based on statistical significance)
 # ----------------------------------------------------------------------
-for (p in unique(RProjects$project)) {
-  data_project <- subset(RProjects, project == p)
-  significantO <- data_project$po1 < 0.025
-  significantR <- data_project$pr1 < 0.025
-  success <- significantO & significantR 
-  
-  cat(paste0(p, ": \n"))
-  cat(paste0(round(mean(significantO)*100, 1), 
-             "% original studies significant (", 
-             sum(significantO), "/", length(significantO), ")\n"))
-  cat(paste0(round(mean(significantR)*100, 1), 
-             "% replications significant (", 
-             sum(significantR), "/", length(significantR), ")\n"))
-  cat(paste0(round(mean(success)*100, 1), 
-             "% both significant, same direction (",
-             sum(success), "/", length(success), ") \n \n"))
-}
+## compute for all projects
+significant_O <- RProjects$po1 < 0.025
+significant_R <- RProjects$pr1 < 0.025
+RProjects$successSignif <- significant_O & significant_R
+allDF <- data.frame(project = "all", 
+                    success = mean(RProjects$successSignif)*100)
 
-# plots
+## compute for each project
+successSignif <- lapply(X = unique(RProjects$project), FUN = function(p) {
+  data_project <- subset(RProjects, project == p)
+  data.frame(project = p, 
+             success = mean(data_project$successSignif)*100)
+})
+(signSuccessDF <- rbind(do.call("rbind", successSignif), allDF))
+
+## plots
+par(mfrow = c(2, 2), las = 1)
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
-  success <- data_project$po1 < 0.025 & data_project$pr1 < 0.025 
+  success <- data_project$successSignif
   col_success <- color <- ifelse(success == FALSE, "#333333B3", "#8B0000B3")
   title <- paste0(p, ": ", round(mean(success)*100, 0), 
                   "% (", sum(success), "/", length(success), ")")
   plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = col_success, pch = 20)
-  legend("topleft", c("both significant", "not both significant"), 
+  legend("topleft", 
+         legend = c(expression(paste("both ", italic(p), "-values < 0.025")), 
+                    expression(paste("not both ", italic(p), "-values < 0.025"))),
          pch = 20, col = c("#8B0000B3", "#333333B3"), bty = "n")
   abline(h = 0, lty = 2)
   abline(a = 0, b = 1, col = "grey")
 }
 
 
-# Exercise 1.2
+# Exercise 1.2 (Detecting incompatibility with Q-test)
 # ----------------------------------------------------------------------
+## compute for all projects
+RProjects$pQ <- Qtest(thetao = RProjects$fiso, thetar = RProjects$fisr,
+                      seo = RProjects$se_fiso, ser = RProjects$se_fisr)
+RProjects$Qincompatible <- RProjects$pQ <= 0.05
+allQDF <- data.frame(project = "all", 
+                     incomp = mean(RProjects$Qincompatible)*100)
+
+## compute for each project
+Qproject <- lapply(X = unique(RProjects$project), FUN = function(p) {
+  data_project <- subset(RProjects, project == p)
+  data.frame(project = p, 
+             incomp = mean(data_project$Qincompatible)*100)
+})
+(QDF <- rbind(do.call("rbind", Qproject), allQDF))
+
+## plot
+par(mfrow = c(2, 2), las = 1)
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
-  PI <- predictionInterval(thetao = data_project$fiso, 
-                           seo = data_project$se_fiso, 
-                           ser = data_project$se_fisr)
-  
-  PI <- tanh(PI) # transforming back to correlation scale
-  
-  within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
-  coverage <- mean(within)
-  color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
-  studynr <- seq(1, nrow(data_project))
-  plot(data_project$rr, studynr, col = color, pch = 20, 
-       xlim = c(-0.5, 1), xlab = expression(italic(r)[r]), 
-       main = paste0(p, ": ", round(coverage*100, 0), "% coverage"), 
-       yaxt = "n", ylab = "")
-  arrows(PI$lower, studynr, PI$upper, studynr, length = 0.02, 
-         angle = 90, code = 3, col = color)
-  abline(v = 0, lty = 3)
+  incompatible <- data_project$pQ < 0.05
+  PropIncomp <- mean(incompatible)
+  color <- ifelse(incompatible == FALSE, "#333333B3", "#8B0000B3")
+  title <- paste0(p, ": ", round(PropIncomp*100, 0), '% incompatible')
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
+       xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]), col = color, pch = 20)
+  legend("topleft", 
+         c(expression(italic(p)[Q] < 0.05), expression(italic(p)[Q] >= 0.05)),
+         pch = 20, col = c("#8B0000B3", "#333333B3"), bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
 }
 
-
-# Exercise 1.3
+# Exercise 1.3 (sceptical p-value)
 # ----------------------------------------------------------------------
+## compute for all projects
 RProjects$ps <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
-                                           alternative = "one.sided"))
-threshNominal <- thresholdSceptical(level = 0.025, alternative = "one.sided")
-threshControlled <- thresholdSceptical(level = 0.025, type = "controlled", 
-                                       alternative = "one.sided")
+                                           alternative = "one.sided",
+                                           type = "golden"))
+RProjects$pSsuccess <- RProjects$ps < 0.025
+allpsDF <- data.frame(project = "all", 
+                      success = mean(RProjects$pSsuccess)*100)
 
+## compute for each project
+psProjects <- lapply(X = unique(RProjects$project), FUN = function(p) {
+  data_project <- subset(RProjects, project == p)
+  data.frame(project = p, 
+             success = mean(data_project$pSsuccess)*100)
+})
+(psDF <- rbind(do.call("rbind", psProjects), allpsDF))
+
+
+## plot
+par(mfrow = c(2, 2), las = 1)
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
-  cat(paste0(p, ": \n"))
-  success_scept_nominal <- (data_project$ps < threshNominal)
-  success_scept_controlled <- (data_project$ps < threshControlled)
-  cat(paste0(round(mean(success_scept_controlled)*100, 1), 
-             "% smaller than controlled threshold 0.065 (",
-             sum(success_scept_controlled), "/", 
-             length(success_scept_controlled), ") \n"))
-  cat(paste0(round(mean(success_scept_nominal)*100, 1), 
-             "% smaller than nominal threshold 0.025 (",
-             sum(success_scept_nominal), "/", 
-             length(success_scept_nominal), ") \n"))
-  cat("\n")
-}
-
-# plots
-for (p in unique(RProjects$project)) {
-  data_project <- subset(RProjects, project == p)
-  success_scept_controlled <- (data_project$ps < threshControlled)
-  col_success <- ifelse(success_scept_controlled == FALSE, 
-                        "#333333B3", "#8B0000B3")
-  title <- paste0(p, ": ", round(mean(success_scept_controlled)*100, 0), 
-                  "% (", sum(success_scept_controlled), "/", 
-                  length(success_scept_controlled), ")")
+  success <- data_project$pSsuccess
+  col_success <- ifelse(success == FALSE, "#333333B3", "#8B0000B3")
+  title <- paste0(p, ": ", round(mean(success)*100, 0), "% (",
+                  sum(success), "/",  length(success), ")")
   plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = col_success, pch = 20)
-  legend("topleft", c("p-sceptical > 0.065", "p-sceptical < 0.065"), 
-         pch = 20, col = c("#333333B3", "#8B0000B3"), bty = "n")
+  legend("topleft", c(expression(italic(p)[s] < 0.025),
+                      expression(italic(p)[s] >= 0.025)),
+         pch = 20, col = c("#8B0000B3", "#333333B3"), bty = "n")
   abline(h = 0, lty = 2)
   abline(a = 0, b = 1, col = "grey")
 }
 
 
-# Exercise 1.4
+# Exercise 1.4 (Looking closer at studies where discrepancies between methods)
 # ----------------------------------------------------------------------
-options(scipen = 5)
+## plot
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
-  cat(paste0(p, ": \n"))
-
-  success_scept_controlled <- (data_project$ps < threshControlled)
-  success_tradit <- data_project$po1 < 0.025 & data_project$pr1 < 0.025 
-  
-  if(any(success_tradit != success_scept_controlled) == TRUE){
-    discrepant <- which(success_scept_controlled != success_tradit)
-    discrepant_df <- data_project[discrepant,
-                                  c("ro", "rr", "c", "po1", "pr1", "ps")]
-    # print effect estimates, 1-sided p-values, and c of discrepant studies
-    print(signif(discrepant_df, 2), row.names = FALSE)
-  }
-  cat("\n")
-}
-
-# plot
-for (p in unique(RProjects$project)) {
-  data_project <- subset(RProjects, project == p)
-  success_scept_controlled <- (data_project$ps < threshControlled)
-  success_tradit <- data_project$po1 < 0.025 & data_project$pr1 < 0.025 
-  discrepant <- success_scept_controlled != success_tradit
-  col_discrepant <- ifelse(discrepant == TRUE, 
-                        ifelse(success_scept_controlled == TRUE, 
+  discrep <- data_project$pSsuccess != data_project$successSignif
+  col_discord <- ifelse(discrep == TRUE,
+                        ifelse(data_project$pSsuccess == TRUE,
                                "#8B0000B3", "#00008AB3"), "#B2B2B299")
   plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
        xlim = c(-0.5, 1), main = p, xlab = expression(italic(r)[o]),
-       ylab = expression(italic(r)[r]), col = col_discrepant, pch = 20)
-  legend("topleft", c("only p-sceptical successful", 
-                      "only significance successful"), 
+       ylab = expression(italic(r)[r]), col = col_discord, pch = 20)
+  legend("topleft", legend = c(expression(paste(italic(p)[s], " only")),
+                               "significance only"),
          pch = 20, col = c("#8B0000B3", "#00008AB3"), bty = "n")
   abline(h = 0, lty = 2)
   abline(a = 0, b = 1, col = "grey")
 }
+
+## looking closer at sample size (ratio), effect estimates, p-values
+discrepantDF <- subset(RProjects, pSsuccess != successSignif)
+discrepantDF[, c("study", "project", "no", "nr", "c", "ro", "rr", "po1", "pr1", 
+                 "ps", "pSsuccess", "successSignif")]
 
 
 # Exercise 2.1
