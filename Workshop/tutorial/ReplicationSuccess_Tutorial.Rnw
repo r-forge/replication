@@ -805,7 +805,7 @@ For all studies from the replication projects investigate
 For all studies from the replication projects investigate
   \begin{block}{Exercise 1.3}
     Compute the one-sided \textbf{sceptical $p$-value}. How many replication 
-    studies are successful at $0.025$? 
+    studies are successful at $\alpha = 0.025$? 
       Use the function \texttt{pSceptical()}
   \end{block}
   \begin{block}{Exercise 1.4}
