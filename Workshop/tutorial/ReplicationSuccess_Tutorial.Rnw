@@ -796,7 +796,7 @@ For all studies from the replication projects investigate
 \begin{block}{}
   \begin{center}
     \vspace{2.5cm}
-    \color{red}{\Huge \textbf{Poll 3 \& 4}} 
+    \color{red}{\Huge \textbf{Poll 3}} 
   \end{center}
 \end{block}
 \end{minipage}
@@ -1121,7 +1121,7 @@ print(discTab, include.rownames = FALSE, booktabs = TRUE,
 \begin{frame}
 \begin{block}{}
   \begin{center}
-    \color{red}{\Huge \textbf{Poll 5}}
+    \color{red}{\Huge \textbf{Poll 4}}
   \end{center}
 \end{block}
 \end{frame}
@@ -1449,7 +1449,7 @@ powerSignificance(zo = p2z(0.004, alternative = "one.sided"),
 \begin{block}{}
   \begin{center}
     \vspace{2.5cm}
-    \color{red}{\Huge \textbf{Poll 6}}
+    \color{red}{\Huge \textbf{Poll 5}}
   \end{center}
 \end{block}
 \end{minipage}
@@ -1847,7 +1847,7 @@ powerReplicationSuccess(zo = p2z(0.004, alternative = "one.sided"),
 \begin{block}{}
   \begin{center}
     \vspace{2.5cm}
-    \color{red}{\Huge \textbf{Poll 7}}
+    \color{red}{\Huge \textbf{Poll 6}}
   \end{center}
 \end{block}
 \end{minipage}

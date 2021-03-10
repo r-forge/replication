@@ -11,12 +11,12 @@ data("RProjects")
 
 # Some data manipulations
 # ----------------------------------------------------------------------
-# computing z-values and variance ratio c
+## computing z-values and variance ratio c
 RProjects$zo <- RProjects$fiso/RProjects$se_fiso
 RProjects$zr <- RProjects$fisr/RProjects$se_fisr
 RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 
-# computing 1-sided p-values (all original estimates were positive)
+## computing 1-sided p-values (all original estimates coded in positive direction)
 RProjects$po1 <- z2p(RProjects$zo, alternative = "greater")
 RProjects$pr1 <- z2p(RProjects$zr, alternative = "greater")
 
@@ -158,7 +158,7 @@ discrepantDF[, c("study", "project", "no", "nr", "c", "ro", "rr", "po1", "pr1",
 
 # Exercise 2.1
 # ----------------------------------------------------------------------
-par(las = 1)
+par(mfrow = c(1, 1), las = 1)
 
 # first plot
 pval.or <- c(0.0001, 0.001, 0.005, 0.01, 0.025)
@@ -298,4 +298,3 @@ legend("topleft",
        bty = "n", 
        cex = 1.5, 
        lwd = 2)
-
