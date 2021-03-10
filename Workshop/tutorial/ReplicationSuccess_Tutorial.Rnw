@@ -805,7 +805,7 @@ For all studies from the replication projects investigate
 For all studies from the replication projects investigate
   \begin{block}{Exercise 1.3}
     Compute the one-sided \textbf{sceptical $p$-value}. How many replication 
-    studies are successful at $\alpha = 0.025$? 
+    studies are successful at $0.025$? 
       Use the function \texttt{pSceptical()}
   \end{block}
   \begin{block}{Exercise 1.4}
@@ -1191,6 +1191,11 @@ plot(grid,
      cex.axis = 1.2, 
      lwd = 2)
 
+legend("topright", 
+       "Power = 95%", 
+       bty = "n", 
+       cex = 1.75)
+
 @
 
 \end{frame}
@@ -1242,6 +1247,10 @@ axis(2,
      col.axis=1, 
      cex.axis = 1.2)
 
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
 
 @
 
@@ -1292,10 +1301,17 @@ axis(2,
      col.axis=1, 
      cex.axis = 1.2)
 
-plotCI(x = deltahat, y=0, li=quantile(deltahat2, 0.025), ui = quantile(deltahat2, 0.975),
+plotCI(x = deltahat,
+       y = 0, 
+       li = quantile(deltahat2, 0.025), 
+       ui = quantile(deltahat2, 0.975),
        col=2, lwd=2, add=TRUE, err="x")
 
 
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
 
 @
 \end{frame}
@@ -1380,6 +1396,11 @@ axis(2,
      col.axis = 2, 
      cex.axis = 1.2)
 
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
+
 @
 \end{frame}
 
@@ -1461,7 +1482,7 @@ $0.0001$, $0.001$, $0.005$, $0.01$, and $0.025$, respectively.
 We decide to use the same sample size as in the original study ($c = 1$). 
 \begin{itemize}
 \item Compute and plot the conditional and predictive power of the five replication studies. Use the function \texttt{powerSignificance()} % Goal: bordeline significant original study: very low power with both methods
-\item Shrink the original effect estimate by a factor of 25\% and use a conditonal design prior. How does the power compare to the conditional power without shrinkage? {\color{red} remove exercise for time reason if needed} 
+\item Shrink the original effect estimate by a factor of 25\% and use a conditonal design prior. How does the power compare to the conditional power without shrinkage?
 \end{itemize}
   \end{block}
 <<echo = FALSE, eval = F>>=
@@ -2009,7 +2030,7 @@ legend("topleft",
        col = c("red", "blue"), 
        lty = 1, 
        bty = "n", 
-       cex = 1.5, 
+       cex = 1.75, 
        lwd = 2)
 @
 \end{frame}
@@ -2040,7 +2061,7 @@ legend("topleft",
        lty = c(1, 2), 
        col = "red",
        bty = "n", 
-       cex = 1.5, 
+       cex = 1.75, 
        lwd = 2)
 
 @
