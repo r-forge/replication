@@ -8,7 +8,7 @@ levelEquivalent <- function(dinf, level=0.025, alternative="one.sided"){
         stop('alternative must be either "one.sided", "two.sided", "greater" or "less"')
 
     zalpha <- p2z(level, alternative=alternative)
-    K <- 0.5 + sqrt(1/dinf + 1/4)
+    K <- 0.5 + sqrt(1/dinf^2 + 1/4)
     phi <- (sqrt(5)+1)/2
     zalphaNew <- zalpha*sqrt(phi/K)
     alphaNew <- z2p(zalphaNew, alternative=alternative)
