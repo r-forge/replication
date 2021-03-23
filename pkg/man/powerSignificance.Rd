@@ -28,7 +28,10 @@ powerSignificance(zo, c = 1, level = 0.025, designPrior = "conditional",
   }
   \item{designPrior}{
     Either \code{"conditional"}, \code{"predictive"}, or \code{"EB"}.  
-    Defaults to \code{"conditional"}. If \code{"EB"}, the power is computed under a predictive distribution where the contribution of the original study is shrunken towards zero based on the evidence in the original study (with an empirical Bayes shrinkage estimator).
+    Defaults to \code{"conditional"}. If \code{"EB"}, the power is computed under
+    a predictive distribution where the contribution of the original study is
+    shrunken towards zero based on the evidence in the original study (with an
+    empirical Bayes shrinkage estimator).
   }
   \item{alternative}{
     Either \code{"two.sided"}, \code{"one.sided"}, \code{"less"}, or \code{"greater"}.  
@@ -45,8 +48,10 @@ powerSignificance(zo, c = 1, level = 0.025, designPrior = "conditional",
   \item{shrinkage}{
   A number in [0,1].
   Defaults to \code{0}. 
-  Specifies how much the original effect estimate is shrunken towards zero (e.g. the effect is shrunken by a factor of 25\% for \code{shrinkage = 0.25}). 
-  Is only taken into account when \code{designPrior = "conditional"} or \code{designPrior = "predictive"}.
+  Specifies how much the original effect estimate is shrunken towards zero 
+  (e.g. the effect is shrunken by a factor of 25\% for \code{shrinkage = 0.25}). 
+  Is only taken into account when \code{designPrior = "conditional"} or 
+  \code{designPrior = "predictive"}.
   }
 }
   \details{

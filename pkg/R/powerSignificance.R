@@ -21,7 +21,7 @@ powerSignificance <- function(zo,
         if (!is.numeric(shrinkage) || (shrinkage < 0 || shrinkage > 1)) 
             stop("shrinkage must be numeric and in [0, 1]")
         if (!is.numeric(level) || (level <= 0 || level >= 1))
-            stop("level must be numeric and in (0,1)!")
+            stop("level must be numeric and in (0, 1)!")
     
         # determine direction of alternative and critical value of zr
         v <- p2z(p = level, alternative = alternative) 

@@ -26,7 +26,7 @@ levelSceptical(level, alternative = "one.sided", type = "golden")
   \code{"liberal"}, \code{"controlled"} or \code{"golden"}.
   Defaults to \code{"golden"}. This type ensures that 
   for an original study just significant at the specified \code{level}, 
-  replication success is only possible if the replication effect estimate 
+  replication success is only possible if the replication effect estimate is
   larger than the original one.
   If \code{"type"} is \code{"controlled"} then the type-I error rate is equal
   to \code{level}^2 (for alternative = "two.sided") or 
