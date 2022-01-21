@@ -13,4 +13,4 @@ ReplicationSuccess_Tutorial.pdf: ReplicationSuccess_Tutorial.Rnw Makefile
 
 
 clean:
-	rm -f *.dvi *.aux *.log *.toc *.bmt *.bbl *.blg *.idx *.ilg *.ind *.mtc* *.flc *.out *.nav *.vrb *.snm *.gz *.tex
+	rm -f *.dvi *.aux *.log *.toc *.bmt *.bbl *.blg *.idx *.ilg *.ind *.mtc* *.flc *.out *.nav *.vrb *.snm *.gz 
