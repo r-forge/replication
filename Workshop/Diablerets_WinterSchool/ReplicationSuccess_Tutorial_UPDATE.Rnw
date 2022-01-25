@@ -18,6 +18,13 @@
 
 % biostat beamer theme
 \usepackage{beamerthemebiostat}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{wasysym}
+\definecolor{darkred}{rgb}{0.8,0,0}
+\usepackage{color}
+\definecolor{magenta}{cmyk}{0,1,0,0}
+\newcommand{\dmin}{d_{\tiny \mbox{min}}}
 
 % hyperref options
 \usepackage{hyperref}  
@@ -107,10 +114,11 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{frame}{Large-scale replication projects}
 \begin{block}{}
   \begin{itemize}
-    \item<1-> \color<5>{gray}{2015: Reproducibility project psychology}
-    \item<2-> \color<5>{gray}{2016: Experimental economics replication project}
-    \item<3-> \color<5>{gray}{2018: Experimental philosophy replicability project}
-    \item<4-> \color<5>{red}{2018: Social sciences replication project}
+    \item<1-> \color<6>{gray}{2015: Reproducibility project psychology}
+    \item<2-> \color<6>{gray}{2016: Experimental economics replication project}
+    \item<3-> \color<6>{gray}{2018: Experimental philosophy replicability project}
+    \item<4-> \color<6>{red}{2018: Social sciences replication project}
+    \item<5-> \color<6>{gray}{2021: Reproducibility Project: Cancer Biology}
   \end{itemize}
 \end{block}
 \begin{minipage}[t][5cm][t]{\textwidth}
@@ -124,7 +132,13 @@ opts_chunk$set(fig.path = "figures/fig",
   \only<3>{
   \includegraphics[width=0.6\textwidth]{images_presentation/cova2018.png}
   }
-  \only<4,5>{
+  \only<4>{
+  \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
+  }
+  \only<5>{
+  \includegraphics[width=0.6\textwidth]{images_presentation/errington2021.png}
+  }
+  \only<6>{
   \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
   }
 \end{minipage}
@@ -140,6 +154,56 @@ opts_chunk$set(fig.path = "figures/fig",
 \end{frame}
 
 \begin{frame}[fragile]{Social sciences replication project}
+  \framesubtitle{Correlation scale}
+<< echo = FALSE >>=
+library(ReplicationSuccess)
+library(ggplot2)
+data("RProjects")
+SSRP <- subset(RProjects, project == "Social Sciences")
+
+ggplot(data = SSRP, aes(x = ro, y = rr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.7, size = 7, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = expression(paste("Original effect estimate ", r[o])), 
+       y = expression(paste("Replication effect estimate ", r[r]))) +
+  lims(x = c(-0.15, 1), y = c(-0.15, 1)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Statistical framework of package}
+\begin{block}{}
+\begin{itemize}
+\item Effect estimates are assumed to be {\color{red} normally distributed} after suitable transformation \\
+$\rightarrow$ {\color{red} Fisher's $z$-transformation} for correlation 
+coefficients $r$ with (effective) sample size $n - 3$
+\end{itemize}
+\end{block}
+<< fig.height = 4.5, echo = FALSE>>=
+r <- seq(-1, 1, 0.001)
+ztrans_df <- data.frame(r, z = atanh(r))
+ggplot(data = ztrans_df, aes(x = r, y = z)) +
+  geom_abline(intercept = 0, slope = 1, lty = 2, size = 1,
+              alpha = 0.6) +
+  geom_line(size = 1) + 
+  labs(x = expression(paste("Correlation ", italic(r))), 
+       y = expression(paste("Fisher-", italic(z)))) +
+  theme_bw() +
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30))
+@
+\end{frame}
+
+\begin{frame}[fragile]{Social sciences replication project}
+  \framesubtitle{Fisher-$z$ scale}
 << echo = FALSE >>=
 library(ReplicationSuccess)
 library(ggplot2)
@@ -162,6 +226,7 @@ ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
 \end{frame}
 
 \begin{frame}{Social sciences replication project}
+  \framesubtitle{Fisher-$z$ scale}
 << echo = FALSE >>=
 study <- subset(SSRP,
                 study == "Pyc and Rawson (2010), Science")
@@ -239,7 +304,7 @@ study_plot <- ggplot(data = plot_df, aes(x = Study, y = z)) +
            label = "?", size = 55, 
            color = "red") + 
   ylim(-0.05, 1) +
-   labs(x = " ", y = expression(italic(hat(theta)))) + 
+   labs(x = " ", y = "Effect Size") + 
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
         axis.title = element_text(size = 30)) 
@@ -307,7 +372,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
             parse = TRUE, 
              x = 2.3, y = 0.1, size = 8) +
   ylim(-0.05, 1) +
-   labs(x = " ", y = expression(italic(hat(theta)))) + 
+   labs(x = " ", y = "Effect Size") + 
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
         axis.title = element_text(size = 30)) 
@@ -367,7 +432,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
             parse = TRUE, 
              x = 2.3, y = 0.1, size = 8) +
   ylim(-0.05, 1) +
-  labs(x = " ", y = expression(italic(hat(theta)))) + 
+  labs(x = " ", y = "Effect Size") + 
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
         axis.title = element_text(size = 30)) 
@@ -433,7 +498,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
             parse = TRUE, 
              x = 2.3, y = 0.1, size = 8) +
   ylim(-0.05, 1) +
-  labs(x = " ", y = expression(italic(hat(theta)))) + 
+  labs(x = " ", y = "Effect Size") + 
   theme_bw() +
   theme(axis.text = element_text(size = 25),
         axis.title = element_text(size = 30))
@@ -550,7 +615,7 @@ scept_plot <- ggplot(data = plot_df, aes(x = Study, y = z)) +
    geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
             parse = TRUE, 
              x = 2.3, y = 0.1, size = 8) +
-  labs(x = " ", y = expression(italic(hat(theta)))) + 
+  labs(x = " ", y = "Effect Size") + 
   ylim(-0.35, 1) +
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
@@ -620,13 +685,61 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
                       ymin = ma_estimate - qnorm(0.975)*se,
                       ymax = ma_estimate + qnorm(0.975)*se),
                   size = 1.5, color = "tan3") + 
-   labs(x = " ", y = expression(italic(hat(theta)))) +  
+   labs(x = " ", y = "Effect Size") +  
   ylim(-0.05, 1) +
   theme_bw() +
   theme(axis.text = element_text(size = 25), 
         axis.title = element_text(size = 30))
 @
 \end{minipage}
+\end{frame}
+
+
+\begin{frame}[fragile]{The Relative Effect Size}
+\framesubtitle{in the assessment of replication success}
+
+\vspace{0.75cm}
+\begin{multicols}{2}
+
+\begin{minipage}{0.4\textwidth}
+\visible<1->{
+  \alert{Goal}: Comparison of 
+\begin{itemize}
+   \item {\bf two-trials rule} 
+   \item {\bf meta-analysis} 
+   \item {\bf sceptical $p$-value}
+   \end{itemize}
+   }
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\visible<2->{
+\alert{Key}: Formulation in terms of
+\begin{enumerate}
+   \item {\bf Original $p$-value} $p_o$ 
+   \item {\bf Relative effect size} $d=\hat \theta_r / \hat \theta_o$
+   \item {\bf Relative sample size} $c = n_r / n_o$ 
+   \end{enumerate}
+}
+ \end{minipage}
+\end{multicols}
+\vspace{.25cm}
+\begin{multicols}{2}
+
+\begin{minipage}{0.6\textwidth}
+\visible<3->{
+  \alert{Criterion}: Success if $d > \dmin$
+}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\visible<4->{
+   \begin{center}
+  \includegraphics[width=5cm]{images_presentation/Held-etal2021.png} \\
+  \color{darkred}{\scriptsize AOAS, to appear \\ \url{https://arxiv.org/abs/2009.07782}}
+\end{center}
+}
+ \end{minipage}
+\end{multicols}
+
 \end{frame}
 
 
@@ -638,16 +751,21 @@ source("Rcode/plotLevel2.R")
 @
 
 <<echo = F>>=
-mycval <- 0.5
+mycval <- 0.5 
 @
-
-
 \begin{frame}[fragile]{Comparison of Success Regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
 
-<<plot1, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = FALSE>>=
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d < \dmin$}
+\end{center}
+\vspace{-1cm}
 
+<<plot1, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = FALSE>>=
+ 
 par(mfrow = c(1,3))
+
 plotLevel(c = mycval,
           level = 0.025,
           type = "nominal",
@@ -668,7 +786,6 @@ plotLevel(c = mycval, # choosing one value of c
           minRES = T, # not showing minres
           method = "RS") # Replication Success
 
-
 @
 
 \end{frame}
@@ -679,6 +796,12 @@ mycval <- 1
 @
 \begin{frame}[fragile]{Comparison of Success Regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d < \dmin$}
+\end{center}
+\vspace{-1cm}
 
 <<plot1b, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = FALSE>>=
 
@@ -715,6 +838,12 @@ mycval <- 2
 \begin{frame}[fragile]{Comparison of Success Regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
 
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d < \dmin$}
+\end{center}
+\vspace{-1cm}
+
 <<plot1c, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
 
 par(mfrow = c(1,3))
@@ -748,6 +877,12 @@ mycval <- 5
 @
 \begin{frame}[fragile]{Comparison of Success Regions}
 \framesubtitle{{Relative sample size} $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d < \dmin$}
+\end{center}
+\vspace{-1cm}
 
 <<plot1d, fig.height = 6, fig.weight=12, cache=FALSE, out.width="1\\linewidth", echo = F>>=
 
@@ -783,6 +918,12 @@ mycval <- 10
 \begin{frame}[fragile]{Comparison of Success Regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
 
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d < \dmin$}
+\end{center}
+\vspace{-1cm}
+
 <<plot1e, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
 
 par(mfrow = c(1,3))
@@ -815,6 +956,12 @@ mycval <- 1000
 @
 \begin{frame}[fragile]{Comparison of Success Regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d < \dmin$}
+\end{center}
+\vspace{-1cm}
 
 <<plot1f, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
 
@@ -874,50 +1021,19 @@ plotLevel(c = mycval, # choosing one value of c
       %% \item Statistical methods and functionality for the design and analysis of replication studies (work in progress!)
       \item Installation
 << eval = FALSE, size = "small" >>=
-# Linux / Windows
-install.packages(pkgs = "ReplicationSuccess", 
-                 repos ="http://R-Forge.R-project.org")
-# Mac
-install.packages(pkgs = "ReplicationSuccess", 
-                 repos = "http://R-Forge.R-project.org",
-                 type = "source")
+install.packages("ReplicationSuccess")
 @
       \item Usage
     << size = "small", eval = FALSE >>=
 library(ReplicationSuccess)
 vignette("ReplicationSuccess")
 ?pSceptical # documentation
-news(package = "ReplicationSuccess") # news page
 @
   \end{itemize}
   \end{block}
 \end{frame}
 
-
-\begin{frame}[fragile]{Statistical framework of package}
-\begin{block}{}
-\begin{itemize}
-\item Effect estimates are assumed to be {\color{red} normally distributed} after suitable transformation \\
-$\rightarrow$ {\color{red} Fisher's $z$-transformation} for correlation 
-coefficients $r$ with (effective) sample size $n - 3$
-\end{itemize}
-\end{block}
-<< fig.height = 4.5, echo = FALSE>>=
-r <- seq(-1, 1, 0.001)
-ztrans_df <- data.frame(r, z = atanh(r))
-ggplot(data = ztrans_df, aes(x = r, y = z)) +
-  geom_abline(intercept = 0, slope = 1, lty = 2, size = 1,
-              alpha = 0.6) +
-  geom_line(size = 1) + 
-  labs(x = expression(paste("Correlation ", italic(r))), 
-       y = expression(paste("Fisher-", italic(z)))) +
-  theme_bw() +
-  theme(axis.text = element_text(size = 25), 
-        axis.title = element_text(size = 30))
-@
-\end{frame}
-
-\begin{frame}[fragile]{Statistical framework of package}
+\begin{frame}[fragile]{Statistical framework}
 \begin{block}{}
 \begin{itemize}
 \item Effect estimates are assumed to be {\color{red} normally distributed} 
@@ -935,15 +1051,15 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
                       ymax = z + qnorm(0.975)*se),
-                  size = 1.5) +
+                  size = 1.25) +
   geom_text(aes(label = paste("italic(r) ==~", 
                               round(r, 2), 
                               sep = "")), parse = TRUE, 
-            nudge_x = c(-0.31, 0.27), nudge_y = 0.1, size = 10) +
+            nudge_x = c(-0.31, 0.27), nudge_y = 0.1, size = 6) +
   geom_text(aes(label = paste("'fis' ==~", 
                               round(z, 2), 
                               sep = "")), parse = TRUE, 
-            nudge_x = c(-0.31, 0.27), nudge_y = -0.1, size = 10) +
+            nudge_x = c(-0.31, 0.27), nudge_y = -0.1, size = 6) +
   scale_y_continuous(limits = c(-0.05, 1.2), 
                      breaks = seq(0, 2.5, 0.5),
                      sec.axis = sec_axis(trans = ~tanh(.), 
@@ -952,8 +1068,8 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
                                          name = expression(paste("Correlation ", italic(r))))) + 
   labs(x = " ", y = expression(paste("Fisher-",italic(z)))) + 
   theme_bw() + 
-  theme(axis.text = element_text(size = 25), 
-        axis.title = element_text(size = 30)) 
+  theme(axis.text = element_text(size = 20), 
+        axis.title = element_text(size = 25)) 
 @
 \end{frame}
 
@@ -1011,7 +1127,7 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 \end{frame}
 
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
 \begin{block}{}
 Load the package and the data sets with
 \vspace{-0.5em}
@@ -1033,12 +1149,12 @@ RProjects$pr1 <- z2p(RProjects$zr,
 \end{frame}
 
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
 \begin{block}{}
 For all studies from the replication projects investigate
 \end{block}
   \begin{block}{Exercise 1.1}
-     How many study pairs fulfill the \textbf{significance} criterion for 
+     How many study pairs fulfill the \textbf{two-trials rule} criterion for 
      replication success? Use a threshold of $\alpha = 0.025$ for the one-sided 
      $p$-values.
   \end{block}
@@ -1049,8 +1165,9 @@ For all studies from the replication projects investigate
   \end{block}
 \end{frame}
 
+
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
 
 For all studies from the replication projects investigate
   \begin{block}{Exercise 1.3}
@@ -1060,9 +1177,32 @@ For all studies from the replication projects investigate
   \end{block}
   \begin{block}{Exercise 1.4}
     Look closer at the studies which show \textbf{discrepancies} in terms of replication 
-    success based on significance and the sceptical $p$-value. How do their 
+    success based on the two-trials rule and the sceptical $p$-value. How do their 
     effect estimates and sample sizes compare?
   \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exercises}
+  \begin{block}{Exercise 1.5 (if time permits)}
+Calculate the \textbf{relative effect size $d = \hat\theta_r/\hat\theta_o$} for the 
+discrepant studies, as well as the minimum relative effect size $\dmin$ with the 
+two approaches (two-trials rule and sceptical $p$-value). 
+\\~\\
+Use the functions \texttt{effectSizeSignificance} and 
+\texttt{effectSizeReplicationSuccess}.
+  \end{block}
+<<echo = F, eval = F>>=
+par(mfrow = c(1,1))
+dmin_sign <- effectSizeSignificance(zo = RProjects$zo, c = RProjects$c, level = 0.025)
+dmin_rs <- effectSizeReplicationSuccess(zo = RProjects$zo, c = RProjects$c, level = 0.025, 
+                             type = "golden", alternative = "one.sided")
+
+plot(dmin_sign, dmin_rs, pch = 20, xlim = c(0, 2), ylim = c(0, 2))
+abline(coef = c(0,1), col = "red")
+mean(dmin_sign < dmin_rs, na.rm = T)
+mean(dmin_sign > dmin_rs, na.rm = T)
+@
+  
 \end{frame}
 
 \begin{frame}[fragile]{Solution: Exercise 1.1}  
@@ -1337,7 +1477,7 @@ RProjects$study2[RProjects$study == "Nichols (2006)"] <-
 
 ## discrepant studies
 discrepantDF <- subset(RProjects, pSsuccess != TTR)[, c("study2", "c", "ro", 
-                                                        "rr", "po1", "pr1", "ps")]
+                                                        "rr", "po1", "pr1", "ps", "zo", "se_fiso", "se_fisr", "fiso", "fisr")]
 discrepantDF$c <- as.character(round(discrepantDF$c, 1))
 discrepantDF$ro <- as.character(round(discrepantDF$ro, 2))
 discrepantDF$rr <- as.character(round(discrepantDF$rr, 2))
@@ -1345,7 +1485,7 @@ discrepantDF$po1 <- phighlighfun(discrepantDF$po1)
 discrepantDF$pr1 <- phighlighfun(discrepantDF$pr1)
 discrepantDF$ps <- phighlighfun(discrepantDF$ps)
 
-discTab <- xtable(discrepantDF)
+discTab <- xtable(discrepantDF[, 1:(ncol(discrepantDF)-5)])
 colnames(discTab) <- c("Study", "$n_r / n_o$", "$r_o$", "$r_r$", "$p_o$", 
                        "$p_r$", "$p_s$")
 print(discTab, include.rownames = FALSE, booktabs = TRUE,
@@ -1353,6 +1493,31 @@ print(discTab, include.rownames = FALSE, booktabs = TRUE,
       floating = FALSE)
 @
  }
+}
+\end{frame}
+
+\begin{frame}[fragile]{Solution: Exercise 1.5}
+
+\makebox[1 \textwidth][c]{  
+  \resizebox{1.2\textwidth}{!} {
+<<echo = F, results = 'asis'>>=
+
+discrepantDF$d <- discrepantDF$fisr/discrepantDF$fiso
+discrepantDF$dminSign <- effectSizeSignificance(zo = discrepantDF$zo,
+                                c = discrepantDF$se_fiso^2/discrepantDF$se_fisr^2, level = 0.025)
+discrepantDF$dminRS <- effectSizeReplicationSuccess(zo = discrepantDF$zo,
+                                        c = discrepantDF$se_fiso^2/discrepantDF$se_fisr^2, level = 0.025,
+                             type = "golden")
+
+
+discTab2 <- xtable(discrepantDF[, -c(3, 4, 8:12)])
+colnames(discTab2) <- c("Study", "$n_r / n_o$", "$p_o$",
+                       "$p_r$", "$p_s$", "$d$", "$d_{min} (2TR)$", "$d_{min} (RS)$")
+print(discTab2, include.rownames = FALSE, booktabs = TRUE,
+      sanitize.text.function = function(x) {x}, size = "small",
+      floating = FALSE)
+@
+  } 
 }
 \end{frame}
 
@@ -1656,6 +1821,37 @@ uncertainty about the true effect after the original experiment
 \end{block}
 \end{frame}
 
+\begin{frame}{Power of the two-trials rule} 
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+  \mbox{Power} = \Phi\left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)
+    \end{eqnarray*}
+  \end{block}
+  \pause
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+   \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{n_o}{n_o + n_r}}}
+   \left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Power of the two-trials rule} 
+  \framesubtitle{Alternative formulation}
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+  \mbox{Power} = \Phi\left(z_o \sqrt{c} - z_{1- \alpha}\right)
+    \end{eqnarray*}
+  \end{block}
+  \pause
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+   \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{1}{c+1}}}
+   \left(z_o \sqrt{c} - z_{1- \alpha}\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
 
 \begin{frame}{Design based on significance} 
 %%    \framesubtitle{Functions}
@@ -1701,7 +1897,7 @@ powerSignificance(zo = p2z(0.011, alternative = "one.sided"),
 \end{frame}
 
 \begin{frame}{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
 \begin{block}{Exercise 2.1}
 We have five original studies that we want to replicate. The one-sided $p$-values are 
 $0.0001$, $0.001$, $0.005$, $0.01$, and $0.025$, respectively. 
@@ -1722,8 +1918,7 @@ lines(pval.or, pow.pred, col = "blue")
 \end{frame}
 
 \begin{frame}{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
-
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
   \begin{block}{Exercise 2.2}
 % We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
 \begin{itemize}
@@ -2050,6 +2245,24 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
   % \end{block}
 \end{frame}
 
+\begin{frame}{Power for replication success}
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+    \mbox{Power} = \Phi\left(\sqrt{c} z_o (1 - \dmin)\right)
+    \end{eqnarray*}
+  \end{block}
+  
+  \pause
+  
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+    \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{1}{c + 1}}}
+    \left(\sqrt{c} z_o (1 - \dmin)\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
+
+
 \begin{frame}{Design based on replication success}
 \begin{block}{}
 Two functions:
@@ -2089,8 +2302,16 @@ powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"),
 % Explain here why we use alpha level of 0.065 and one-sided test
 \end{frame}
 
+\begin{frame}{TO DO}
+
+  \begin{itemize}
+  \item Think about the exercises for this part 
+  \item Currently not so good as sample size for RS explodes for large po.
+  \end{itemize}
+\end{frame}
+
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
   \begin{block}{Exercise 3.1}
     \begin{itemize}
     \item Compute and plot the conditional and predictive power for replication success. 
@@ -2105,8 +2326,7 @@ powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"),
 \end{frame}
 
 \begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
-
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
   \begin{block}{Exercise 3.2}
 \begin{itemize}
   \item Compute and plot the relative sample sizes of the five
@@ -2408,25 +2628,168 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 
 
-\begin{frame}{Outlook}
-\section{Outlook}
-\begin{itemize}
+% \begin{frame}{Outlook}
+% \section{Outlook}
+% \begin{itemize}
+%   
+%   \item \alert{Between-study heterogeneity} \\
+%   $\rightarrow$ relative heterogeneity \texttt{h} can be specified in some functions
+%   % $= \tau^2/\sigma^2_o$
+%   
+%   \item \alert{Data-driven shrinkage} with empirical Bayes \\
+%   $\rightarrow$ \texttt{designPrior = "EB"}
+%   
+%   \item \alert{Interim analysis} \\
+%   $\rightarrow$ \texttt{powerSignificanceInterim()}
+%   
+%   \item Sample size based on \alert{relative effect size}
+% \end{itemize}
+% \end{frame}
+
+\begin{frame}
+\section{More advanced topics}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{More advanced topics}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}
+\section{More advanced topics}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\huge \textbf{Meta-analysis and multiple replication studies}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}{TODO}
+  \begin{itemize}
+    \item Introducing meta-analysis 
+    \item Introducing multiple replication studies per original study
+    \item Preparing an exercise with the dataset from Protzo
+  \end{itemize}
+<<>>=
+data("protzko2020")
+@
   
-  \item \alert{Between-study heterogeneity} \\
-  $\rightarrow$ relative heterogeneity \texttt{h} can be specified in some functions
-  % $= \tau^2/\sigma^2_o$
-  
-  \item \alert{Data-driven shrinkage} with empirical Bayes \\
-  $\rightarrow$ \texttt{designPrior = "EB"}
-  
-  \item \alert{Interim analysis} \\
-  $\rightarrow$ \texttt{powerSignificanceInterim()}
-  
-  \item Sample size based on \alert{relative effect size}
-\end{itemize}
+\end{frame}
+
+\begin{frame}
+\section{More advanced topics}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\huge \textbf{Sequential replication studies}}
+   \end{center}
+  % \end{block}
 \end{frame}
 
 
+\begin{frame}
+\frametitle{Social Sciences Replication Project}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\includegraphics[width = 1\textwidth]{images_presentation/camerer2018.png}
+\end{center}
+\begin{itemize}
+\item[--] 21 studies replicated
+\pause
+\item[--] \textcolor{purple!50!red}{11 stopped} at stage 1
+\item[] \textcolor{white}{10 continued in stage 2}
+\end{itemize}
+% \vspace{-2.5cm}
+\end{column}
+
+
+
+\begin{column}{0.5\textwidth}
+<<fig.width = 10, fig.height = 5, echo = F>>=
+plot(NA, 
+     axes= F, 
+     xlim = c(0, 5), 
+     ylim = c(0, 1), 
+     xlab = "", 
+     ylab = "")
+
+segments(0, 0.5, 2, 0.5, lwd = 2)
+segments(2, 0.5, 5, 0.5, lwd = 2, col = "white")
+points(2, 0.5, pch = "|", cex = 2)
+text(1, 0.7, "Stage 1", cex = 2)
+text(3.5, 0.7, "Stage 2", cex = 2, col = "white")
+@
+
+
+\vspace{-1cm}
+\begin{itemize}
+\item[] {\scriptsize Significant $p$-value and effect in the same direction:
+\textcolor{purple!50!red}{stop}}
+\item[] \textcolor{gray!20}{ \scriptsize Otherwise: stage 2}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Social Sciences Replication Project}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\includegraphics[width = 1\textwidth]{images_presentation/camerer2018.png}
+\end{center}
+\begin{itemize}
+\item[--] 21 studies replicated
+\item[--] \textcolor{purple!50!red}{11 stopped} at stage 1
+\item[--] \textcolor{purple!50!red}{10 continued} in stage 2
+\end{itemize}
+% \vspace{-2.5cm}
+\end{column}
+
+
+
+
+\begin{column}{0.5\textwidth}
+<<fig.width = 10, fig.height = 5, echo = F>>=
+plot(NA, 
+     axes= F, 
+     xlim = c(0, 5), 
+     ylim = c(0, 1), 
+     xlab = "", 
+     ylab = "")
+
+segments(0, 0.5, 2, 0.5, lwd = 2)
+segments(2, 0.5, 5, 0.5, lwd = 2)
+points(2, 0.5, pch = "|", cex = 2)
+text(1, 0.7, "Stage 1", cex = 2)
+text(3.5, 0.7, "Stage 2", cex = 2)
+points(5, 0.5, pch = "|", cex = 2)
+@
+
+\vspace{-1cm}
+\begin{itemize}
+\item[] \textcolor{gray!20} {\scriptsize Significant $p$-value and effect in the same direction:
+\textcolor{gray!20}{stop}}
+\item[] { \scriptsize Otherwise: stage 2}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Interim power}
+
+  \begin{block}{}
+    \begin{itemize}
+    \item Power of a replication study taking into account data from an interim analysis
+    \item Conditional vs predictive 
+    \item Depends on $p_o$, $c$, but also {\color{red} $p_i$ and $f$}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{}
+work in progress
+\end{frame}
 % ============================================================================
 \nocite{Pyc2010, Opensc2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, Held2020, Held2020c}
 \begin{frame}{References}
