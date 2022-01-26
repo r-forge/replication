@@ -48,7 +48,7 @@
 \def\uzhunit{}
 \def\uzhunitext{}
 \title{\centering Design and Analysis of Replication Studies}
-\author{\centering \bf  Leonhard Held}
+\author{\centering \bf  Leonhard Held, Charlotte Micheloud}
 \institute{University of Zurich}
 
   
@@ -3308,6 +3308,17 @@ print(xt5,
       scalebox='0.6')
 @
 
+\end{frame}
+
+
+\begin{frame}{Conclusion/Outlook}
+
+to do 
+\end{frame}
+
+\begin{frame}{Acknowledgments}
+
+to do 
 \end{frame}
 % ============================================================================
 \nocite{Pyc2010, Opensc2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, Held2020, Held2020c}
