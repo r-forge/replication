@@ -12,7 +12,11 @@
 \definecolor{springgreen4}{RGB}{0, 139, 69}
 \definecolor{Rred}{RGB}{255,0,0}
 \definecolor{tan3}{RGB}{205,133,63}
+\definecolor{foo}{rgb}{0.2,0.2,0.7}
 
+\usepackage{colortbl}
+\definecolor{Gray}{gray}{0.85}
+\newcolumntype{a}{>{\columncolor{Gray}}c}
 % citing
 \usepackage[round]{natbib}
 
@@ -1185,8 +1189,8 @@ For all studies from the replication projects investigate
 \begin{frame}[fragile]{Exercises}
   \begin{block}{Exercise 1.5 (if time permits)}
 Calculate the \textbf{relative effect size $d = \hat\theta_r/\hat\theta_o$} for the 
-discrepant studies, as well as the minimum relative effect size $\dmin$ with the 
-two approaches (two-trials rule and sceptical $p$-value). 
+discrepant studies, {\bf as well as the minimum relative effect size $\dmin$}
+with the two approaches (two-trials rule and sceptical $p$-value). 
 \\~\\
 Use the functions \texttt{effectSizeSignificance} and 
 \texttt{effectSizeReplicationSuccess}.
@@ -1502,20 +1506,31 @@ print(discTab, include.rownames = FALSE, booktabs = TRUE,
   \resizebox{1.2\textwidth}{!} {
 <<echo = F, results = 'asis'>>=
 
+phighlighfun2 <- function(dmin, d) {
+ ifelse(dmin > d,
+        paste0("\\textcolor{red}{", round(dmin, 2), "}"),
+        paste0("\\textcolor{black}{",  round(dmin, 2), "}"))
+}
+
 discrepantDF$d <- discrepantDF$fisr/discrepantDF$fiso
 discrepantDF$dminSign <- effectSizeSignificance(zo = discrepantDF$zo,
                                 c = discrepantDF$se_fiso^2/discrepantDF$se_fisr^2, level = 0.025)
 discrepantDF$dminRS <- effectSizeReplicationSuccess(zo = discrepantDF$zo,
                                         c = discrepantDF$se_fiso^2/discrepantDF$se_fisr^2, level = 0.025,
                              type = "golden")
+discrepantDF$dminSign <- phighlighfun2(dmin = discrepantDF$dminSign, d = discrepantDF$d)
+discrepantDF$dminRS <- phighlighfun2(dmin = discrepantDF$dminRS, d = discrepantDF$d)
+discrepantDF$d <- paste0("\\textcolor{blue}{", round(discrepantDF$d, 2) , "}")
 
 
-discTab2 <- xtable(discrepantDF[, -c(3, 4, 8:12)])
+
+discTab2 <- xtable(discrepantDF[, -c(3:4, 6:12)])
 colnames(discTab2) <- c("Study", "$n_r / n_o$", "$p_o$",
-                       "$p_r$", "$p_s$", "$d$", "$d_{min} (2TR)$", "$d_{min} (RS)$")
+                        "$d$", "$d_{min} (2TR)$", "$d_{min} (RS)$")
 print(discTab2, include.rownames = FALSE, booktabs = TRUE,
       sanitize.text.function = function(x) {x}, size = "small",
       floating = FALSE)
+
 @
   } 
 }
@@ -2780,15 +2795,519 @@ points(5, 0.5, pch = "|", cex = 2)
 
   \begin{block}{}
     \begin{itemize}
-    \item Power of a replication study taking into account data from an interim analysis
-    \item Conditional vs predictive 
-    \item Depends on $p_o$, $c$, but also {\color{red} $p_i$ and $f$}
+    \item Power of a replication study taking into account 
+    {\bf data from an interim analysis}
+    \item {\it Conditional} vs {\it predictive} 
+    \item Depends on {\bf $p_o$}, {\bf $c$}, but also
+      \begin{itemize}
+        \item {\color{red} $p_i$:} the $p$-value at interim
+        \item {\color{red} $f$:} the fraction of the replication study already
+        completed
+      \end{itemize}
     \end{itemize}
   \end{block}
 \end{frame}
 
-\begin{frame}{}
-work in progress
+\begin{frame}
+\frametitle{Conditional power at interim}
+\framesubtitle{Uncertainty of original result is ignored}
+<<schema2, fig.height = 5, echo = F>>=
+par(mfrow = c(1,1))
+## Conditional
+plot(NULL, xlim = c(0,12), ylim = c(0,5), 
+     axes = F,
+     xlab = "", 
+     ylab = "", 
+     # main = "Conditional power at interim"
+     )
+# title(main = "Conditional power at interim", 
+#       line = -1,
+#       cex.main = 1.5)
+
+
+segments(0,1,5,1)
+points(0,1, pch = "|")
+points(5,1, pch = "|")
+text(2.5, 3.5, "Original study", cex = 1.5)
+segments(7,1,8.5,1, lty = 1)
+segments(8.5,1,12,1, lty = 2)
+points(7,1, pch = "|")
+# points(8.5, 1, pch = "|", col = "red")
+points(12,1, pch = "|")
+text(9.5, 3.5, "Replication study", cex = 1.5)
+
+## To do CI
+#######
+segments(2.5, 2.4, 2.5, 3, col = "grey",
+         lwd = 2)
+points(2.5, 3, pch = "--", col = "grey", 
+       cex = 2)
+points(2.5, 2.4, pch = "--", col = "grey", 
+       cex = 2)
+points(2.5, 2.7, pch = 20, 
+       cex = 1.5)
+text(3,2.7, expression(hat(theta)[o]), 
+     cex = 1.3)
+#######
+
+segments(8.5, 0.7, 8.5, 1.3, col = "darkgrey")
+text(8.5, 2, " Interim power\ 
+calculation", col = "darkgrey", cex = 1.5)
+
+@ 
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Predictive power at interim}
+\framesubtitle{Uncertainty of original result is \textbf{not} ignored}
+
+<<schema3, fig.height  = 5, echo = F>>=
+
+par(mfrow = c(1,1))
+
+
+# Informed predictive
+plot(NULL, xlim = c(0,12), ylim = c(0,5), 
+     axes = F,
+     xlab = "", 
+     ylab = "", 
+     # main = "Informed predictive power at interim"
+     )
+# title(main = "Informed predictive power at interim", 
+#       line = -1,
+#       cex.main = 1.5)
+
+segments(0,1,5,1)
+points(0,1, pch = "|")
+points(5,1, pch = "|")
+text(2.5, 3.5, "Original study", cex = 1.5)
+segments(7,1,8.5,1, lty = 1)
+segments(8.5,1,12,1, lty = 2)
+points(7,1, pch = "|")
+points(12,1, pch = "|")
+text(9.5, 3.5, "Replication study", cex = 1.5)
+
+## To do the CI
+#######
+segments(2.5, 2.4, 2.5, 3, 
+         lwd = 2)
+points(2.5, 3, pch = "--", 
+       cex = 2)
+points(2.5, 2.4, pch = "--", 
+       cex = 2)
+points(2.5, 2.7, pch = 20, 
+       cex = 1.5)
+text(3,2.7, expression(hat(theta)[o]), 
+     cex = 1.3)
+#######
+
+segments(8.5, 0.7, 8.5, 1.3, col = "darkgrey")
+text(8.5, 2, "Interim power\
+calculation", col = "darkgrey",
+cex = 1.5)
+
+
+@
+
+\end{frame}
+
+
+
+<<echo = F>>=
+library(biostatUZH)
+col0 <- function(x){
+ ifelse(x< 0.05,
+        paste("\\cellcolor{green!25}{", formatC(x, dig=2, format="f"), "}"),
+        paste("\\cellcolor{red!25}{", formatC(x, dig=2, format="f"), "}"))
+}
+
+
+col1 <- function(x){
+ ifelse(x< 0.025,
+        paste("\\cellcolor{green!25}{", formatPval(x), "}"),
+        paste("\\cellcolor{red!25}{", formatPval(x), "}"))
+}
+
+col2 <- function(x){
+ ifelse(x< 30,
+        paste("\\cellcolor{blue!30}{", round(x, 1), "}"),
+        paste("\\cellcolor{white}{", round(x, 1), "}"))
+}
+
+col3 <- function(x){
+ ifelse(x< 30,
+        paste("\\cellcolor{white}{", round(x, 1), "}"),
+        paste("\\cellcolor{white}{", round(x, 1), "}"))
+}
+
+col4 <- function(x){
+  paste("\\cellcolor{white}{", formatPval(x), "}")
+}
+
+@
+
+<<echo = F>>=
+
+## Defining the variables 
+level = 0.025
+data("SSRP")
+
+## ratio and relative
+SSRP$c <- SSRP$se_fiso^2/SSRP$se_fisr^2
+SSRP$f = SSRP$se_fisr^2/SSRP$se_fisi^2 
+
+## we want to have everything one-sided
+SSRP$zo <- SSRP$fiso/SSRP$se_fiso
+SSRP$zi <- SSRP$fisi/SSRP$se_fisi
+SSRP$zr <- SSRP$fisr/SSRP$se_fisr 
+subs <- which(!is.na(SSRP$zr))
+
+SSRP$po1 <- z2p(SSRP$zo, alternative = "greater")
+SSRP$pi1 <- z2p(SSRP$zi, alternative = "greater")
+SSRP$pr1 <- rep(NA, times = length(SSRP$zr))
+SSRP$pr1[subs] <- z2p(SSRP$zr[subs], alternative = "greater")
+
+## studies which have been stopped and final p-value
+SSRP$stopped <- ifelse(is.na(SSRP$rr), 2, 1) # indicates if study has been stopped (2) or not (1) at interim
+SSRP$r_final <- ifelse(is.na(SSRP$rr), SSRP$ri, SSRP$rr) # final r
+SSRP$pval1_final <- ifelse(is.na(SSRP$pr1), SSRP$pi1, SSRP$pr1) # final p-value
+
+## studies which failed to replicate at final analysis
+SSRP[SSRP$stopped == 1 & SSRP$pval1_final > 0.025, "stopped"] <- 0 
+
+## Remove Journal and Publication Year from study
+SSRP$study <- gsub( ", Science|, Nature|[0-9]|et al.", "", SSRP$study)
+SSRP$study <- gsub("\\(\\)", '', SSRP$study)
+
+
+## new dataset: only studies not stopped at interim
+SSRP_red <- SSRP[SSRP$stopped != 2,]
+SSRP_red <- SSRP_red[-1, ]
+
+@
+
+<<preparation table interim, results = 'asis', echo = F>>=
+
+
+# Conditional Power at interim
+cpi <- with(SSRP_red,  
+            powerSignificanceInterim(zo = zo, 
+                                     zi = zi,
+                                     c = c, 
+                                     f = f,
+                                     designPrior = "conditional",
+                                     analysisPrior = "flat",
+                                     level = 0.025, 
+                                     alternative = "one.sided"))
+
+# predictive power at interim
+IPPi <- with(SSRP_red, 
+             powerSignificanceInterim(zo = zo, 
+                                      zi = zi,
+                                      c = c, 
+                                      f = f,
+                                      designPrior = "informed predictive",
+                                      analysisPrior = "flat", 
+                                      level = 0.025, 
+                                      alternative = "one.sided"))
+# predictive power at interim
+PPi <- with(SSRP_red, 
+            powerSignificanceInterim(zo = zo, 
+                                     zi = zi,
+                                     c = c, 
+                                     f = f,
+                                     designPrior = "predictive",
+                                     analysisPrior = "flat", 
+                                     level = 0.025, 
+                                     alternative = "one.sided"))
+
+@
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{white}{futility boundary: 10\%}}
+{\color{white} $\rightarrow$ no study stopped for futility with {\color{white} conditional power at interim}}
+\end{block}
+
+
+<<table-interim, echo = FALSE, results = 'asis', echo = F>>=
+source("Rcode/construct_header.R")
+# summary table
+mat_content <- c(SSRP_red$study, 
+                 col1(SSRP_red$po1),
+                 SSRP_red$fiso,
+                 col4(SSRP_red$pi1),
+                 SSRP_red$fisi,
+                 col3(cpi*100),
+                 col3(IPPi*100),
+                 col4(SSRP_red$pval1_final),
+                 SSRP_red$fisr)
+
+summary_table_interim <- matrix(mat_content, ncol = 9, byrow = F)
+
+colnames(summary_table_interim) <- c("Study", "po", "ro", "pi", "ri",
+                                     "CPi", "HPP",
+                                     "pr","rr")
+
+summary_table_interim <- as.data.frame(summary_table_interim)
+
+cols <- c(3,5,9)
+# make sure that c, f, r etc are numeric
+summary_table_interim[,cols] = apply(summary_table_interim[,cols], 2, function (x) as.numeric(as.character(x)))
+
+#order the table om decreasing ri
+summary_table_interim <- summary_table_interim[order(summary_table_interim$ri ,summary_table_interim$pi, decreasing = c(TRUE, FALSE)),]
+
+xt2 <- xtable(summary_table_interim,
+              align =  c("l", "l","c", "c", "c", "c", "c", "c",
+                         "c", "c"),
+              digits = c(0, 0, 0,  2, 0,  2,1, 1, 1, 2))
+
+names(xt2) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                " $p_i$",
+                "$\\hat\\theta_i$",
+                "Cond.",
+                "Pred.",
+                "$p_r$",
+                "$\\hat\\theta_r$")
+#formatting (second title row)
+  a_header <- construct_header(
+  # the data.frame or matrix that should be plotted
+  summary_table_interim,
+  # the labels of the groups that we want to insert
+  grp_names = c("", "Original", "Interim", "Interim power (in \\%)", "Replication"),
+  # the number of columns each group spans
+  span = c(1, 2, 2, 2, 2),
+  # the alignment of each group, can be a single character (lcr) or a vector
+  align = "c"
+)
+
+print(xt2,
+      add.to.row = a_header,
+      include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+
+@
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{white}{futility boundary: 10\%}}
+{\color{white} $\rightarrow$ no study stopped for futility with {\color{white} conditional power at interim}}
+\end{block}
+
+
+<<echo = F, results = 'asis'>>=
+mat_content2 <- c(SSRP_red$study,
+                 col1(SSRP_red$po1),
+                 SSRP_red$fiso,
+                 col1(SSRP_red$pi1),
+                 SSRP_red$fisi,
+                 col3(cpi*100),
+                 col3(IPPi*100),
+                 col4(SSRP_red$pval1_final),
+                 SSRP_red$fisr)
+ 
+summary_table_interim2 <- matrix(mat_content2, ncol = 9, byrow = F)
+
+colnames(summary_table_interim2) <- c("Study", "po", "ro", "pi", "ri",
+                                     "CPi", "HPP",
+                                     "pr","rr")
+
+summary_table_interim2 <- as.data.frame(summary_table_interim2)
+
+cols <- c(3,5,9)
+# make sure that c, f, r etc are numeric
+summary_table_interim2[,cols] = apply(summary_table_interim2[,cols], 2, function (x) as.numeric(as.character(x)))
+
+#order the table om decreasing ri
+summary_table_interim2 <- summary_table_interim2[order(summary_table_interim2$ri ,summary_table_interim2$pi, decreasing = c(TRUE, FALSE)),]
+
+xt3 <- xtable(summary_table_interim2,
+              align =  c("l", "l","c", "c", "c", "c", "c", "c",
+                         "c", "c"),
+              digits = c(0, 0, 0,  2, 0,  2,1, 1, 1, 2))
+
+names(xt3) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                "\\cellcolor{Gray}$p_i$",
+                "$\\hat\\theta_i$",
+                "Cond.",
+                "Pred.",
+                "$p_r$",
+                "$\\hat\\theta_r$")
+
+
+print(xt3,
+      add.to.row = a_header,
+      include.rownames = F, 
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+@
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{red}{futility boundary: 10\%}}
+$\rightarrow$ no study stopped for futility with {\color{foo} conditional power at interim}
+\end{block}
+
+<<echo = F, results = 'asis'>>=
+
+names(xt3) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                "\\cellcolor{Gray}$p_i$",
+                "$\\hat\\theta_i$",
+                "\\cellcolor{Gray}Cond.",
+                "Pred.",
+                "$p_r$",
+                "$\\hat\\theta_r$")
+
+
+print(xt3,
+      add.to.row = a_header,
+      include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6') 
+@
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{red}{futility boundary: 10\%}}
+$\rightarrow$ four studies stopped for futility with {\color{foo} 
+predictive power at interim}
+\end{block}
+
+
+<<echo = F, results = 'asis'>>=
+mat_content3 <- c(SSRP_red$study,
+                 col1(SSRP_red$po1),
+                 SSRP_red$fiso,
+                 col1(SSRP_red$pi1),
+                 SSRP_red$fisi,
+                 col3(cpi*100), 
+                 col2(IPPi*100),
+                 col4(SSRP_red$pval1_final),
+                 SSRP_red$fisr)
+
+summary_table_interim3 <- matrix(mat_content3, ncol = 9, byrow = F)
+
+colnames(summary_table_interim3) <- c("Study", "po", "ro", "pi", "ri",
+                                     "CPi", "HPP",
+                                     "pr","rr")
+
+summary_table_interim3 <- as.data.frame(summary_table_interim3)
+
+cols <- c(3,5,9)
+# make sure that c, f, r etc are numeric
+summary_table_interim3[,cols] = apply(summary_table_interim3[,cols], 2, function (x) as.numeric(as.character(x)))
+
+#order the table om decreasing ri
+summary_table_interim3 <- summary_table_interim3[order(summary_table_interim3$ri ,summary_table_interim3$pi, decreasing = c(TRUE, FALSE)),]
+
+xt4 <- xtable(summary_table_interim3,
+              align =  c("l", "l","c", "c", "c", "c", "c", "c",
+                         "c", "c"),
+              digits = c(0, 0, 0,  2, 0,  2,1, 1, 1, 2))
+
+names(xt4) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                "\\cellcolor{Gray}$p_i$",
+                "$\\hat\\theta_i$",
+                "Cond.",
+                "\\cellcolor{Gray}Pred.",
+                "$p_r$",
+                "$\\hat\\theta_r$")
+
+
+print(xt4,
+      add.to.row = a_header,
+      include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{red}{futility boundary: 10\%}}
+$\rightarrow$ four studies stopped for futility with {\color{foo} 
+predictive power at interim}
+\end{block}
+
+<<echo = F, results = 'asis'>>=
+mat_content4 <- c(SSRP_red$study,
+                 col1(SSRP_red$po1), 
+                 SSRP_red$fiso,
+                 col1(SSRP_red$pi1),
+                 SSRP_red$fisi,
+                 col3(cpi*100),
+                 col2(IPPi*100),
+                 col1(SSRP_red$pval1_final),
+                 SSRP_red$fisr)
+
+summary_table_interim4 <- matrix(mat_content4, ncol = 9, byrow = F)
+
+colnames(summary_table_interim4) <- c("Study", "po", "ro", "pi", "ri",
+                                     "CPi", "HPP",
+                                     "pr","rr")
+
+summary_table_interim4 <- as.data.frame(summary_table_interim4)
+
+cols <- c(3,5,9)
+# make sure that c, f, r etc are numeric
+summary_table_interim4[,cols] = apply(summary_table_interim4[,cols], 2, function (x) as.numeric(as.character(x)))
+
+#order the table om decreasing ri
+summary_table_interim4 <- summary_table_interim4[order(summary_table_interim4$ri ,summary_table_interim4$pi, decreasing = c(TRUE, FALSE)),]
+
+xt5 <- xtable(summary_table_interim4,
+              align =  c("l", "l","c", "c", "c", "c", "c", "c",
+                         "c", "c"),
+              digits = c(0, 0, 0,  2, 0,  2,1, 1, 1, 2))
+
+names(xt5) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                "\\cellcolor{Gray}$p_i$",
+                "$\\hat\\theta_i$",
+                "\\cellcolor{Gray}Cond.",
+                "\\cellcolor{Gray}Pred.",
+                "\\cellcolor{Gray}$p_r$",
+                "$\\hat\\theta_r$")
+
+
+print(xt5,
+      add.to.row = a_header,
+      include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+@
+
 \end{frame}
 % ============================================================================
 \nocite{Pyc2010, Opensc2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, Held2020, Held2020c}
