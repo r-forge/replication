@@ -762,7 +762,7 @@ mycval <- 0.5
 
 \vspace{1cm}
 \begin{center}
-Success if {\color{darkred} $d < \dmin$}
+Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
@@ -803,7 +803,7 @@ mycval <- 1
 
 \vspace{1cm}
 \begin{center}
-Success if {\color{darkred} $d < \dmin$}
+Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
@@ -844,7 +844,7 @@ mycval <- 2
 
 \vspace{1cm}
 \begin{center}
-Success if {\color{darkred} $d < \dmin$}
+Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
@@ -884,7 +884,7 @@ mycval <- 5
 
 \vspace{1cm}
 \begin{center}
-Success if {\color{darkred} $d < \dmin$}
+Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
@@ -924,7 +924,7 @@ mycval <- 10
 
 \vspace{1cm}
 \begin{center}
-Success if {\color{darkred} $d < \dmin$}
+Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
@@ -963,7 +963,7 @@ mycval <- 1000
 
 \vspace{1cm}
 \begin{center}
-Success if {\color{darkred} $d < \dmin$}
+Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
@@ -2695,7 +2695,7 @@ data("protzko2020")
 \section{More advanced topics}
   % \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\huge \textbf{Sequential replication studies}}
+  \color{uzh@blue}{\huge \textbf{Replication studies with a sequential design}}
    \end{center}
   % \end{block}
 \end{frame}
