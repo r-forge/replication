@@ -165,7 +165,7 @@ library(ggplot2)
 data("RProjects")
 SSRP <- subset(RProjects, project == "Social Sciences")
 
-ggplot(data = SSRP, aes(x = ro, y = rr)) +
+gg_r <-  ggplot(data = SSRP, aes(x = ro, y = rr)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_abline(intercept = 0, slope = 1, col = "grey") +
   geom_point(alpha = 0.7, size = 7, shape = 21, 
@@ -176,7 +176,7 @@ ggplot(data = SSRP, aes(x = ro, y = rr)) +
   coord_fixed() +
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
-        axis.title = element_text(size = 30)) 
+        axis.title = element_text(size = 30)); gg_r
 @
 \end{frame}
 
@@ -214,23 +214,65 @@ library(ggplot2)
 data("RProjects")
 SSRP <- subset(RProjects, project == "Social Sciences")
 
-ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
+gg_z <- ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_abline(intercept = 0, slope = 1, col = "grey") +
   geom_point(alpha = 0.7, size = 7, shape = 21, 
              fill = "midnightblue") +
   labs(x = expression(paste("Original effect estimate ", hat(theta)[o])), 
        y = expression(paste("Replication effect estimate ", hat(theta)[r]))) +
-  lims(x = c(-0.15, 1), y = c(-0.15, 1)) + 
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
   coord_fixed() +
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
-        axis.title = element_text(size = 30)) 
+        axis.title = element_text(size = 30)); gg_z
+@
+\end{frame}
+
+
+\begin{frame}[fragile]{Correlation vs Fisher-$z$ scale}
+<< echo = FALSE >>=
+library(ReplicationSuccess)
+library(ggplot2)
+library(gridExtra)
+
+gg_r2 <- ggplot(data = SSRP, aes(x = ro, y = rr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.7, size = 5, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = "Original effect estimate", 
+       y = "Replication effect estimate") +
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 15), 
+        axis.title = element_text(size = 15)) + 
+  ggtitle("Correlation scale ") + 
+  theme(plot.title = element_text(color = "red", size = 25))
+
+gg_z2 <- ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.7, size = 5, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = "Original effect estimate", 
+       y = "Replication effect estimate") +
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 15), 
+        axis.title = element_text(size = 15)) +
+  ggtitle("Fisher-z scale") + 
+  theme(plot.title = element_text(color = "red", size = 25))
+
+grid.arrange(gg_r2, gg_z2, 
+             ncol = 2)
 @
 \end{frame}
 
 \begin{frame}{Social sciences replication project}
-  \framesubtitle{Fisher-$z$ scale}
+  \framesubtitle{Pyc and Rawson (2010), Science}
 << echo = FALSE >>=
 study <- subset(SSRP,
                 study == "Pyc and Rawson (2010), Science")
@@ -246,7 +288,7 @@ ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
   
    labs(x = expression(paste("Original effect estimate ", hat(theta)[o])), 
        y = expression(paste("Replication effect estimate ", hat(theta)[r]))) +
-  lims(x = c(-0.15, 1), y = c(-0.15, 1)) + 
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
   coord_fixed() +
   theme_bw() + 
   theme(axis.text = element_text(size = 25), 
@@ -255,17 +297,70 @@ ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
 \end{frame}
 
 \begin{frame}{\citet{Pyc2010}. Science}
-% \framesubtitle{Thought for Food: Imagined Consumption Reduces Actual Consumption}
-\begin{minipage}[t][3cm][t]{\textwidth}
-\begin{block}{Original discovery}
-\begin{itemize}
-  \item[] ``Testing improves memory'' 
-  \item[] {\color{red} Relative effect size} $d = \hat\theta_r/\hat\theta_o = 
-  \Sexpr{round(study$fisr/study$fiso, 1)}$
-  \item[] {\color{red} Relative sample size} $c = n_r/n_o = 9$
-\end{itemize}
-\end{block}
+\framesubtitle{Original discovery: ``Testing improves memory'' }
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+library(biostatUZH)
+options(scipen = 5)
+plot_df <- data.frame(Study = c("Original study", 
+                                "Replication study"),
+                      z = c(study$fiso, study$fisr),
+                      r = c(study$ro, study$rr),
+                      p = formatPval(x = c(study$po/2,
+                                           study$pr/2)),
+                      se = c(study$se_fiso, study$se_fisr),
+                      n = c(1/study$se_fiso^2 + 3, 
+                            1/study$se_fisr^2 + 3)) 
+study_plot <- ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  ylim(-0.05, 1) +
+   labs(x = " ", y = "Effect Size") + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+study_plot
+@
+\begin{center}
+\vspace{-.6cm}
+\hspace{.75cm}
+{\small
+\begin{tabular}{rcl}
+$n_o$ $\qquad$ & Sample size & $\qquad$ $n_r$ \\
+$\hat \theta_o$ $\qquad$ & Effect estimate & $\qquad$ $\hat \theta_r$ \\
+$\sigma_o$ $\qquad$ & Standard error & $\qquad$ $\sigma_r$ \\
+ $p_o$ $\qquad$ & one-sided $p$-value &$\qquad$  $p_r$ \\
+  &&
+  \end{tabular}
+}
+\end{center}
 \end{minipage}
+\end{frame}
+
+\begin{frame}{\citet{Pyc2010}. Science}
+\framesubtitle{Original discovery: ``Testing improves memory'' }
 \begin{minipage}[t][6cm][t]{\textwidth}
 << fig.height = 4.5, echo = FALSE >>=
 library(biostatUZH)
@@ -315,6 +410,13 @@ study_plot <- ggplot(data = plot_df, aes(x = Study, y = z)) +
 study_plot
 @
 \vspace{-0.5cm}
+\begin{block}{}
+\begin{itemize}
+  \item[] {\color{red} Relative effect size} $d = \hat\theta_r/\hat\theta_o = 
+  \Sexpr{round(study$fisr/study$fiso, 1)}$
+  \item[] {\color{red} Relative sample size} $c = n_r/n_o = 9$
+\end{itemize}
+\end{block}
 \end{minipage}
 \end{frame}
 
@@ -450,7 +552,8 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 {\large \textit{Is a meta-analytic estimate statistically significant?}} 
 
 $\rightarrow$ Which threshold? \\
-$\rightarrow$ {\color{tan3} one-sided $\alpha = 0.025^2 = 0.000625$} \\
+$\rightarrow$ {\color{tan3} one-sided $\alpha = 0.025$ or $0.0025$} used in 
+practice\\
 \end{block}
 \end{minipage}
 \begin{minipage}[t][6cm][t]{\textwidth}
@@ -512,6 +615,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 
 \begin{frame}{4. Sceptical $p$-value}
 \framesubtitle{New definition of replication success}
+\vspace{1cm}
 \begin{columns}
 \begin{column}{0.5\textwidth}
   % \centering
@@ -519,7 +623,8 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 
 \vspace{6em}
 \begin{center}
-{\scriptsize \url{https://doi.org/10.1111/rssa.12493}}
+{\scriptsize \url{https://doi.org/10.1111/rssa.12493}}\\
+  \color{white}{\scriptsize published in JRSSA}
 \end{center}
 \end{column}
 
@@ -528,8 +633,9 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 
 \vspace{0.8em}
 \begin{center}
-{\scriptsize \url{https://arxiv.org/abs/2009.07782}}
-\end{center}
+{\scriptsize \url{https://arxiv.org/abs/2009.07782}}\\
+  \color{darkred}{\scriptsize AOAS, to appear}
+  \end{center}
 \end{column}
 \end{columns}
 \end{frame}
@@ -698,53 +804,113 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 \end{minipage}
 \end{frame}
 
+\begin{frame}[fragile]{The Relative Effect Size}
+  \framesubtitle{in the assessment of replication success}
+    
+    \begin{block}{}
+      \begin{itemize}
+        \item Relative effect size {\color{red} $d = \hat\theta_r/\hat\theta_o$}
+        can be used in the assessment of replication success
+                \item[] $\rightarrow$ success if {\color{red} $d >\dmin$, the
+                minimum relative effect size}
+                \pause
+        \item {\color{red} $\dmin$} depends on 
+          \begin{itemize}
+            \item {\color{foo} relative sample size} $c$ 
+            \item {\color{foo} original $p$-value} $p_o$  
+            \item {\color{foo} one-sided level} $\alpha$
+          \end{itemize}
+          \item Equivalent to assessment based on (sceptical) $p$-value
+      \end{itemize}
+    \end{block}
+\end{frame}
 
 \begin{frame}[fragile]{The Relative Effect Size}
 \framesubtitle{in the assessment of replication success}
+  
+  \begin{block}{Pyc and Rawson example}
+<<echo = FALSE>>=
 
-\vspace{0.75cm}
-\begin{multicols}{2}
+dmin2TR <-  effectSizeSignificance(zo = study$fiso/study$se_fiso, 
+                                   c = study$se_fiso^2/study$se_fisr^2, 
+                                   level = 0.025, 
+                                   alternative = "one.sided")
 
-\begin{minipage}{0.4\textwidth}
-\visible<1->{
-  \alert{Goal}: Comparison of 
-\begin{itemize}
-   \item {\bf two-trials rule} 
-   \item {\bf meta-analysis} 
-   \item {\bf sceptical $p$-value}
-   \end{itemize}
-   }
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-\visible<2->{
-\alert{Key}: Formulation in terms of
-\begin{enumerate}
-   \item {\bf Original $p$-value} $p_o$ 
-   \item {\bf Relative effect size} $d=\hat \theta_r / \hat \theta_o$
-   \item {\bf Relative sample size} $c = n_r / n_o$ 
-   \end{enumerate}
-}
- \end{minipage}
-\end{multicols}
-\vspace{.25cm}
-\begin{multicols}{2}
-
-\begin{minipage}{0.6\textwidth}
-\visible<3->{
-  \alert{Criterion}: Success if $d > \dmin$
-}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-\visible<4->{
-   \begin{center}
-  \includegraphics[width=5cm]{images_presentation/Held-etal2021.png} \\
-  \color{darkred}{\scriptsize AOAS, to appear \\ \url{https://arxiv.org/abs/2009.07782}}
-\end{center}
-}
- \end{minipage}
-\end{multicols}
-
+dminRS <- effectSizeReplicationSuccess(zo = study$fiso/study$se_fiso, 
+                                   c = study$se_fiso^2/study$se_fisr^2, 
+                                   level = 0.025, 
+                                   type = "golden", 
+                                   alternative = "one.sided")
+@
+  
+  
+    \begin{itemize}
+      \item {\color{foo} $d = \Sexpr{round(study$fisr, 2)}/\Sexpr{round(study$fiso, 2)} = 
+      \Sexpr{round(study$fisr/study$fiso, 2)}$ }
+      \item Minimum relative effect size
+        \begin{itemize}
+          \item With the two-trials rule: {\color{springgreen4} $\dmin = \Sexpr{round(dmin2TR, 2)} < d$}
+          \item With the 
+          sceptical $p$-value {\color{red} $\dmin = \Sexpr{round(dminRS, 2)} > d$}
+        \end{itemize}
+    \end{itemize}
+      \pause
+  \end{block}
+  
+  
+      \begin{center}
+    {\color{darkred} Why do the two methods disagree?}
+    \end{center}
+    
+    
 \end{frame}
+
+% \begin{frame}[fragile]{The Relative Effect Size}
+% \framesubtitle{in the assessment of replication success}
+% 
+% \vspace{0.75cm}
+% \begin{multicols}{2}
+% 
+% \begin{minipage}{0.4\textwidth}
+% \visible<1->{
+%   \alert{Goal}: Comparison of 
+% \begin{itemize}
+%    \item {\bf two-trials rule} 
+%    \item {\bf meta-analysis} 
+%    \item {\bf sceptical $p$-value}
+%    \end{itemize}
+%    }
+% \end{minipage}
+% \begin{minipage}{0.5\textwidth}
+% \visible<2->{
+% \alert{Key}: Formulation in terms of
+% \begin{enumerate}
+%    \item {\bf Original $p$-value} $p_o$ 
+%    \item {\bf Relative effect size} $d=\hat \theta_r / \hat \theta_o$
+%    \item {\bf Relative sample size} $c = n_r / n_o$ 
+%    \end{enumerate}
+% }
+%  \end{minipage}
+% \end{multicols}
+% \vspace{.25cm}
+% \begin{multicols}{2}
+% 
+% \begin{minipage}{0.6\textwidth}
+% \visible<3->{
+%   \alert{Criterion}: Success if $d > \dmin$
+% }
+% \end{minipage}
+% % \begin{minipage}{0.5\textwidth}
+% % \visible<4->{
+% %    \begin{center}
+% %   \includegraphics[width=5cm]{images_presentation/Held-etal2021.png} \\
+% %   \color{darkred}{\scriptsize AOAS, to appear \\ \url{https://arxiv.org/abs/2009.07782}}
+% % \end{center}
+% % }
+% %  \end{minipage}
+% \end{multicols}
+% 
+% \end{frame}
 
 
 <<echo=FALSE>>=
@@ -766,6 +932,8 @@ Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
 <<plot1, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = FALSE>>=
  
 par(mfrow = c(1,3))
@@ -791,7 +959,8 @@ plotLevel(c = mycval, # choosing one value of c
           method = "RS") # Replication Success
 
 @
-
+  }
+}
 \end{frame}
 
 
@@ -806,7 +975,8 @@ mycval <- 1
 Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
-
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
 <<plot1b, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = FALSE>>=
 
 par(mfrow = c(1,3))
@@ -832,7 +1002,8 @@ plotLevel(c = mycval, # choosing one value of c
           method = "RS") # Replication Success
 
 @
-
+  }
+}
 \end{frame}
 
 
@@ -848,6 +1019,8 @@ Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
 <<plot1c, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
 
 par(mfrow = c(1,3))
@@ -873,7 +1046,8 @@ plotLevel(c = mycval, # choosing one value of c
           method = "RS") # Replication Success
 
 @
-
+  } 
+}
 \end{frame}
 
 <<echo = F>>=
@@ -887,7 +1061,8 @@ mycval <- 5
 Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
-
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
 <<plot1d, fig.height = 6, fig.weight=12, cache=FALSE, out.width="1\\linewidth", echo = F>>=
 
 par(mfrow = c(1,3))
@@ -913,7 +1088,8 @@ plotLevel(c = mycval, # choosing one value of c
           method = "RS") # Replication Success
 
 @
-
+  }
+}
 \end{frame}
 
 <<echo = F>>=
@@ -928,6 +1104,8 @@ Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
 <<plot1e, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
 
 par(mfrow = c(1,3))
@@ -953,7 +1131,8 @@ plotLevel(c = mycval, # choosing one value of c
           method = "RS") # Replication Success
 
 @
-
+  } 
+} 
 \end{frame}
 <<echo = F>>=
 mycval <- 1000
@@ -967,6 +1146,8 @@ Success if {\color{darkred} $d > \dmin$}
 \end{center}
 \vspace{-1cm}
 
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
 <<plot1f, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
 
 par(mfrow = c(1,3))
@@ -992,6 +1173,16 @@ plotLevel(c = mycval, # choosing one value of c
           method = "RS") # Replication Success
 
 @
+  } 
+}
+\end{frame}
+
+\begin{frame}{Shrinkage of replication effect estimate}
+
+Shrinkage {\color{foo} $s = 1 - d$} \\
+    of replication effect estimate $\hat\theta_r$ 
+    as compared to original effect estimate $\hat\theta_o$ is 
+    {\color{red} penalized} in the sceptical $p$-value approach
 
 \end{frame}
 
