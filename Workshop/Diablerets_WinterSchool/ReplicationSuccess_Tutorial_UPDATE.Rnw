@@ -842,26 +842,34 @@ dminRS <- effectSizeReplicationSuccess(zo = study$fiso/study$se_fiso,
                                    type = "golden", 
                                    alternative = "one.sided")
 @
-  
+ 
+
   
     \begin{itemize}
       \item {\color{foo} $d = \Sexpr{round(study$fisr, 2)}/\Sexpr{round(study$fiso, 2)} = 
       \Sexpr{round(study$fisr/study$fiso, 2)}$ }
       \item Minimum relative effect size
         \begin{itemize}
-          \item With the two-trials rule: {\color{springgreen4} $\dmin = \Sexpr{round(dmin2TR, 2)} < d$}
+\visible<2->{  
+          \item With the two-trials rule: \\
+            \begin{center} 
+            {\color{springgreen4} $\dmin = \Sexpr{round(dmin2TR, 2)} < \Sexpr{round(study$fisr/study$fiso, 2)}\quad$ 
+              Replication Success} \end{center}}
+\visible<3->{  
           \item With the 
-          sceptical $p$-value {\color{red} $\dmin = \Sexpr{round(dminRS, 2)} > d$}
+          sceptical $p$-value: \begin{center} 
+            {\color{red} $\dmin = \Sexpr{round(dminRS, 2)} > \Sexpr{round(study$fisr/study$fiso, 2)}\quad$  No Replication Success} 
+            \end{center}}
         \end{itemize}
     \end{itemize}
       \pause
   \end{block}
   
-  
+\visible<4->{  
       \begin{center}
     {\color{darkred} Why do the two methods disagree?}
     \end{center}
-    
+    }
     
 \end{frame}
 
