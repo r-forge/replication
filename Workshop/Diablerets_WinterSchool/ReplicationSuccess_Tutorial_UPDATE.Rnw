@@ -3,7 +3,17 @@
 
 % Leos shortcuts
 \input{newCommands.tex}
-
+\def\SE{\mbox{se}}
+\def\PE{\mbox{PE}}
+\def\OR{\mbox{OR}}
+\def\HR{\mbox{HR}}
+\def\RR{\mbox{RR}}
+\def\EF{\mbox{EF}}
+\def\RV{\mbox{RV}}
+\def\RD{\mbox{RD}}
+\def\ARR{\mbox{ARR}}
+\def\RRR{\mbox{RRR}}
+\def\NNT{\mbox{NNT}}
 % nicer tables
 \usepackage{booktabs}
 
@@ -118,11 +128,11 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{frame}{Large-scale replication projects}
 \begin{block}{}
   \begin{itemize}
-    \item<1-> \color<6>{gray}{2015: Reproducibility project psychology}
-    \item<2-> \color<6>{gray}{2016: Experimental economics replication project}
-    \item<3-> \color<6>{gray}{2018: Experimental philosophy replicability project}
-    \item<4-> \color<6>{red}{2018: Social sciences replication project}
-    \item<5-> \color<6>{gray}{2021: Reproducibility Project: Cancer Biology}
+    \item<1->                {2015: Reproducibility project psychology}
+    \item<2->                {2016: Experimental economics replication project}
+    \item<3->                {2018: Experimental philosophy replicability project}
+    \item<4->               {2018: Social sciences replication project}
+    \item<5->                {2021: Reproducibility Project: Cancer Biology}
   \end{itemize}
 \end{block}
 \begin{minipage}[t][5cm][t]{\textwidth}
@@ -140,13 +150,59 @@ opts_chunk$set(fig.path = "figures/fig",
   \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
   }
   \only<5>{
-  \includegraphics[width=0.6\textwidth]{images_presentation/errington2021.png}
+  \includegraphics[width=0.8\textwidth]{images_presentation/errington2021.png}
   }
-  \only<6>{
+%%  \only<6>{
+%%  \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
+%%  }
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{The four horsemen of irreproducibility}
+%% \framesubtitle{Dorothy Bishop, Oxford Reproducibility Lecture  (2017)}
+\framesubtitle{Dorothy Bishop (2019) in Nature}
+%\vspace{-.5cm}
+\begin{multicols}{2}
+\begin{center}
+\begin{minipage}{7cm}
+\begin{center}
+\vspace{-1cm}
+%%\includegraphics[width=2.5cm]{figures/Bishop.jpg} \\[.5cm]
+    \includegraphics[width=7cm]{/home/leo/lehre/medpres/jahr1neu/slides/pictures/horsemen.jpg}\\
+%\hspace{-2cm}
+%%    \includegraphics[width=5cm]{figures/King1995Top2.pdf}
+\end{center}
+{\scriptsize $\qquad \quad$ Questionable research practices (QRPs)}
+\end{minipage}
+\end{center}
+   \hspace{2cm}
+  \begin{minipage}{3cm}
+\vspace{.5cm}
+\includegraphics[width=3cm]{/home/leo/talks/EBPILunch2017/figures/Bishop.jpg}
+\end{minipage}
+\end{multicols}
+  
+\end{frame}
+\begin{frame}{Large-scale replication projects}
+\begin{block}{}
+  \begin{itemize}
+    \item<1-> \color<1>{gray}{2015: Reproducibility project psychology}
+    \item<1-> \color<1>{gray}{2016: Experimental economics replication project}
+    \item<1-> \color<1>{gray}{2018: Experimental philosophy replicability project}
+    \item<1-> \color<1>{red}{2018: Social sciences replication project}
+    \item<1-> \color<1>{gray}{2021: Reproducibility Project: Cancer Biology}
+  \end{itemize}
+\end{block}
+\begin{minipage}[t][5cm][t]{\textwidth}
+  \centering
+  \only<1>{
   \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
   }
 \end{minipage}
 \end{frame}
+
 
 \begin{frame}[fragile]{Social sciences replication project} 
 << size = "normalsize" >>=
@@ -413,7 +469,7 @@ study_plot
 \begin{block}{}
 \begin{itemize}
   \item[] {\color{red} Relative effect size} $d = \hat\theta_r/\hat\theta_o = 
-  \Sexpr{round(study$fisr/study$fiso, 1)}$
+  \Sexpr{round(study$fisr/study$fiso, 2)}$
   \item[] {\color{red} Relative sample size} $c = n_r/n_o = 9$
 \end{itemize}
 \end{block}
@@ -952,6 +1008,7 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
 
 plotLevel(c = mycval,
           level = 0.025,
@@ -959,12 +1016,15 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
+
 plotLevel(c = mycval, # choosing one value of c
           level = 0.025,
           type = "golden",
           alternative = "one.sided",
           minRES = T, # not showing minres
           method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
 
 @
   }
@@ -995,6 +1055,7 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
 
 plotLevel(c = mycval,
           level = 0.025,
@@ -1002,12 +1063,14 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
 plotLevel(c = mycval, # choosing one value of c
           level = 0.025,
           type = "golden",
           alternative = "one.sided",
           minRES = T, # not showing minres
           method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
 
 @
   }
@@ -1039,6 +1102,7 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
 
 plotLevel(c = mycval,
           level = 0.025,
@@ -1046,12 +1110,14 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
 plotLevel(c = mycval, # choosing one value of c
           level = 0.025,
           type = "golden",
           alternative = "one.sided",
           minRES = T, # not showing minres
           method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
 
 @
   } 
@@ -1081,6 +1147,7 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
 
 plotLevel(c = mycval,
           level = 0.025,
@@ -1088,12 +1155,14 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
 plotLevel(c = mycval, # choosing one value of c
           level = 0.025,
           type = "golden",
           alternative = "one.sided",
           minRES = T, # not showing minres
           method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
 
 @
   }
@@ -1101,7 +1170,7 @@ plotLevel(c = mycval, # choosing one value of c
 \end{frame}
 
 <<echo = F>>=
-mycval <- 10
+mycval <- 9
 @
 \begin{frame}[fragile]{Comparison of Success Regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
@@ -1124,6 +1193,7 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
 
 plotLevel(c = mycval,
           level = 0.025,
@@ -1131,12 +1201,14 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
 plotLevel(c = mycval, # choosing one value of c
           level = 0.025,
           type = "golden",
           alternative = "one.sided",
           minRES = T, # not showing minres
           method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
 
 @
   } 
@@ -1166,6 +1238,7 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
 
 plotLevel(c = mycval,
           level = 0.025,
@@ -1173,12 +1246,15 @@ plotLevel(c = mycval,
           alternative = "one.sided",
           minRES = F,
           method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
+
 plotLevel(c = mycval, # choosing one value of c
           level = 0.025,
           type = "golden",
           alternative = "one.sided",
           minRES = T, # not showing minres
           method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
 
 @
   } 
@@ -2092,6 +2168,7 @@ Main arguments (\texttt{default}):
 \end{frame}
 
 \begin{frame}[fragile]{Example from \citet{Pyc2010}}
+\frametitle{No shrinkage}
   \begin{block}{}
     \begin{itemize}
       \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
@@ -2105,6 +2182,26 @@ Main arguments (\texttt{default}):
 # power calculation
 powerSignificance(zo = p2z(0.011, alternative = "one.sided"), 
                   c = 9.2, 
+                  designPrior = "conditional")
+@
+  
+\end{frame}
+\begin{frame}[fragile]{Example from \citet{Pyc2010}}
+\framesubtitle{With 50\% shrinkage}
+  \begin{block}{}
+    \begin{itemize}
+      \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
+      \item relative sample size $c =$ \Sexpr{round(c,1)}
+    \end{itemize}
+
+  \end{block}
+  
+<<>>=
+
+# power calculation
+powerSignificance(zo = p2z(0.011, alternative = "one.sided"), 
+                  c = 9.2, 
+                  shrinkage = 0.5, 
                   designPrior = "conditional")
 @
   
@@ -2878,17 +2975,447 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
   % \end{block}
 \end{frame}
 
-\begin{frame}{TODO}
+\begin{frame}[fragile]{TODO}
   \begin{itemize}
     \item Introducing meta-analysis 
     \item Introducing multiple replication studies per original study
     \item Preparing an exercise with the dataset from Protzo
-  \end{itemize}
+    \end{itemize}
 <<>>=
 data("protzko2020")
+head(protzko2020, 10)
 @
   
 \end{frame}
+
+\begin{frame}
+\frametitle{Show Protzko et al paper (published by now?)}
+\end{frame}
+
+\begin{frame}
+\frametitle{Show data from Protzko $4 \times 4$ forest plots}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Effect Measures}
+\begin{itemize}
+\item For \alert{continuous outcomes}
+ \begin{itemize}
+\item    Difference in means $\theta$ between treatment groups
+\end{itemize}
+ \item For \alert{binary/event outcomes} relative treatment effects
+    are preferred:
+  \begin{itemize}
+\item  Relative risk $\RR$
+  \item Odds ratio $\OR$
+    \item Hazard ratio $\HR$
+      \end{itemize}
+  \item These are usually considered on a log-scale: $\theta=\log(\RR)$, 
+    $\theta=\log(\OR)$, $\theta=\log(\HR)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Incidence of Preeclampsia in nine RCTs}
+\framesubtitle{Effect measure: Odds ratio for diuretic vs.~control}
+
+\begin{center}
+    \begin{tabular}{lrlrlr}
+      \textbf{Study}   & \multicolumn{2}{c}{\textbf{Diuretic}} & \multicolumn{2}{c}{\textbf{Control}} %
+      & \textbf{OR} \\ \hline
+      Weseley           & 11\% & (14/131)       & 10\% & (14/136)       & 1.04 \\
+      Flowers           &  5\% & (21/385)       & 13\% & (17/134)       & 0.40 \\
+      Menzies           & 25\% & (14/57)        & 50\% & (24/48)        & 0.33 \\
+      Fallis            & 16\% & (6/38)         & 45\% & (18/40)        & 0.23 \\
+      Cuadros           &  1\% & (12/1011)      &  5\% & (35/760)       & 0.25 \\
+      Landesman         & 10\% & (138/1370)     & 13\% & (175/1336)     & 0.74 \\
+      Krans             &  3\% & (15/506)       &  4\% & (20/524)       & 0.77 \\
+      Tervila           &  6\% & (6/108)        &  2\% & (2/103)        & 2.97 \\
+      Campbell          & 42\% & (65/153)       & 39\% & (40/102)       & 1.14 \\  \hline
+    \end{tabular}
+\end{center}
+
+\end{frame}
+
+<<ch1, echo=F>>=
+
+preeclampsia <- read.table("data/preeclampsia.txt", header = TRUE)
+
+diuretics <- with (preeclampsia,
+                   c (sum (Diuretic[Preeclampsia == "yes"]), sum (Diuretic[Preeclampsia == "no"]))
+                   )
+controls <- with (preeclampsia,
+                   c (sum (Control[Preeclampsia == "yes"]), sum (Control[Preeclampsia == "no"]))
+                   )
+logOddsRatio <- log (diuretics[1] * controls[2] / diuretics[2] / controls[1])
+standardError <- sqrt (sum (1/diuretics) + sum (1/controls))
+waldKiLogOddsRatio <- logOddsRatio + c (-1, 1) * 1.96 * standardError
+waldData <- list (logOddsRatio, waldKiLogOddsRatio)
+
+
+## compute data
+oddsRatio <- function (square)
+    (square[1,1] * square[2,2]) / (square[1,2] * square[2,1])
+
+variance <- function (square)
+    sum (1 / square)
+
+groups <- split (subset (preeclampsia, select = c (Diuretic, Control)),
+                 preeclampsia[["Trial"]])
+
+logOddsRatios <- log (sapply (groups, oddsRatio))
+variances <- sapply (groups, variance)
+w <- 1/variances
+num <- sum(w*logOddsRatios)
+den <- sum(w)
+theta.hat <- num/den
+se.theta.hat <- 1/sqrt(sum(w))
+wald.z <- (theta.hat)/se.theta.hat
+wald.p <- 2*pnorm(abs(wald.z), lower.tail=FALSE)
+
+t.homo <- sum(w*(logOddsRatios-theta.hat)^2)
+n <- length(logOddsRatios)
+p.homo <- pchisq(t.homo, df=n-1, lower.tail=FALSE)
+
+@ 
+
+\begin{frame}[fragile]
+\frametitle{Graphical Summary with 95\% CIs}
+\framesubtitle{Forest Plot}
+\begin{center}
+\setkeys{Gin}{width=0.75\textwidth}
+<<ch2, echo=FALSE>>=
+## mar <- par("mar")
+## mar[2] <- 12
+## par(mar=c(5.1, 12, 4.1, 2.1))
+
+## plot intervals with point estimates
+library (lattice)
+
+## study effects
+postSd <- sqrt (variances)
+postLower <- logOddsRatios - postSd * 1.96
+postUpper <- logOddsRatios + postSd * 1.96
+
+## plot intervals with point estimates
+
+panel.ci <- function(x, y, lx, ux, subscripts, ...)
+{
+    x <- as.numeric(x)
+    y <- as.numeric(y)
+
+    lx <- as.numeric(lx[subscripts])
+    ux <- as.numeric(ux[subscripts])
+
+    panel.dotplot(x, y, lty = 2, ...)            # normal dotplot for point estimates
+    panel.arrows(lx, y, ux, y,          # draw intervals
+                 length = 0.1, unit = "native",
+                 angle = 90,            # deviation from line
+                 code = 3,              # left and right whisker
+                 ...)
+    panel.abline (v = 0, lty = 2)       # reference line
+}
+
+studyNames <- c (names (postLower))
+studyNames <- ordered (studyNames, levels = rev (studyNames)) # levels important for order!
+
+ciData <- data.frame (low = postLower, 
+                      up = postUpper,
+                      mid = logOddsRatios,
+                      names = studyNames
+                      )
+ciData[["signif"]] <- with (ciData,
+                            up < 0 | low > 0)
+ciData[["farbe"]] <- with (ciData,
+                           ifelse (signif, "black", "black"))
+
+randomEffectsCiPlot <- with (ciData,
+                             dotplot (names ~ mid,
+                                      panel = panel.ci,
+                                      lx = low, ux = up,
+                                      pch = 19, col = farbe,
+                                      xlim = c (-3, 3), xlab = "Log Odds Ratio",
+                                      scales = list (cex = 1)
+                                      )
+                             )
+print (randomEffectsCiPlot)
+
+
+@
+\end{center}
+\end{frame}
+
+%% \begin{frame}[fragile]
+%% \frametitle{Forest Plot in \texttt{R}}
+
+
+%% <<echo=FALSE>>=
+
+%% Preeclampsia <- data.frame(study=names(logOddsRatios), logOR=logOddsRatios, se=sqrt(variances), 
+%%                            row.names=NULL)
+
+%% @ 
+
+%% <<>>=
+%% head(Preeclampsia)
+%% library(meta)
+
+%% @ 
+
+%% \end{frame}
+
+\section{Meta-Analysis}
+\subsection{Fixed Effect Model}
+
+\begin{frame}
+\frametitle{Notation and Overall Effect}
+\framesubtitle{Fixed effect model}
+\begin{itemize}
+\item Notation: 
+  \begin{itemize}
+\item $i=1,\ldots, n$ trials
+\item $\theta_i$, $\hat \theta_i$: true and estimated study-specific treatment effect
+\item standard error $\sigma_i = \se(\hat \theta_i)$ of $\hat \theta_i$
+\item variance $v_i = \sigma_i^2$
+%%\item $w_i=1/v_i$: (estimated) precision of $\hat \theta_i$ 
+\end{itemize}
+\item \alert{Homogeneity} assumption: $\theta_i = \theta$ for all $i$
+\item The estimate $\hat \theta$ of the overall treatment effect $\theta$ is then a
+  \alert{weighted average} of study-specific estimates $\hat \theta_i$
+  with \alert{inverse variance weights} $w_i=1/v_i$:
+  \[
+  \hat \theta = \frac{\sum w_i \hat \theta_i}{\sum w_i}
+\mbox{  with }
+  \se(\hat \theta) =  1/\sqrt{\sum w_i}.
+  \]
+%% \item[$\rightarrow$]  Wald test statistic $z=\hat \theta/\se(\hat \theta)$
+%% for $H_0$: $\theta = 0$.
+%% \item For the preeclampsia study we obtain for $\theta=\log(\OR)$: $\hat
+%%   \theta=\Sexpr{format(theta.hat,digits=2, nsmall=2)}$, so $\widehat{\OR}=
+%%   \exp(\Sexpr{format(theta.hat,digits=2, nsmall=2)}) = 
+%%   \Sexpr{format(exp(theta.hat),digits=2, nsmall=2)}$, with  $\se(\hat
+%%   \theta)=\Sexpr{format(se.theta.hat,digits=2, nsmall=2)}$ %% and $z=\Sexpr{round(wald.z, 2)}$ 
+%%   ($p\Sexpr{format.pval(wald.p,digits=2, eps=0.0001, scientific=FALSE)}$ for $H_0$: $\theta = 0$.).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Presentation in Forest Plot}
+\framesubtitle{Fixed effect model}
+\vspace{2cm}
+
+\begin{center}
+\begin{figure}[h!]
+\setkeys{Gin}{width = 1\textwidth}
+%%\vspace*{-1cm}
+<<ch4.0, echo = FALSE>>=
+
+pree <- read.csv("data/preeclampsia.csv", header = TRUE, sep = ",", dec = ".", fill = TRUE)     
+pree <- pree[order(pree$study),]
+
+#transformVarNames(pree, "pree")
+study       <- pree$study
+treatedPre <- pree$diur_pre
+treatedTot <- pree$diur_tot
+controlPre <- pree$plac_pre
+controlTot <- pree$plac_tot
+a <- treatedPre
+b <- treatedTot
+c <- controlPre
+d <- controlTot
+@ 
+\vspace*{-2cm}
+
+<<ch4b.0, echo = TRUE, fig.height=7.5, fig.width=9.75>>=
+library(meta)
+meta1 <- metabin(event.e = treatedPre, n.e = treatedTot, 
+                 event.c = controlPre, n.c = controlTot, 
+                 sm = "OR" , method = "Inverse", studlab = study)
+forest(meta1, comb.fixed=TRUE, comb.random=FALSE) 
+@ 
+
+\end{figure}
+\end{center}
+%% \vspace{1cm}
+<<ch5.0, echo=F>>=
+
+or.fixed <- exp(meta1$TE.fixed)
+or.lower <- exp(meta1$lower.fixed)
+or.upper <- exp(meta1$upper.fixed)
+ci.fixed <- c(or.lower, or.upper)
+
+or.random <- exp(meta1$TE.random)
+or.lower <- exp(meta1$lower.random)
+or.upper <- exp(meta1$upper.random)
+ci.random <- c(or.lower, or.upper)
+
+
+
+@ 
+\end{frame}
+
+
+\subsection{Cochran's Test for Heterogeneity}
+
+\begin{frame}
+\frametitle{Test for Heterogeneity}
+\begin{itemize}
+\item Under the \alert{homogeneity} assumption, we have
+\[
+Q = \sum w_i (\hat \theta_i - \hat \theta)^2 \sima \chi^2_{n-1}
+\]
+\item This can be used to calculate the $p$-value of \alert{Cochran's test for heterogeneity}. 
+\item For the preeclampsia data, this test yields $Q = \Sexpr{round(t.homo, 1)}$ at $n-1=8$ degrees of freedom ($p=\Sexpr{format.pval(p.homo,digits=1, eps=0.0001, scientific=FALSE)}$).
+\item[$\rightarrow$] Strong evidence for heterogeneity between studies. 
+\item[$\rightarrow$]  Fixed effect model questionable. 
+  %% \item But: ``test lacks power'', ``limited usefulness in the context
+%%   of meta-analysis''
+\end{itemize}
+\end{frame}
+
+
+\subsection{Random Effects Model}
+
+\begin{frame}
+\frametitle{Random Effects Model}
+\begin{itemize}
+\item 
+Assumes that the $\theta_i$'s come from a normal distribution with
+mean $\theta^*$ and \alert{heterogeneity variance} $\tau^2$:
+\[
+\hat \theta_i \given \theta_i  \sim   \Nor(\theta_i, v_i) \quad \mbox{ and }
+\quad \theta_i   \sim   \Nor(\theta^*, \tau^2),
+\]
+so marginally
+\[
+\hat \theta_i \sim   
+\Nor(\theta^*, v_i + \tau^2).
+\]
+\item The overall effect estimate $\hat \theta^*$ is now based on the weights
+  $$w_i^*  =  {1}/{(v_i + \tau^2)}.$$
+%% \[
+%%   \hat \theta^*  = \frac{\sum w_i^* \hat \theta_i}{\sum w_i^*}, 
+%%   \mbox{ with }
+%% %% w_i^*  =  \frac{1}{v_i + \tau^2} \mbox{ and }
+%%   \se(\hat \theta^*) = {1}/{\sqrt{\sum w_i^*}}.
+%% \]
+%% with weights $w_i^*  =  {1}/{(v_i + \tau^2)}$.
+\item Compared to the fixed effect model, 
+\begin{itemize}
+\item the confidence intervals for the
+  overall treatment effect will become wider, 
+\item  large studies will obtain less weight. 
+\end{itemize}
+%% \item[$\rightarrow$] $z^*=\hat \theta^*/\se(\hat \theta^*)$ can be used to test $H_0$: $\theta^*=0$.
+%  under heterogeneity.
+%\item For the preeclampsia data, the test gives $\chi^2_1 = 6.4$ ($p=0.011$)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Estimate of Heterogeneity Variance and Higgins' $I^2$}
+  \begin{itemize}
+  \item \alert{Moment estimator} of heterogeneity variance compares
+    $Q$-statistic to its expectation $n-1$ under homogeneity.
+\item Truncation at zero and appropriate scaling gives 
+  \[
+  \hat \tau^2 = \left\{Q-(n-1)\right\}_{+} / \left\{\textstyle\sum w_i - \textstyle\sum w_i^2/\textstyle\sum w_i\right\}
+  \]
+\item Standard \alert{DerSimonian-Laird} approach plugs $\hat \tau^2$ in $w_i^* = {1}/{(v_i + \tau^2)}$,  
+  the alternative \alert{Hartung-Knapp} adjustment accounts for 
+  the uncertainty of $\hat \tau^2$. 
+%\item Standard deviation $\hat \tau$ rather than $\hat \tau^2$ is often reported. 
+%where $Q = \sum w_i (\hat \theta_i - \hat \theta)^2$
+<<ch3, echo=F>>=
+
+Q <- t.homo
+sigma2.hat <- max(0, (Q-(n-1))/(sum(w)-sum(w^2)/sum(w)))
+w.star <- 1/(variances+sigma2.hat)
+num.star <- sum(w.star*logOddsRatios)
+den.star <- sum(w.star)
+theta.star.hat <- num.star/den.star
+se.theta.star.hat <- 1/sqrt(sum(w.star))
+wald.star.z <- (theta.star.hat)/se.theta.star.hat
+wald.star.p <- 2*pnorm(abs(wald.star.z), lower.tail=FALSE)
+
+@ 
+\item Easier to interpret is \alert{Higgins $I^2$}: 
+  {Percentage of variance} that is attributable to study heterogeneity.
+%% \item For the preeclampsia data we obtain $\hat
+%%   \tau^2=\Sexpr{round((sigma2.hat),2)}$, 
+%%   $\hat \theta^*=\Sexpr{round(theta.star.hat,2)}$, {\it i.e.} $\widehat{\OR}=\Sexpr{format(exp(theta.star.hat),digits=2, nsmall=2)}$, with  
+%%   $\se(\hat \theta^*)=\Sexpr{round(sqrt(se.theta.star.hat),2)}$.
+%%   \item The Wald test for $H_0$: $\theta^*=0$ now gives $z^*
+%%     =\Sexpr{round(wald.star.z,2)}$
+%%     ($p=\Sexpr{format.pval(wald.star.p,digits=2,eps=0.0001, scientific=FALSE)}$).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Presentation in Forest Plot}
+\framesubtitle{Random effects model}
+\vspace{2cm}
+
+\begin{center}
+\begin{figure}[h!]
+\setkeys{Gin}{width = 1\textwidth}
+%%\vspace*{-1cm}
+<<ch4, echo = FALSE>>=
+
+pree <- read.csv("data/preeclampsia.csv", header = TRUE, sep = ",", dec = ".", fill = TRUE)     
+pree <- pree[order(pree$study),]
+
+#transformVarNames(pree, "pree")
+study       <- pree$study
+treatedPre <- pree$diur_pre
+treatedTot <- pree$diur_tot
+controlPre <- pree$plac_pre
+controlTot <- pree$plac_tot
+a <- treatedPre
+b <- treatedTot
+c <- controlPre
+d <- controlTot
+@ 
+\vspace*{-2cm}
+
+<<ch4b, echo = TRUE, fig.height=7.5, fig.width=9.75>>=
+
+library(meta)
+forest(meta1, comb.fixed=TRUE, comb.random=TRUE)
+@ 
+
+\end{figure}
+\end{center}
+\vspace{1cm}
+<<ch5, echo=F>>=
+
+or.fixed <- exp(meta1$TE.fixed)
+or.lower <- exp(meta1$lower.fixed)
+or.upper <- exp(meta1$upper.fixed)
+ci.fixed <- c(or.lower, or.upper)
+
+or.random <- exp(meta1$TE.random)
+or.lower <- exp(meta1$lower.random)
+or.upper <- exp(meta1$upper.random)
+ci.random <- c(or.lower, or.upper)
+
+
+
+@ 
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercises}
+\begin{itemize}
+\item Compute fixed- and random-effects meta-analysis of Protzko (external) replications
+\item Study heterogeneity estimates ($I^2$)
+\item Feed this into 2TR and sceptical $p$; how many replication successes with each method?
+\end{itemize}
+  
+\end{frame}
+
 
 \begin{frame}
 \section{More advanced topics}
