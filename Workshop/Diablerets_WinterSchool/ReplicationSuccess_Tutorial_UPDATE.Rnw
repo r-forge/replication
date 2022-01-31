@@ -1261,12 +1261,67 @@ points(0.011, 0.38, col=4, pch=19)
 }
 \end{frame}
 
-\begin{frame}{Shrinkage of replication effect estimate}
 
-Shrinkage {\color{foo} $s = 1 - d$} \\
-    of replication effect estimate $\hat\theta_r$ 
-    as compared to original effect estimate $\hat\theta_o$ is 
-    {\color{red} penalized} in the sceptical $p$-value approach
+\begin{frame}{Shrinkage}
+  \framesubtitle{Definition and example}
+  \begin{block}{Shrinkage}
+    \begin{itemize}
+      \item is defined as {\color{foo} $s = 1 - d$}
+      \item represents how much the {\color{red} replication effect estimate}
+      is decreased as compared to the {\color{red} original effect estimate}
+      \item Pyc and Rawson example: {\color{foo} $s = 1 - 
+      \Sexpr{round(study$fisr/study$fiso, 2)} = 
+      \Sexpr{round(1 -study$fisr/study$fiso, 2) }$}
+      \item[] $\rightarrow$ replication effect is 
+      {\color{red} $\Sexpr{round(1 -study$fisr/study$fiso, 2)*100}$\% smaller} 
+      than original one
+    \end{itemize}
+      \pause 
+  \end{block}
+    \begin{center}
+    {\color{darkred} Shrinkage is penalized in the sceptical $p$-value 
+  approach}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Shrinkage penalization}
+  \framesubtitle{in the sceptical $p$-value approach}
+    \vspace{1cm}
+  \begin{center}
+    Bordeline significant original studies 
+    {\color{red} ($p_o = \alpha$)}
+    can only lead to success if there is no shrinkage {\color{foo} ($d > 1$)}
+  \end{center}
+
+    \vspace{-1.5cm}
+\makebox[1\textwidth][c]{  
+  \resizebox{0.5\textwidth}{!} { 
+<<echo = F, fig.width = 5>>=
+
+par(mfrow = c(1,1))
+plotLevel(c = Inf, 
+          level = 0.025,  
+          type = "golden", 
+          alternative = "one.sided", 
+          minRES = T, 
+          method = "RS")
+segments(x0 = 0.025, y0 = 1, x1 = 0, y1 = 1, 
+         col = "red", cex = 1.5, 
+         lty = 2)
+
+segments(x0 = 0.025, y0 = 0, x1 = 0.025, y1 = 1, 
+         col = "red", cex = 1.5, 
+         lty = 2)
+
+points(x = 0.025, y = 1, 
+       col = "red", 
+       pch = 19)
+axis(1, 0.025, 0.025, col.axis = "red", col.ticks = "red", 
+     cex.axis = 0.5)
+
+@
+  } 
+}
 
 \end{frame}
 
@@ -1470,18 +1525,7 @@ with the two approaches (two-trials rule and sceptical $p$-value).
 Use the functions \texttt{effectSizeSignificance} and 
 \texttt{effectSizeReplicationSuccess}.
   \end{block}
-<<echo = F, eval = F>>=
-par(mfrow = c(1,1))
-dmin_sign <- effectSizeSignificance(zo = RProjects$zo, c = RProjects$c, level = 0.025)
-dmin_rs <- effectSizeReplicationSuccess(zo = RProjects$zo, c = RProjects$c, level = 0.025, 
-                             type = "golden", alternative = "one.sided")
 
-plot(dmin_sign, dmin_rs, pch = 20, xlim = c(0, 2), ylim = c(0, 2))
-abline(coef = c(0,1), col = "red")
-mean(dmin_sign < dmin_rs, na.rm = T)
-mean(dmin_sign > dmin_rs, na.rm = T)
-@
-  
 \end{frame}
 
 \begin{frame}[fragile]{Solution: Exercise 1.1}  
@@ -1811,6 +1855,45 @@ print(discTab2, include.rownames = FALSE, booktabs = TRUE,
 }
 \end{frame}
 
+\begin{frame}[fragile]{Solution: Exercise 1.5 (extended)}
+  \begin{center}
+  Minimum relative effect size $\dmin$ with the 
+  {\color{foo} two-trials rule} 
+  vs the {\color{foo} sceptical $p$-value}
+  \end{center}
+  
+  \makebox[1\textwidth][c]{  
+  \resizebox{0.75\textwidth}{!} {
+<<echo = F>>=
+dmin_sign <- effectSizeSignificance(zo = RProjects$zo,
+                                    c = RProjects$c,
+                                    level = 0.025)
+dmin_rs <- effectSizeReplicationSuccess(zo = RProjects$zo,
+                                        c = RProjects$c,
+                                        level = 0.025,
+                                        type = "golden",
+                                        alternative = "one.sided")
+dmin_DF <- as.data.frame(cbind(dmin_sign, dmin_rs,
+                               RProjects$se_fiso^2/RProjects$se_fisr^2))
+colnames(dmin_DF) <-  c("dmin_sign", "dmin_rs", "c")
+                               
+                               
+ggplot(data= dmin_DF, aes(x = dmin_sign, y = dmin_rs)) +
+   geom_point(aes(size  = c, sie = 10)) +
+  xlim(0, 2) +
+  ylim(0, 2) +
+  geom_abline(intercept = 0, slope = 1, color = "grey") + 
+  xlab(expression(paste(d[min], " (two-trials rule)"))) + 
+  ylab(expression(paste(d[min], " (sceptical p-value)"))) + 
+    theme_bw()  + 
+  theme(axis.text = element_text(size = 20), 
+        axis.title = element_text(size = 25))
+@
+
+  } 
+} 
+\end{frame}
+
 \begin{frame}
 \section{Exercise 2 -- Design of replication studies}
   % \begin{block}{}
@@ -2112,6 +2195,7 @@ uncertainty about the true effect after the original experiment
 \end{frame}
 
 \begin{frame}{Power of the two-trials rule} 
+  \framesubtitle{in absolute terms}
   \begin{block}{Conditional design prior}
     \begin{eqnarray*}
   \mbox{Power} = \Phi\left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)
@@ -2128,7 +2212,7 @@ uncertainty about the true effect after the original experiment
 
 
 \begin{frame}{Power of the two-trials rule} 
-  \framesubtitle{Alternative formulation}
+  \framesubtitle{in relative terms}
   \begin{block}{Conditional design prior}
     \begin{eqnarray*}
   \mbox{Power} = \Phi\left(z_o \sqrt{c} - z_{1- \alpha}\right)
@@ -2139,6 +2223,23 @@ uncertainty about the true effect after the original experiment
     \begin{eqnarray*}
    \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{1}{c+1}}}
    \left(z_o \sqrt{c} - z_{1- \alpha}\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Power of the two-trials rule} 
+  \framesubtitle{with shrinkage}
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+  \mbox{Power} = \Phi\left({\color{foo} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)
+    \end{eqnarray*}
+  \end{block}
+  \pause
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+   \mbox{Power} = \Phi\left({\color{black} \sqrt{\frac{1}{c+1}}}
+   \left( {\color{foo} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)\right)
     \end{eqnarray*}
   \end{block}
 \end{frame}
