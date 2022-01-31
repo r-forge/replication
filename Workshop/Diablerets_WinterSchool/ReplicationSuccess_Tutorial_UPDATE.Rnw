@@ -39,6 +39,8 @@
 \usepackage{color}
 \definecolor{magenta}{cmyk}{0,1,0,0}
 \newcommand{\dmin}{d_{\tiny \mbox{min}}}
+\setbeamertemplate{footline}[page number]
+
 
 % hyperref options
 \usepackage{hyperref}  
@@ -62,7 +64,7 @@
 \institute{University of Zurich}
 
   
-\date{February 2022}
+\date{Feb 6-9, 2022}
 
 
 % ----------------------------------------------------------------------------
@@ -97,6 +99,9 @@ opts_chunk$set(fig.path = "figures/fig",
   \includegraphics[width=0.8\textwidth]{images_presentation/logo.png}
     \end{column}
   \end{columns}
+    \begin{center}
+    {\color{darkred} Winter School 2022, Les Diablerets}
+    \end{center}
 \end{frame}
 
 \begin{frame}
@@ -1362,6 +1367,7 @@ install.packages("ReplicationSuccess")
 library(ReplicationSuccess)
 vignette("ReplicationSuccess")
 ?pSceptical # documentation
+news(package = "ReplicationSuccess") # news page
 @
   \end{itemize}
   \end{block}
@@ -1898,9 +1904,7 @@ ggplot(data= dmin_DF, aes(x = dmin_sign, y = dmin_rs)) +
 \section{Exercise 2 -- Design of replication studies}
   % \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Exercise Session 2}}
-  \\~\\
-  {\LARGE Design based on significance}
+  \color{uzh@blue}{\Huge \textbf{Design of replication studies}}
    \end{center}
   % \end{block}
 \end{frame}
@@ -2244,7 +2248,19 @@ uncertainty about the true effect after the original experiment
   \end{block}
 \end{frame}
 
-\begin{frame}{Design based on significance} 
+
+\begin{frame}
+\section{Exercise 2 -- Design of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Exercise session 2}}
+  \\~\\
+  {\LARGE Design based on the two-trials rule}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}{Design based on the two-trials rule} 
 %%    \framesubtitle{Functions}
   \begin{block}{}
 Two functions: 
@@ -4143,9 +4159,31 @@ print(xt5,
 to do 
 \end{frame}
 
-\begin{frame}{Acknowledgments}
+\begin{frame}
+  \frametitle{Acknowledgments}
+  
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+    \begin{center}
+      \includegraphics[height=0.275\paperheight]{images_presentation/CRS.png}% \\
+    \end{center}
+    \begin{center}
+    \includegraphics[width=4cm]{images_presentation/SwissRNLogowide.png} \\
+    \end{center}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+      \vspace{0.5cm}
+    \begin{center}
+    \includegraphics[width=5cm]{images_presentation/logo.png}\\
+    {\scriptsize \url{http://p3.snf.ch/Project-189295}}
+    \end{center}
+    \begin{center}
+    \vspace{0.5cm}
+      \includegraphics[width=1.65cm]{images_presentation/pawel_samuel.jpg} \vspace{.5cm}% \\
+    \end{center}
+    \end{column}
+  \end{columns}
 
-to do 
 \end{frame}
 % ============================================================================
 \nocite{Pyc2010, Opensc2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, Held2020, Held2020c}
