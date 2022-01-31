@@ -170,7 +170,7 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{center}
 \vspace{-1cm}
 %%\includegraphics[width=2.5cm]{figures/Bishop.jpg} \\[.5cm]
-    \includegraphics[width=7cm]{/home/leo/lehre/medpres/jahr1neu/slides/pictures/horsemen.jpg}\\
+    \includegraphics[width=7cm]{figures/horsemen.jpg}\\
 %\hspace{-2cm}
 %%    \includegraphics[width=5cm]{figures/King1995Top2.pdf}
 \end{center}
@@ -180,7 +180,7 @@ opts_chunk$set(fig.path = "figures/fig",
    \hspace{2cm}
   \begin{minipage}{3cm}
 \vspace{.5cm}
-\includegraphics[width=3cm]{/home/leo/talks/EBPILunch2017/figures/Bishop.jpg}
+\includegraphics[width=3cm]{figures/Bishop.jpg}
 \end{minipage}
 \end{multicols}
   
