@@ -3111,7 +3111,7 @@ head(protzko2020, 10)
 
 \begin{frame}
 \frametitle{Forest plots}
-  \frametitle{for the $16$ experiments}
+  \framesubtitle{for the $16$ experiments}
 
 \makebox[1\textwidth][c]{  
   \resizebox{1\textwidth}{!} {
