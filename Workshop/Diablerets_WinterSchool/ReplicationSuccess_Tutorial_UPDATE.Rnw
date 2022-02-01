@@ -3166,7 +3166,7 @@ par(parOld)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Effect Measures}
+\frametitle{Effect measures}
 \begin{itemize}
 \item For \alert{continuous outcomes}
  \begin{itemize}
@@ -3185,7 +3185,7 @@ par(parOld)
 \end{frame}
 
 \begin{frame}
-\frametitle{Example: Incidence of Preeclampsia}
+\frametitle{Incidence of preeclampsia}
 \framesubtitle{Effect measure: Odds ratio for diuretic vs.~control}
 
 \begin{center}
@@ -3249,8 +3249,8 @@ p.homo <- pchisq(t.homo, df=n-1, lower.tail=FALSE)
 @ 
 
 \begin{frame}[fragile]
-\frametitle{Graphical Summary with 95\% CIs}
-\framesubtitle{Forest Plot}
+\framesubtitle{Effect estimates with 95\% CIs}
+\frametitle{Forest plot}
 \begin{center}
 \setkeys{Gin}{width=0.75\textwidth}
 <<ch2, echo=FALSE>>=
@@ -3337,7 +3337,7 @@ print (randomEffectsCiPlot)
 \subsection{Fixed Effect Model}
 
 \begin{frame}
-\frametitle{Notation and Overall Effect}
+\frametitle{Notation and overall effect}
 \framesubtitle{Fixed effect model}
 \begin{itemize}
 \item Notation: 
@@ -3369,7 +3369,7 @@ print (randomEffectsCiPlot)
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Presentation in Forest Plot}
+\frametitle{Presentation in forest plot}
 \framesubtitle{Fixed effect model}
 \vspace{2cm}
 
@@ -3427,7 +3427,7 @@ ci.random <- c(or.lower, or.upper)
 \subsection{Cochran's Test for Heterogeneity}
 
 \begin{frame}
-\frametitle{Test for Heterogeneity}
+\frametitle{Test for heterogeneity}
 \begin{itemize}
 \item Under the \alert{homogeneity} assumption, we have
 \[
@@ -3446,7 +3446,7 @@ Q = \sum w_i (\hat \theta_i - \hat \theta)^2 \sima \chi^2_{n-1}
 \subsection{Random Effects Model}
 
 \begin{frame}
-\frametitle{Random Effects Model}
+\frametitle{Random effects model}
 \begin{itemize}
 \item 
 Assumes that the $\theta_i$'s come from a normal distribution with
@@ -3482,7 +3482,7 @@ so marginally
 \end{frame}
 
 \begin{frame}
-\frametitle{Estimate of Heterogeneity Variance and Higgins' $I^2$}
+\frametitle{Estimate of heterogeneity variance and Higgins' $I^2$}
   \begin{itemize}
   \item \alert{Moment estimator} of heterogeneity variance $\tau^2$ compares
     $Q$-statistic to its expectation ($n-1$) under homogeneity.
@@ -3521,7 +3521,7 @@ wald.star.p <- 2*pnorm(abs(wald.star.z), lower.tail=FALSE)
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Presentation in Forest Plot}
+\frametitle{Presentation in forest plot}
 \framesubtitle{Random effects model}
 \vspace{2cm}
 
