@@ -71,7 +71,7 @@
 << include = FALSE, purl = FALSE >>=
 library(knitr)
 opts_chunk$set(fig.path = "figures/fig", 
-               cache = FALSE, 
+               cache = TRUE, 
                fig.align = "center",
                fig.height = 8,
                fig.width = 10,
@@ -3105,12 +3105,46 @@ head(protzko2020, 10)
   
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{Show Protzko et al paper (published by now?)}
 \end{frame}
 
 \begin{frame}
-\frametitle{Show data from Protzko $4 \times 4$ forest plots}
+\frametitle{Forest plots}
+  \frametitle{for the $16$ experiments}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1\textwidth}{!} {
+<<echo = F>>=
+# graphics.off()
+parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(4, 4))
+experiments <- unique(protzko2020$experiment)
+for (ex in experiments) {
+  ## compute CIs
+  dat <- subset(protzko2020, experiment == ex)
+  za <- qnorm(p = 0.975)
+  plotDF <- data.frame(lower = dat$smd - za*dat$se,
+                       est = dat$smd,
+                       upper = dat$smd + za*dat$se)
+colpalette <- c("#000000", "#1B9E77", "#D95F02")
+cols <- colpalette[dat$type]
+yseq <- seq(1, nrow(dat))
+
+## forestplot
+plot(x = plotDF$est, y = yseq, xlim = c(-0.15, 0.8),
+     ylim = c(0.8*min(yseq), 1.05*max(yseq)), type = "n",
+     yaxt = "n", xlab = "Effect estimate (SMD)", ylab = "")
+abline(v = 0, col = "#0000004D")
+arrows(x0 = plotDF$lower, x1 = plotDF$upper, y0 = yseq, angle = 90,
+       code = 3, length = 0.05, col = cols)
+points(y = yseq, x = plotDF$est, pch = 20, lwd = 2, col = cols)
+axis(side = 2, at = yseq, las = 1, labels = dat$type, cex.axis = 0.85)
+title(main = ex)
+}
+par(parOld)
+@
+  }
+} 
 \end{frame}
 
 
