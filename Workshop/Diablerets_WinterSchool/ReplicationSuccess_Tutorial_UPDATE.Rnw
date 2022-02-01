@@ -2285,7 +2285,7 @@ Main arguments (\texttt{default}):
 \end{frame}
 
 \begin{frame}[fragile]{Example from \citet{Pyc2010}}
-\frametitle{No shrinkage}
+\framesubtitle{No shrinkage}
   \begin{block}{}
     \begin{itemize}
       \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
