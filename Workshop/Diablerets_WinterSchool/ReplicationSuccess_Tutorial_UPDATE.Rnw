@@ -1875,6 +1875,7 @@ print(discTab2, include.rownames = FALSE, booktabs = TRUE,
 \end{frame}
 
 \begin{frame}[fragile]{Solution: Exercise 1.5 (extended)}
+  \framesubtitle{Significant original studies only}
   \begin{center}
   Minimum relative effect size $\dmin$ with the 
   {\color{foo} two-trials rule} 
@@ -1884,29 +1885,36 @@ print(discTab2, include.rownames = FALSE, booktabs = TRUE,
   \makebox[1\textwidth][c]{  
   \resizebox{0.75\textwidth}{!} {
 <<echo = F>>=
-dmin_sign <- effectSizeSignificance(zo = RProjects$zo,
-                                    c = RProjects$c,
+RProjects$po1 <- z2p(RProjects$fiso/RProjects$se_fiso, "one.sided")
+RProjects_sign <- which(RProjects$po1 < 0.025)
+dmin_sign <- effectSizeSignificance(zo = RProjects$zo[RProjects_sign],
+                                    c = RProjects$c[RProjects_sign],
                                     level = 0.025)
-dmin_rs <- effectSizeReplicationSuccess(zo = RProjects$zo,
-                                        c = RProjects$c,
+dmin_rs <- effectSizeReplicationSuccess(zo = RProjects$zo[RProjects_sign],
+                                        c = RProjects$c[RProjects_sign],
                                         level = 0.025,
                                         type = "golden",
                                         alternative = "one.sided")
 dmin_DF <- as.data.frame(cbind(dmin_sign, dmin_rs,
-                               RProjects$se_fiso^2/RProjects$se_fisr^2))
+                               RProjects$c[RProjects_sign]))
 colnames(dmin_DF) <-  c("dmin_sign", "dmin_rs", "c")
                                
                                
 ggplot(data= dmin_DF, aes(x = dmin_sign, y = dmin_rs)) +
-   geom_point(aes(size  = c, sie = 10)) +
+   geom_point(aes(size  = c, col = c)) +
   xlim(0, 2) +
   ylim(0, 2) +
   geom_abline(intercept = 0, slope = 1, color = "grey") + 
   xlab(expression(paste(d[min], " (two-trials rule)"))) + 
   ylab(expression(paste(d[min], " (sceptical p-value)"))) + 
-    theme_bw()  + 
+    theme_bw()  +
   theme(axis.text = element_text(size = 20), 
-        axis.title = element_text(size = 25))
+        axis.title = element_text(size = 25), 
+        panel.background = element_blank()) + 
+  scale_size(breaks = c(10, 5, 1, 0.2)) + 
+  scale_colour_gradientn(colours = (c("orange", "red", "darkred", "black")))
+
+
 @
 
   } 
@@ -2249,14 +2257,14 @@ uncertainty about the true effect after the original experiment
   \framesubtitle{with shrinkage}
   \begin{block}{Conditional design prior}
     \begin{eqnarray*}
-  \mbox{Power} = \Phi\left({\color{foo} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)
+  \mbox{Power} = \Phi\left({\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)
     \end{eqnarray*}
   \end{block}
   \pause
     \begin{block}{Predictive design prior}
     \begin{eqnarray*}
    \mbox{Power} = \Phi\left({\color{black} \sqrt{\frac{1}{c+1}}}
-   \left( {\color{foo} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)\right)
+   \left( {\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)\right)
     \end{eqnarray*}
   \end{block}
 \end{frame}
@@ -3128,15 +3136,6 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
   % \end{block}
 \end{frame}
 
-%% \begin{frame}[fragile]{TODO}
-%%   \begin{itemize}
-%%     \item Introducing meta-analysis 
-%%     \item Introducing multiple replication studies per original study
-%%     \item Preparing an exercise with the dataset from Protzo
-%%     \end{itemize}
-  
-%% \end{frame}
-
 \begin{frame}[fragile]
 \frametitle{Multiple replications}
 \begin{center}
@@ -3161,6 +3160,11 @@ experiments <- unique(protzko2020$experiment)
 for (ex in experiments) {
   ## compute CIs
   dat <- subset(protzko2020, experiment == ex)
+  # re-ordering
+  ori.index <- which(dat$type == "original")
+  self.index <- which(dat$type == "self-replication")
+  extern.index <- which(dat$type == "external-replication")
+  dat <- dat[ c(extern.index, self.index, ori.index),]
   za <- qnorm(p = 0.975)
   plotDF <- data.frame(lower = dat$smd - za*dat$se,
                        est = dat$smd,
@@ -3397,7 +3401,7 @@ print (randomEffectsCiPlot)
 \vspace{2cm}
 
 \begin{center}
-\begin{figure}[h!]
+\begin{figure}[!h]
 \setkeys{Gin}{width = 1\textwidth}
 %%\vspace*{-1cm}
 <<ch4.0, echo = FALSE>>=
@@ -3428,7 +3432,6 @@ forest(meta1, comb.fixed=TRUE, comb.random=FALSE)
 
 \end{figure}
 \end{center}
-%% \vspace{1cm}
 <<ch5.0, echo=F>>=
 
 or.fixed <- exp(meta1$TE.fixed)
@@ -3596,15 +3599,145 @@ ci.random <- c(or.lower, or.upper)
 @ 
 \end{frame}
 
+
+\begin{frame}
+\section{Exercise 4 -- Multiple replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Exercise Session 4}} 
+  \\~\\
+  {\LARGE Multiple replication studies}
+   \end{center}
+  % \end{block}
+\end{frame}
+
 \begin{frame}
 \frametitle{Exercises}
-\begin{itemize}
-\item Compute fixed- and random-effects meta-analysis of Protzko (external) replications
-\item Study heterogeneity estimates ($I^2$)
-\item Feed this into 2TR and sceptical $p$; how many replication successes with each method?
-\end{itemize}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+
+\begin{block}{}
+For each experiment in the Protzko dataset
+\end{block}
+
+  \begin{block}{Exercise 4.1}
+  Compute a fixed and random-effects meta-analysis for the external replications. \\
+ Hint: Use the function \texttt{metagen} from the R package \texttt{meta}.
   
+  \end{block}
+  
+  \begin{block}{Exercise 4.2}
+  Compute Higgin's $I^2$ \\
+  Hint:
+  \end{block}
+  
+  \begin{block}{Exercise 4.3}
+  Use the results from Exercise 4.1 to assess replication success with the
+  two methods
+  \end{block}
 \end{frame}
+
+\begin{frame}[fragile]{Solution: Exercise 4.1}
+<<echo = T>>=
+
+protzko_ext <- protzko2020[protzko2020$type == "external-replication",]
+protzko_or <- protzko2020[protzko2020$type == "original",]
+
+for(i in unique(protzko_ext$experiment)){
+  dat = protzko_ext[protzko_ext$experiment == i, ]
+  ma <- metagen(TE = smd, seTE = se, data = dat, sm = "SMD")
+   # print(summary(ma))
+}
+@
+\end{frame}
+
+
+\begin{frame}[fragile]{Solution: Exercise 4.2}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{0.9\textwidth}{!} {
+<<echo = F>>=
+
+par(las = 1, mar = c(5.5, 5, 4, 2) + 0.1)
+ma_mat <-   matrix(data = NA, nrow = length(unique(protzko_ext$experiment)), 
+                  ncol = 4)
+
+colnames(ma_mat) <-  c("I2", "zr", "sefixed", "experiment")
+
+for(i in 1:length(unique(protzko_ext$experiment))){
+  ex <- unique(protzko_ext$experiment)[i]
+  dat = protzko_ext[protzko_ext$experiment == ex, ]
+  ma <- metagen(TE = smd, seTE = se, data = dat, sm = "SMD")
+  ma_mat[i, 1] <-  ma$I2*100
+  ma_mat[i, 2] <- as.numeric(ma$zval.fixed)
+  ma_mat[i, 3] <- ma$seTE.fixed
+  ma_mat[i, 4] <-  ex
+  
+}
+
+matplot(ma_mat[, c(1, 4)], 
+     pch = 19,
+     xaxt = "n", 
+     xlab = "",  
+     ylab = expression(paste("Higgins ", I^2, " (%)")), 
+     cex.axis = 1.5, 
+     cex.lab = 1.5, 
+     ylim = c(0, 100))
+
+axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment), 
+     las = 3, 
+     cex.axis = 1.5)
+
+
+@
+  } 
+} 
+\end{frame}
+
+
+\begin{frame}[fragile]{Solution: Exercise 4.3}
+
+<<results = 'asis', echo = F>>=
+
+zr_ma <- as.numeric(ma_mat[, 2])
+pr_ma <- z2p(zr_ma, alternative = "one.sided") 
+zo_ma <- protzko_or$smd/protzko_or$se
+po_ma <- z2p(zo_ma, alternative = "one.sided")
+c_ma = protzko_or$se^2/as.numeric(ma_mat[, 3])^2
+pS_ma <- pSceptical(zo = zo_ma, zr = zr_ma, c = c_ma )
+
+
+summary_ma <-  matrix(c(unique(protzko2020$experiment), 
+                        formatPval(as.numeric(po_ma)), 
+                        formatPval(as.numeric(pr_ma)), 
+                        formatPval(as.numeric(pS_ma))), 
+                      ncol = 4)
+
+xt_ma <- xtable(summary_ma) 
+names(xt_ma) <-  c("Experiment", 
+                   "$p_o$", 
+                   "$p_r$ (meta-analysis)", 
+                  "$p_S$ (meta-analysis)")
+
+print.xtable(xt_ma, 
+            include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+@
+
+\end{frame}
+
+
+
+
+% \begin{itemize}
+% \item Compute fixed- and random-effects meta-analysis of Protzko (external) replications
+% \item Study heterogeneity estimates ($I^2$)
+% \item Feed this into 2TR and sceptical $p$; how many replication successes with each method?
+% \end{itemize}
+
+
+
 
 
 \begin{frame}
@@ -4252,7 +4385,8 @@ to do
     \end{center}
     \begin{center}
     \vspace{0.5cm}
-      \includegraphics[width=1.65cm]{images_presentation/pawel_samuel.jpg} \vspace{.5cm}% \\
+      \includegraphics[width=1.65cm]{images_presentation/pawel_samuel.jpg}\\
+    {\scriptsize Samuel Pawel}
     \end{center}
     \end{column}
   \end{columns}
