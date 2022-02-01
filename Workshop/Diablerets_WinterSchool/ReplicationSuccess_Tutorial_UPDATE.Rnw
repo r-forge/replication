@@ -865,8 +865,8 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 \end{minipage}
 \end{frame}
 
-\begin{frame}[fragile]{The Relative Effect Size}
-  \framesubtitle{in the assessment of replication success}
+\begin{frame}[fragile]{The relative effect size}
+  \framesubtitle{For the assessment of replication success}
     
     \begin{block}{}
       \begin{itemize}
@@ -874,20 +874,23 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
         can be used in the assessment of replication success
                 \item[] $\rightarrow$ success if {\color{red} $d >\dmin$, the
                 minimum relative effect size}
-                \pause
+                \visible<2->{
         \item {\color{red} $\dmin$} depends on 
           \begin{itemize}
             \item {\color{foo} relative sample size} $c$ 
             \item {\color{foo} original $p$-value} $p_o$  
             \item {\color{foo} one-sided level} $\alpha$
           \end{itemize}
+          }
+                \visible<3->{
           \item Equivalent to assessment based on (sceptical) $p$-value
-      \end{itemize}
+          }
+          \end{itemize}
     \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{The Relative Effect Size}
-\framesubtitle{in the assessment of replication success}
+\begin{frame}[fragile]{The relative effect size}
+  \framesubtitle{For the assessment of replication success}
   
   \begin{block}{Pyc and Rawson example}
 <<echo = FALSE>>=
@@ -992,7 +995,7 @@ source("Rcode/plotLevel2.R")
 <<echo = F>>=
 mycval <- 0.5 
 @
-\begin{frame}[fragile]{Comparison of Success Regions}
+\begin{frame}[fragile]{Comparison of success regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
 
 \vspace{1cm}
@@ -1015,6 +1018,7 @@ plotLevel(c = mycval,
           method = "signif") # Significance
 points(0.011, 0.38, col=4, pch=19)
 
+
 plotLevel(c = mycval,
           level = 0.025,
           type = "nominal",
@@ -1022,6 +1026,8 @@ plotLevel(c = mycval,
           minRES = F,
           method = "meta") # Meta-Analysis
 points(0.011, 0.38, col=4, pch=19)
+text(0.033, 1.2, expression(paste("minimum relative effect size ", d[min])), cex=0.9)
+arrows(x0=0.015, x1=0.01, y0=1.2, y1=1.3, cex=0.7, length=0.1)
 
 plotLevel(c = mycval, # choosing one value of c
           level = 0.025,
@@ -1040,7 +1046,7 @@ points(0.011, 0.38, col=4, pch=19)
 <<echo = F>>=
 mycval <- 1
 @
-\begin{frame}[fragile]{Comparison of Success Regions}
+\begin{frame}[fragile]{Comparison of success regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
 
 \vspace{1cm}
@@ -1086,7 +1092,7 @@ points(0.011, 0.38, col=4, pch=19)
 <<echo = F>>=
 mycval <- 2
 @
-\begin{frame}[fragile]{Comparison of Success Regions}
+\begin{frame}[fragile]{Comparison of success regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
 
 \vspace{1cm}
@@ -1132,7 +1138,7 @@ points(0.011, 0.38, col=4, pch=19)
 <<echo = F>>=
 mycval <- 5
 @
-\begin{frame}[fragile]{Comparison of Success Regions}
+\begin{frame}[fragile]{Comparison of success regions}
 \framesubtitle{{Relative sample size} $c=\Sexpr{mycval}$}
 
 \vspace{1cm}
@@ -1177,7 +1183,7 @@ points(0.011, 0.38, col=4, pch=19)
 <<echo = F>>=
 mycval <- 9
 @
-\begin{frame}[fragile]{Comparison of Success Regions}
+\begin{frame}[fragile]{Comparison of success regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
 
 \vspace{1cm}
@@ -1222,7 +1228,7 @@ points(0.011, 0.38, col=4, pch=19)
 <<echo = F>>=
 mycval <- 1000
 @
-\begin{frame}[fragile]{Comparison of Success Regions}
+\begin{frame}[fragile]{Comparison of success regions}
 \framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
 
 \vspace{1cm}
@@ -1267,14 +1273,16 @@ points(0.011, 0.38, col=4, pch=19)
 \end{frame}
 
 
-\begin{frame}{Shrinkage}
+\begin{frame}{Shrinkage of effect estimates}
   \framesubtitle{Definition and example}
   \begin{block}{Shrinkage}
     \begin{itemize}
-      \item is defined as {\color{foo} $s = 1 - d$}
       \item represents how much the {\color{red} replication effect estimate}
-      is decreased as compared to the {\color{red} original effect estimate}
-      \item Pyc and Rawson example: {\color{foo} $s = 1 - 
+      is decreased as compared to the {\color{red} original effect estimate}:
+      \begin{center}
+      \fbox{\color{foo} $s = 1 - d$}
+    \end{center}
+    \item Pyc and Rawson example: {\color{foo} $s = 1 - 
       \Sexpr{round(study$fisr/study$fiso, 2)} = 
       \Sexpr{round(1 -study$fisr/study$fiso, 2) }$}
       \item[] $\rightarrow$ replication effect is 
