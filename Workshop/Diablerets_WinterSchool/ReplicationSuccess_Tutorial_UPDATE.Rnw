@@ -2743,13 +2743,36 @@ powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"),
 % Explain here why we use alpha level of 0.065 and one-sided test
 \end{frame}
 
-\begin{frame}{TO DO}
 
-  \begin{itemize}
-  \item Think about the exercises for this part 
-  \item Currently not so good as sample size for RS explodes for large po.
-  \end{itemize}
+\begin{frame}[fragile]{Example from \citet{Pyc2010}}
+\framesubtitle{With 50\% shrinkage}
+  \begin{block}{}
+    \begin{itemize}
+      \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
+      \item relative sample size $c =$ \Sexpr{round(c,1)}
+    \end{itemize}
+
+  \end{block}
+  
+<<>>=
+
+# power calculation
+powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"), 
+                  c = 9.2, 
+                  shrinkage = 0.5, 
+                  designPrior = "conditional")
+@
+  
 \end{frame}
+
+
+%% \begin{frame}{TO DO}
+
+%%   \begin{itemize}
+%%   \item Think about the exercises for this part 
+%%   \item Currently not so good as sample size for RS explodes for large po.
+%%   \end{itemize}
+%% \end{frame}
 
 \begin{frame}[fragile]{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
@@ -2766,21 +2789,21 @@ powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"),
 
 \end{frame}
 
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-  \begin{block}{Exercise 3.2}
-\begin{itemize}
-  \item Compute and plot the relative sample sizes of the five
-studies to achieve a power of 80\% with the conditional
-and the predictive design prior. Use the function
-\texttt{sampleSizeReplicationSuccess()}.
+%% \begin{frame}[fragile]{Exercises}
+%% \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+%%   \begin{block}{Exercise 3.2}
+%% \begin{itemize}
+%%   \item Compute and plot the relative sample sizes of the five
+%% studies to achieve a power of 80\% with the conditional
+%% and the predictive design prior. Use the function
+%% \texttt{sampleSizeReplicationSuccess()}.
 
-    \item Compare the relative sample sizes with the ones
-    obtained in exercise 2.2 (only for the conditional 
-    design prior).
-  \end{itemize}
-  \end{block}
-\end{frame}
+%%     \item Compare the relative sample sizes with the ones
+%%     obtained in exercise 2.2 (only for the conditional 
+%%     design prior).
+%%   \end{itemize}
+%%   \end{block}
+%% \end{frame}
 
 
 
@@ -2873,84 +2896,84 @@ legend("topright",
 
 
 
-\begin{frame}[fragile]{Solution: Exercise 3.2}
+%% \begin{frame}[fragile]{Solution: Exercise 3.2}
 
-<<echo = F, fig.height = 7>>=
-par(mfrow = c(1,1), 
-    las = 1)
+%% <<echo = F, fig.height = 7>>=
+%% par(mfrow = c(1,1), 
+%%     las = 1)
 
-ss.cond2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
-                                         power = 0.8, 
-                                         alternative = "one.sided", 
-                                         type = "golden", 
-                                         designPrior = "conditional",
-                                         level = 0.025)
+%% ss.cond2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
+%%                                          power = 0.8, 
+%%                                          alternative = "one.sided", 
+%%                                          type = "golden", 
+%%                                          designPrior = "conditional",
+%%                                          level = 0.025)
 
-ss.pred2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"), 
-                                         power = 0.8, 
-                                         alternative = "one.sided", 
-                                         designPrior = "predictive",
-                                         type = "golden", 
-                                         level = 0.025)
-plot(po.plot, 
-     ss.cond2, 
-     type = "l", 
-     col = "red", 
-     ylim = c(0, 10), 
-     cex.lab = 1.5, 
-     cex.axis = 1.5, 
-     ylab = "Relative sample size", 
-      xlab = "One-sided original p-value", 
-     lwd = 2)
+%% ss.pred2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"), 
+%%                                          power = 0.8, 
+%%                                          alternative = "one.sided", 
+%%                                          designPrior = "predictive",
+%%                                          type = "golden", 
+%%                                          level = 0.025)
+%% plot(po.plot, 
+%%      ss.cond2, 
+%%      type = "l", 
+%%      col = "red", 
+%%      ylim = c(0, 10), 
+%%      cex.lab = 1.5, 
+%%      cex.axis = 1.5, 
+%%      ylab = "Relative sample size", 
+%%       xlab = "One-sided original p-value", 
+%%      lwd = 2)
 
-lines(po.plot, 
-      ss.pred2, 
-      type = "l", 
-      col = "blue", 
-      lwd = 2)
+%% lines(po.plot, 
+%%       ss.pred2, 
+%%       type = "l", 
+%%       col = "blue", 
+%%       lwd = 2)
 
-legend("topleft", 
-       c("Conditional", "Predictive"), 
-       col = c("red", "blue"), 
-       lty = 1, 
-       bty = "n", 
-       cex = 1.75, 
-       lwd = 2)
-@
-\end{frame}
-
-
-\begin{frame}[fragile]{Solution: Exercise 3.2}
+%% legend("topleft", 
+%%        c("Conditional", "Predictive"), 
+%%        col = c("red", "blue"), 
+%%        lty = 1, 
+%%        bty = "n", 
+%%        cex = 1.75, 
+%%        lwd = 2)
+%% @
+%% \end{frame}
 
 
-<<echo = F, fig.height = 7>>=
+%% \begin{frame}[fragile]{Solution: Exercise 3.2}
 
-par(mfrow = c(1,1), 
-    las = 1)
-plot(po.plot, ss.cond1, type = "l", ylim = c(0, 10), col = "red", 
-     xlab = "One-sided original p-value", 
-     ylab = "Relative sample size", 
-     lwd = 2,
-     cex.lab = 1.5, 
-     cex.axis = 1.5, 
-     lty = 2)
 
-lines(po.plot, ss.cond2, 
-      col = "red", 
-      lty = 1, 
-      lwd = 2)
+%% <<echo = F, fig.height = 7>>=
 
-legend("topleft", 
-       c("Replication Success", "Significance"),
-       lty = c(1, 2), 
-       col = "red",
-       bty = "n", 
-       cex = 1.75, 
-       lwd = 2)
+%% par(mfrow = c(1,1), 
+%%     las = 1)
+%% plot(po.plot, ss.cond1, type = "l", ylim = c(0, 10), col = "red", 
+%%      xlab = "One-sided original p-value", 
+%%      ylab = "Relative sample size", 
+%%      lwd = 2,
+%%      cex.lab = 1.5, 
+%%      cex.axis = 1.5, 
+%%      lty = 2)
 
-@
+%% lines(po.plot, ss.cond2, 
+%%       col = "red", 
+%%       lty = 1, 
+%%       lwd = 2)
 
-\end{frame}
+%% legend("topleft", 
+%%        c("Replication Success", "Significance"),
+%%        lty = c(1, 2), 
+%%        col = "red",
+%%        bty = "n", 
+%%        cex = 1.75, 
+%%        lwd = 2)
+
+%% @
+
+%% \end{frame}
 % 19.2.2021 Removed from time reason
 % \begin{frame}[fragile]{Exercises}
 % \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
