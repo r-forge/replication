@@ -865,6 +865,312 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 \end{minipage}
 \end{frame}
 
+
+\begin{frame}[fragile]
+\frametitle{Type-I error rate and project power}
+%% \framesubtitle{Dashed line is the project power based on significant original studies}
+
+\vspace{0cm}
+%%\hspace{-.5cm}
+
+<<typeIE-projPower-fixedc2b, cache = TRUE, echo=FALSE>>=
+
+myc <- exp(seq(log(0.25), log(10), length.out = 100))
+
+## Type I error rate and project power for fixed c
+f <- function(zo, level, c){
+    zrMin <- zrHowLarge(zo = zo, c = c, level = level)
+    return((1 - pnorm(zrMin)) * dnorm(zo))
+}
+
+f2 <- function(zo, level, c, sig.level, origPower){
+    zrMin <- zrHowLarge(zo = zo, c = c, level = level)
+    zalpha <- qnorm(1 - sig.level) 
+    mu <- zalpha + qnorm(origPower)
+    return((1 - pnorm(zrMin, mean = sqrt(c)*mu)) * dnorm(zo, mean = mu))
+}
+zrHowLarge <- function(zo, c, level){ 
+    z <- p2z(level, alternative = "one.sided")
+    result <- z*sqrt(1 + c/(zo^2/z^2 - 1))
+    return(result)
+}
+
+library(ReplicationSuccess)
+
+alpha <- 0.025
+mythresholds <- c(levelSceptical(alpha, type = c("nominal")), 
+                levelSceptical(alpha, type = c("controlled")), 
+                levelSceptical(alpha, type = c("liberal")), 
+                levelSceptical(alpha, type = c("golden"))) 
+
+## thresholds for one-sided sceptical p-value
+
+## type I error of sceptical p-value at level
+typeIError <- function(level){ 
+    value <- (p2z(level, alternative = "one.sided"))^2
+    alpha <- pgamma(value, shape = .5, rate = 2, lower.tail = FALSE)/4
+    return(alpha)
+}
+  
+## nominal
+y1 <- alpha
+typeI1 <- typeIError(y1)
+
+## controlled
+y2 <- levelSceptical(alpha, type = c("controlled"))
+typeI2 <- typeIError(y2)
+                         
+## liberal
+y3 <- levelSceptical(alpha, type = c("liberal"))
+typeI3 <- typeIError(y3)
+
+## golden
+y4 <- levelSceptical(level = alpha, alternative = "one.sided", type = "golden")
+typeI4 <- typeIError(y4)
+z4 <- p2z(y4, alternative="one.sided")
+
+T1E1 <- T1E2 <- POWER1 <- POWER2 <- matrix(NA, ncol = length(mythresholds), nrow = length(myc))
+## one-sided level for two-trials
+newalpha <- alpha^2
+
+## power for original study
+myorigPower <- 0.9
+
+
+for(i in 1:length(mythresholds)){
+    for(j in 1:length(myc)){
+        T1E1[j, i] <- integrate(f, 
+                                lower = qnorm(mythresholds[i], 
+                                                 lower.tail = FALSE), 
+                                upper = Inf, 
+                                level = mythresholds[i], 
+                                c = myc[j])$value
+        T1E2[j, i] <- integrate(f, 
+                                lower = qnorm(alpha, 
+                                                 lower.tail = FALSE), 
+                                upper = Inf, 
+                                level = mythresholds[i], 
+                                c = myc[j])$value
+        
+        POWER1[j, i] <- integrate(f2, 
+                                  lower = qnorm(mythresholds[i], 
+                                                lower.tail = FALSE), 
+                                  upper = Inf,
+                                  level = mythresholds[i], 
+                                  c = myc[j], 
+                                  sig.level = alpha, 
+                                  origPower = myorigPower)$value
+        POWER2[j, i] <- integrate(f2, 
+                                  lower = qnorm(alpha, 
+                                                lower.tail = FALSE), 
+                                  upper = Inf,
+                                  level = mythresholds[i], 
+                                  c = myc[j], 
+                                  sig.level = alpha, 
+                                  origPower = myorigPower)$value
+    }
+}
+
+colnames(T1E1) <- colnames(T1E2) <- colnames(POWER1) <-  colnames(POWER2) <- as.character(round(mythresholds, 3))
+rownames(T1E1) <- rownames(T1E2) <- rownames(POWER1) <- as.character(round(myc, 3))
+
+
+@ 
+
+
+<<fig44b, fig.height=5, fig.width=10, cache = FALSE, echo=FALSE>>=
+
+## grey-scale color-scale
+greycols <- c("darkgrey", "orange", 6) ##adjustcolor(col = c("#1B1B1B", "#6D6D6D", "#BEBEBE"), alpha.f = 0.95)
+greycols <- c("orange", 6) ##adjustcolor(col = c("#1B1B1B", "#6D6D6D", "#BEBEBE"), alpha.f = 0.95)
+# greycols <- grey.colors(n = 3, start = 0.01, end = 0.88, alpha = 0.95)
+
+myylim <- c(0, 0.0009)*100
+
+ par(las = 1, 
+     mfrow = c(1, 2),    
+     oma = c(1, 2, 0, 0), 
+     mar = c(5.1, 4, 1.5, 2),
+     mgp = c(2.7, 0.5,0), 
+     pty = "s"
+) 
+ 
+mycex <- 0.8
+
+sel = c(1,4) ## select nominal and golden threshold
+sel = c(4) ## select golden level
+T1E1_s <- T1E1[, sel]
+## T1Es_s <- T1Es[, sel]
+## T1E_s <- T1E[, sel]
+## T1EPred_s <- T1EPred[, sel]
+## T1ESig_s <- T1ESig[, sel]
+## T1ESigPred_s <- T1ESigPred[, sel]
+
+# Plot 1: Type-I error rate vs relative sample size
+matplot(myc, 
+        100*T1E1_s, 
+        type = "l", 
+        xlab = expression(paste("Relative sample size ", italic(c))), 
+        ylab = "Type-I error rate (in %)", 
+        ylim = myylim,
+        # col = mycol[sel], 
+        col = greycols[1:2],
+        lty = c(1,1,1,5), 
+        lwd = 2, 
+        cex.axis = mycex, 
+        log = "x", 
+        axes = FALSE)
+
+axis(1, cex.axis = mycex)
+
+myval = seq(0.1, 0.5, by = 0.1)
+axis(2, at = myval, as.character(myval), cex.axis = mycex, 
+     lty = 2)
+abline(v = 1, lty = 2, col = "black")
+
+
+## w <-  which(T1E1_s[, 1] < alpha^2)
+## w.pos <- myc[w[1]]
+lines(range(myc), rep(alpha^2*100, 2), lty = 1, lwd = 2, 
+       # col = 6)
+      col = greycols[2])
+## abline(v = w.pos, lty = 2, 
+##        col = "grey")
+
+## axis(3, 
+##      at = w.pos, 
+##      label = round(w.pos, 2),
+##      tck = -0.025,
+##      cex.axis = mycex, 
+##      col.axis = "grey", 
+##      col = "grey")
+
+
+legend("topright", 
+       # c("nominal", "controlled", "liberal", "golden"), 
+##       rev(c("nominal", "golden", "2TR")),
+       rev(c("sceptical p-value", "two-trials rule")),
+       # col = mycol[sel], 
+       col = rev(greycols),
+       lty = 1, 
+       lwd = 2, 
+       cex = 0.9*mycex, 
+       bty="n")
+
+axis(1, at = min(myc), as.character(min(myc)), cex.axis = mycex)
+myval <- seq(0.0, 0.2, 0.025)
+axis(2, at = myval, as.character(myval), cex.axis = mycex)
+
+## # nominal
+## axis(4, 
+##      at = 100*typeI1, 
+##      as.character(format(100*typeI1, digits = 2, nsmall = 2, 
+##                          scientific = FALSE)), 
+##      col = greycols[1], # mycol[1], 
+##      col.ticks = greycols[1], # mycol[1],  
+##      col.axis = greycols[1], # mycol[1], 
+##      cex.axis = mycex,
+##      tck = -0.025)
+## lines(c(1, 10), c(100*typeI1, 100*typeI1), col=greycols[1], # mycol[1], 
+##       lty = 2)
+## points(1, 100*typeI1, col=greycols[1], # mycol[1], 
+##        pch=19, cex = 0.75)
+
+
+# golden
+axis(4, 
+     at = 100*typeI4, 
+     as.character(format(100*typeI4, digits = 2, nsmall = 2, 
+                         scientific = FALSE)), 
+     col = greycols[1], # mycol[1], 
+     col.ticks = greycols[1], # mycol[1],  
+     col.axis = greycols[1], # mycol[1], 
+     cex.axis = mycex,
+     tck = -0.025)
+lines(c(1, 10), c(100*typeI4, 100*typeI4), col = greycols[1], # mycol[1], 
+      lty = 2)
+
+points(1, 100*typeI4, col = greycols[1], # mycol[1], 
+       pch = 19, cex = 0.75)
+
+# 2TR
+axis(4, 
+     at = 100*alpha^2, 
+     as.character(round(100*alpha^2,4)), 
+     cex.axis = mycex, 
+     col = greycols[2], # 6, ## mycol[2], 
+     col.axis = greycols[2], # 6, ## mycol[2], 
+     col.ticks = greycols[2], # 6 ## mycol[2]
+     tck = -0.025) 
+box()
+
+## Project power plot
+POWER1_s <- POWER1[, sel]
+POWER1_s <- cbind(POWER1[, sel], POWER2[, sel])
+## POWERs_s <- POWERs[, sel]
+## POWERSig_s <- POWERSig[, sel]
+## POWERSigPred_s <- POWERSigPred[, sel]
+## POWER_s <- POWER[, sel]
+## POWERPred_s <- POWERPred[, sel]
+
+
+# Plot 2: Project power vs relative sample size
+matplot(myc, 
+        100*POWER1[, sel],## POWER1_s, 
+        type = "l", 
+        xlab = expression(paste("Relative sample size ", italic(c))), 
+        ylab = "Project power (in %)", 
+        # col = mycol[sel], 
+        col = greycols[1:2],
+        lty = c(1,1,1,5), 
+        lwd = 2, 
+        cex.axis = mycex, 
+        log = "x", 
+        axes = FALSE, 
+        ylim=c(0, 100))
+
+axis(1, cex.axis = mycex)
+
+myval <- seq(0, 100, by = 20)
+axis(2, at = myval, label = as.character(myval), cex.axis = mycex)
+axis(2, at = 90, label = "90", cex.axis = mycex,
+     col = "grey", 
+     col.axis = "grey")
+
+## add significance    
+
+sig.level <- alpha
+zalpha <- qnorm(1-sig.level) 
+mu <- zalpha + qnorm(myorigPower)
+abline(v=1, lty=2)
+## abline(h=0.9^2*100, lty=2)
+
+## 2TR power
+powerSig <- myorigPower*pnorm(sqrt(myc)*mu-zalpha)
+
+abline(h = myorigPower*100, lty = 2, 
+       col = "grey")
+lines(myc, powerSig*100, col=greycols[2], lty=1, lwd=2)
+## lines(myc, 100*POWER2[,4], col=greycols[1], lty=5, lwd=2)
+
+
+## legend("bottomright", 
+##        rev(c("nominal", "golden", "2TR")),
+##        # col = mycol[sel], 
+##        col = rev(greycols),
+##        lty = 1, 
+##        lwd = 2, 
+##        cex = 0.9*mycex,
+##        bg = "white", 
+##        bty="n")
+box()
+
+@ 
+
+\end{frame}
+
+
+
 \begin{frame}[fragile]{The relative effect size}
   \framesubtitle{For the assessment of replication success}
     
