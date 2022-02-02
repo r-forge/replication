@@ -3927,6 +3927,23 @@ ci.random <- c(or.lower, or.upper)
   % \end{block}
 \end{frame}
 
+\begin{frame}{Assessing replication success}
+  \begin{block}{How to assess replication success with multiple replication 
+  studies?}
+  \pause
+    \begin{itemize}
+    \item[] One option: 
+      \begin{enumerate}
+      \item Perform a {\color{red} meta-analysis} with the replication studies
+      \pause
+      \item Use the {\color{red} meta-analytic result} as a single replication studies
+      \pause
+      \item Apply the {\color{red} same methods} as in a 1-1 scenario
+      \end{enumerate}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
 
 \begin{frame}[fragile]{Example for experiment FSD}
   \begin{block}{Meta-analysis of the external replications}
