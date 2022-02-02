@@ -70,6 +70,7 @@
 % ----------------------------------------------------------------------------
 << include = FALSE, purl = FALSE >>=
 library(knitr)
+library(scales)
 opts_chunk$set(fig.path = "figures/fig", 
                cache = TRUE, 
                fig.align = "center",
@@ -3704,12 +3705,8 @@ print (randomEffectsCiPlot)
 \begin{frame}[fragile]
 \frametitle{Presentation in forest plot}
 \framesubtitle{Fixed effect model}
-\vspace{2cm}
+ \vspace{1cm}
 
-\begin{center}
-\begin{figure}[!h]
-\setkeys{Gin}{width = 1\textwidth}
-%%\vspace*{-1cm}
 <<ch4.0, echo = FALSE>>=
 
 pree <- read.csv("data/preeclampsia.csv", header = TRUE, sep = ",", dec = ".", fill = TRUE)     
@@ -3726,18 +3723,34 @@ b <- treatedTot
 c <- controlPre
 d <- controlTot
 @ 
-\vspace*{-2cm}
 
-<<ch4b.0, echo = TRUE, fig.height=7.5, fig.width=9.75>>=
+
+<<ch4b.0, echo = TRUE, eval = F, size = "tiny">>=
+library(meta)
+meta1 <- metabin(event.e = treatedPre, 
+                 n.e = treatedTot, 
+                 event.c = controlPre, 
+                 n.c = controlTot, 
+                 sm = "OR", method = "Inverse", studlab = study)
+
+forest(meta1, comb.fixed = TRUE, comb.random = FALSE) 
+@ 
+\vspace{-1.5cm}
+\makebox[1\textwidth][c]{  
+  \resizebox{0.9\textwidth}{!} {
+  <<ch4b.0bis, echo = FALSE, eval = T>>=
 library(meta)
 meta1 <- metabin(event.e = treatedPre, n.e = treatedTot, 
                  event.c = controlPre, n.c = controlTot, 
                  sm = "OR" , method = "Inverse", studlab = study)
 forest(meta1, comb.fixed=TRUE, comb.random=FALSE) 
 @ 
+  } 
+}
 
-\end{figure}
-\end{center}
+% 
+% \end{figure}
+% \end{center}
 <<ch5.0, echo=F>>=
 
 or.fixed <- exp(meta1$TE.fixed)
@@ -3749,9 +3762,6 @@ or.random <- exp(meta1$TE.random)
 or.lower <- exp(meta1$lower.random)
 or.upper <- exp(meta1$upper.random)
 ci.random <- c(or.lower, or.upper)
-
-
-
 @ 
 \end{frame}
 
@@ -3917,6 +3927,40 @@ ci.random <- c(or.lower, or.upper)
   % \end{block}
 \end{frame}
 
+
+\begin{frame}[fragile]{Example for experiment FSD}
+  \begin{block}{Meta-analysis of the external replications}
+  \end{block}
+<<size = "tiny">>=
+FSD <-  subset(protzko2020, experiment == "FSD") 
+meta_FSD <- metagen(TE = smd, seTE = se, studlab = lab, 
+                    exclude = (type == "original" | type == "self-replication"),
+                    data = FSD, sm = "SMD"); meta_FSD
+
+@
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Example for experiment FSD}
+  \begin{block}{Accessing quantities}
+  \end{block}
+<<eval = T, results = 'hide'>>=
+
+
+meta_FSD$TE.fixed # meta-analytic estimate
+
+meta_FSD$seTE.fixed # standard error of estimate
+
+meta_FSD$zval.fixed # meta-analytic z-value
+
+# meta-analytic variance ratio (relative sample size)
+FSD_ori <- subset(FSD, type == "original")
+FSD_ori$se^2/meta_FSD$seTE.fixed^2
+
+@
+\end{frame}
+
 \begin{frame}
 \frametitle{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
@@ -3927,76 +3971,101 @@ For each experiment in the Protzko dataset
 
   \begin{block}{Exercise 4.1}
   Compute a fixed and random-effects meta-analysis for the external replications. \\
- Hint: Use the function \texttt{metagen} from the R package \texttt{meta}.
-  
+ {\it Hint: Use the function} \texttt{metagen} {\it from the R package} \texttt{meta}.
   \end{block}
-  
+
   \begin{block}{Exercise 4.2}
-  Compute Higgin's $I^2$ \\
-  Hint:
+  Compute Higgin's $I^2$.
   \end{block}
-  
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+
   \begin{block}{Exercise 4.3}
-  Use the results from Exercise 4.1 to assess replication success with the
-  two methods
+  Using the results from Exercise 4.1, assess replication success
+  in the 16 experiments with the two methods (two-trials rule
+  and replication success) \\
+  {\it Hint:
+  \begin{enumerate}
+  \item Compute the original $z$-value
+  \item Extract the meta-analytic $z$-value
+  \item Compute the variance ratio
+  (using the standard error of the meta-analytic estimate)
+  \item Using these quantities, calculate the original, replication
+  and sceptical $p$-values
+  \end{enumerate}}
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Solution: Exercise 4.1}
 <<echo = T>>=
 
-protzko_ext <- protzko2020[protzko2020$type == "external-replication",]
-protzko_or <- protzko2020[protzko2020$type == "original",]
-
-for(i in unique(protzko_ext$experiment)){
-  dat = protzko_ext[protzko_ext$experiment == i, ]
-  ma <- metagen(TE = smd, seTE = se, data = dat, sm = "SMD")
-   # print(summary(ma))
+for(i in unique(protzko2020$experiment)){
+  dat = subset(protzko2020, experiment == i)
+  ma <- metagen(TE = smd, seTE = se, studlab = lab,
+                exclude = (type == "original" | type == "self-replication"),
+                data = dat, sm = "SMD")
+   # print(ma)
+   # forest(ma)
 }
+@
+\end{frame}
+
+\begin{frame}[fragile]{Solution: Exercise 4.1}
+  \framesubtitle{Forest plot FSD experiment}
+<<echo = F>>=
+forest(meta_FSD)
 @
 \end{frame}
 
 
 \begin{frame}[fragile]{Solution: Exercise 4.2}
 
-\makebox[1\textwidth][c]{  
+\makebox[1\textwidth][c]{
   \resizebox{0.9\textwidth}{!} {
 <<echo = F>>=
 
-par(las = 1, mar = c(5.5, 5, 4, 2) + 0.1)
-ma_mat <-   matrix(data = NA, nrow = length(unique(protzko_ext$experiment)), 
-                  ncol = 4)
+par(las = 1, mar = c(10, 5, 4, 2) + 0.1)
+ma_mat <-   matrix(data = NA,
+                   nrow = length(unique(protzko2020$experiment)),
+                   ncol = 4)
 
 colnames(ma_mat) <-  c("I2", "zr", "sefixed", "experiment")
 
-for(i in 1:length(unique(protzko_ext$experiment))){
-  ex <- unique(protzko_ext$experiment)[i]
-  dat = protzko_ext[protzko_ext$experiment == ex, ]
-  ma <- metagen(TE = smd, seTE = se, data = dat, sm = "SMD")
+for(i in 1:length(unique(protzko2020$experiment))){
+  ex <- unique(protzko2020$experiment)[i]
+  dat = protzko2020[protzko2020$experiment == ex, ]
+  ma <- metagen(TE = smd, seTE = se, data = dat, sm = "SMD",
+                exclude = (type == "original" | type == "self-replication"))
   ma_mat[i, 1] <-  ma$I2*100
-  ma_mat[i, 2] <- as.numeric(ma$zval.fixed)
+  ma_mat[i, 2] <- ma$zval.fixed
   ma_mat[i, 3] <- ma$seTE.fixed
   ma_mat[i, 4] <-  ex
-  
+
 }
 
-matplot(ma_mat[, c(1, 4)], 
+matplot(ma_mat[, c(1, 4)],
      pch = 19,
-     xaxt = "n", 
-     xlab = "",  
-     ylab = expression(paste("Higgins ", I^2, " (%)")), 
-     cex.axis = 1.5, 
-     cex.lab = 1.5, 
-     ylim = c(0, 100))
+     xaxt = "n",
+     xlab = "",
+     ylab = expression(paste("Higgins ", I^2, " (%)")),
+     cex.axis = 1.5,
+     cex.lab = 1.5,
+     ylim = c(0, 100),
+     cex = 2.5,
+     col = alpha("blue", 0.6))
 
-axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment), 
-     las = 3, 
+axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
+     las = 3,
      cex.axis = 1.5)
 
 
 @
-  } 
-} 
+  }
+}
 \end{frame}
 
 
@@ -4005,26 +4074,27 @@ axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
 <<results = 'asis', echo = F>>=
 
 zr_ma <- as.numeric(ma_mat[, 2])
-pr_ma <- z2p(zr_ma, alternative = "one.sided") 
-zo_ma <- protzko_or$smd/protzko_or$se
+pr_ma <- z2p(zr_ma, alternative = "one.sided")
+ori_subset <- subset(protzko2020, type == "original")
+zo_ma <- ori_subset$smd/ori_subset$se
 po_ma <- z2p(zo_ma, alternative = "one.sided")
-c_ma = protzko_or$se^2/as.numeric(ma_mat[, 3])^2
+c_ma = ori_subset$se^2/as.numeric(ma_mat[, 3])^2
 pS_ma <- pSceptical(zo = zo_ma, zr = zr_ma, c = c_ma )
 
 
-summary_ma <-  matrix(c(unique(protzko2020$experiment), 
-                        formatPval(as.numeric(po_ma)), 
-                        formatPval(as.numeric(pr_ma)), 
-                        formatPval(as.numeric(pS_ma))), 
+summary_ma <-  matrix(c(unique(protzko2020$experiment),
+                        phighlighfun(as.numeric(po_ma)),
+                        phighlighfun(as.numeric(pr_ma)),
+                        phighlighfun(as.numeric(pS_ma))),
                       ncol = 4)
 
-xt_ma <- xtable(summary_ma) 
-names(xt_ma) <-  c("Experiment", 
-                   "$p_o$", 
-                   "$p_r$ (meta-analysis)", 
+xt_ma <- xtable(summary_ma)
+names(xt_ma) <-  c("Experiment",
+                   "$p_o$",
+                   "$p_r$ (meta-analysis)",
                   "$p_S$ (meta-analysis)")
 
-print.xtable(xt_ma, 
+print.xtable(xt_ma,
             include.rownames = F,
       hline.after = F,
       sanitize.text.function=function(x){x},
@@ -4033,14 +4103,54 @@ print.xtable(xt_ma,
 
 \end{frame}
 
+\begin{frame}
+\frametitle{Solution: Exercise 4.3}
+  \framesubtitle{Forest plots of studie with replication failure}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1.1\textwidth}{!} {
+<<echo = F, fig.height = 4>>=
+# graphics.off()
+parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(1, 3))
+experiments <- c("Prediction", "Redemption", "Misreporting")
+for (ex in experiments) {
+  ## compute CIs
+  dat <- subset(protzko2020, experiment == ex)
+  # re-ordering
+  ori.index <- which(dat$type == "original")
+  self.index <- which(dat$type == "self-replication")
+  extern.index <- which(dat$type == "external-replication")
+  dat <- dat[ c(extern.index, self.index, ori.index),]
+  za <- qnorm(p = 0.975)
+  plotDF <- data.frame(lower = dat$smd - za*dat$se,
+                       est = dat$smd,
+                       upper = dat$smd + za*dat$se)
+colpalette <- c("#000000", "#1B9E77", "#D95F02")
+cols <- colpalette[dat$type]
+yseq <- seq(1, nrow(dat))
+
+## forestplot
+plot(x = plotDF$est, y = yseq, xlim = c(-0.15, 0.8),
+     ylim = c(0.8*min(yseq), 1.05*max(yseq)), type = "n",
+     yaxt = "n", xlab = "Effect estimate (SMD)", ylab = "")
+abline(v = 0, col = "#0000004D")
+arrows(x0 = plotDF$lower, x1 = plotDF$upper, y0 = yseq, angle = 90,
+       code = 3, length = 0.05, col = cols)
+points(y = yseq, x = plotDF$est, pch = 20, lwd = 2, col = cols)
+axis(side = 2, at = yseq, las = 1, labels = dat$type, cex.axis = 0.85)
+title(main = ex)
+}
+par(parOld)
+@
+  }
+} 
+\end{frame}
 
 
 
-% \begin{itemize}
-% \item Compute fixed- and random-effects meta-analysis of Protzko (external) replications
-% \item Study heterogeneity estimates ($I^2$)
-% \item Feed this into 2TR and sceptical $p$; how many replication successes with each method?
-% \end{itemize}
+
+
+
 
 
 
@@ -4144,6 +4254,24 @@ points(5, 0.5, pch = "|", cex = 2)
 \end{itemize}
 \end{column}
 \end{columns}
+\end{frame}
+
+\begin{frame}{Interim analyses}
+
+  \begin{block}{Stopping a study at an interim analysis}
+    \begin{itemize}
+    \item popular in {\color{foo} clinical trials} 
+    \item saves {\color{foo} time and money} 
+    \item Two situations
+    \item [] \begin{center}
+    {\color{springgreen4} Efficacy stopping}
+    \end{center}
+    \item[] \begin{center}
+    {\color{darkred} Futility stopping}
+    \end{center}
+    \end{itemize} 
+  \end{block}
+  
 \end{frame}
 
 \begin{frame}{Interim power}
@@ -4699,11 +4827,12 @@ to do
 
 \end{frame}
 % ============================================================================
-\nocite{Pyc2010, Opensc2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, Held2020, Held2020c}
-\begin{frame}{References}
+\nocite{Pyc2010, open2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, 
+Held2020, HeldMichPaw2021, MicheloudHeld2021, Protzko2020}
+\begin{frame}[allowframebreaks]{References}
   \tiny
   \bibliographystyle{apalike}
-  \bibliography{bibliography}
+  \bibliography{antritt}
 \end{frame}
   
 
