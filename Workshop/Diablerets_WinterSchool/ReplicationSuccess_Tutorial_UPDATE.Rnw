@@ -4523,7 +4523,8 @@ source("Rcode/construct_header.R")
 mat_content <- c(SSRP_red$study, 
                  col1(SSRP_red$po1),
                  SSRP_red$fiso,
-                 col4(SSRP_red$pi1),
+                 col4(SSRP_red$
+                        pi1),
                  SSRP_red$fisi,
                  col3(cpi*100),
                  col3(IPPi*100),
@@ -4828,7 +4829,7 @@ to do
 \end{frame}
 % ============================================================================
 \nocite{Pyc2010, open2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, 
-Held2020, HeldMichPaw2021, MicheloudHeld2021, Protzko2020}
+Held2020, HeldMichPaw2021, MicheloudHeld2021, Protzko2020, Errington2021}
 \begin{frame}[allowframebreaks]{References}
   \tiny
   \bibliographystyle{apalike}
