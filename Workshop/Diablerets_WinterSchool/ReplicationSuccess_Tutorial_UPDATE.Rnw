@@ -3950,30 +3950,25 @@ ci.random <- c(or.lower, or.upper)
   \end{block}
 <<size = "tiny">>=
 FSD <-  subset(protzko2020, experiment == "FSD") 
-meta_FSD <- metagen(TE = smd, seTE = se, studlab = lab, 
-                    exclude = (type == "original" | type == "self-replication"),
-                    data = FSD, sm = "SMD"); meta_FSD
-
+(meta_FSD <- metagen(TE = smd, seTE = se, studlab = lab, 
+                     exclude = (type == "original" | type == "self-replication"), 
+                     data = FSD, sm = "SMD"))
 @
 
 \end{frame}
 
 
-\begin{frame}[fragile]{Example for experiment FSD}
-  \begin{block}{Accessing quantities}
-  \end{block}
-<<eval = T, results = 'hide'>>=
+
+\begin{frame}[fragile]{Retrieving results}
+<<eval = T, size="tiny">>=
+
+(thetar <- meta_FSD$TE.fixed) # meta-analytic estimate
+(se_thetar <- meta_FSD$seTE.fixed) # standard error of estimate
+(zr <- meta_FSD$zval.fixed) # meta-analytic z-value
 
 
-meta_FSD$TE.fixed # meta-analytic estimate
-
-meta_FSD$seTE.fixed # standard error of estimate
-
-meta_FSD$zval.fixed # meta-analytic z-value
-
-# meta-analytic variance ratio (relative sample size)
 FSD_ori <- subset(FSD, type == "original")
-FSD_ori$se^2/meta_FSD$seTE.fixed^2
+(c <- FSD_ori$se^2/se_thetar^2) # variance ratio (relative sample size)
 
 @
 \end{frame}
@@ -4814,7 +4809,16 @@ print(xt5,
 
 \begin{frame}{Conclusion/Outlook}
 
-to do 
+\begin{itemize}
+  \item Incorporation of \alert{smallest effect size of interest}
+  \item Replication of \alert{non-inferiority} and \alert{equivalence} studies
+  \item \alert{Bayes factors} to assess replication success
+  \end{itemize}
+  
+\begin{center}
+\fbox{Statisticians to the Rescue!}
+\fbox{Statisticians Roll up Your Sleeves!}
+\end{center}
 \end{frame}
 
 \begin{frame}
