@@ -1,4 +1,4 @@
-\documentclass[english]{beamer}
+\documentclass[english, handout]{beamer}
 
 
 % Leos shortcuts
@@ -1854,7 +1854,7 @@ Use the functions \texttt{effectSizeSignificance} and
 
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.1}  
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.1}
 << echo = FALSE, results = "asis" >>=
 # for (p in unique(RProjects$project)) {
 #   data_project <- subset(RProjects, project == p)
@@ -1903,7 +1903,7 @@ print(Table1, include.rownames = FALSE, booktabs = TRUE,
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.1}
 << echo = FALSE >>=
 ## Plots of effect estimates
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
@@ -1933,7 +1933,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.2}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
 \makebox[1 \textwidth][c]{  
   \resizebox{1\textwidth}{!} {
 << echo = FALSE, results = "asis" >>=
@@ -1976,7 +1976,7 @@ print(Table2, include.rownames = FALSE, booktabs = TRUE,
 }
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.2}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
@@ -2019,7 +2019,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.3}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
 << echo = FALSE, fig.height = 4, results = "asis" >>=
 ## computing one.sided sceptical p-value for replication projects
 RProjects$ps <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
@@ -2055,7 +2055,7 @@ print(Table3, include.rownames = FALSE, booktabs = TRUE,
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.3}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
@@ -2078,7 +2078,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.4}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.4}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
@@ -2102,7 +2102,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.4}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.4}
 \makebox[1 \textwidth][c]{  
   \resizebox{1.2\textwidth}{!} {
 << echo = FALSE, fig.height = 4, results = "asis" >>=
@@ -2145,7 +2145,7 @@ print(discTab, include.rownames = FALSE, booktabs = TRUE,
 }
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.5}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.5}
 
 \makebox[1 \textwidth][c]{  
   \resizebox{1.2\textwidth}{!} {
@@ -2181,7 +2181,7 @@ print(discTab2, include.rownames = FALSE, booktabs = TRUE,
 }
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 1.5 (extended)}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.5 (extended)}
   \framesubtitle{Significant original studies only}
   \begin{center}
   Minimum relative effect size $\dmin$ with the 
@@ -2685,7 +2685,7 @@ lines(pval.or, pow.pred, col = "blue")
   
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 2.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
 
 <<echo = FALSE, eval = T, fig.height = 8>>=
 par(las = 1)
@@ -2722,7 +2722,7 @@ legend("topright",
 
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 2.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
 <<echo = FALSE, eval = T, fig.height = 8>>=
 par(las = 1)
 
@@ -2753,7 +2753,7 @@ legend("topright",
 
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 2.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
 <<echo = FALSE, eval = T, fig.height = 8>>=
 par(las = 1)
 
@@ -2791,7 +2791,7 @@ legend("topright",
 
 
 
-\begin{frame}{Solution: Exercise 2.2}
+\begin{frame}<handout:0>{Solution: Exercise 2.2}
 <<echo = FALSE, fig.height = 8>>=
 par(las = 1)
 
@@ -2824,7 +2824,7 @@ legend("topleft",
 \end{frame}
 
 
-\begin{frame}{Solution: Exercise 2.2}
+\begin{frame}<handout:0>{Solution: Exercise 2.2}
 <<echo = FALSE, fig.height = 8>>=
 par(las = 1)
 
@@ -3123,7 +3123,7 @@ powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"),
 
 
 
-\begin{frame}[fragile]{Solution: Exercise 3.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 3.1}
 
 <<echo = F, fig.height = 8>>=
 par(las = 1)
@@ -3166,7 +3166,7 @@ legend("topright",
 \end{frame}
 
 
-\begin{frame}[fragile]{Solution: Exercise 3.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 3.1}
  
 <<echo = F, fig.height = 8>>=
 par(las = 1)
@@ -4012,7 +4012,7 @@ For each experiment in the Protzko dataset
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 4.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.1}
 <<echo = T>>=
 
 for(i in unique(protzko2020$experiment)){
@@ -4026,7 +4026,7 @@ for(i in unique(protzko2020$experiment)){
 @
 \end{frame}
 
-\begin{frame}[fragile]{Solution: Exercise 4.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.1}
   \framesubtitle{Forest plot FSD experiment}
 <<echo = F>>=
 forest(meta_FSD)
@@ -4034,7 +4034,7 @@ forest(meta_FSD)
 \end{frame}
 
 
-\begin{frame}[fragile]{Solution: Exercise 4.2}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.2}
 
 \makebox[1\textwidth][c]{
   \resizebox{0.9\textwidth}{!} {
@@ -4081,7 +4081,7 @@ axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
 \end{frame}
 
 
-\begin{frame}[fragile]{Solution: Exercise 4.3}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.3}
 
 <<results = 'asis', echo = F>>=
 
@@ -4115,7 +4115,7 @@ print.xtable(xt_ma,
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}<handout:0>
 \frametitle{Solution: Exercise 4.3}
   \framesubtitle{Forest plots of studie with replication failure}
 
