@@ -3850,9 +3850,9 @@ so marginally
   %% \[
   %% \hat \tau^2 = \left\{Q-(n-1)\right\}_{+} / \left\{\textstyle\sum w_i - \textstyle\sum w_i^2/\textstyle\sum w_i\right\}
   %% \]
-\item Standard \alert{DerSimonian-Laird} approach plugs $\hat \tau^2$ in $w_i^* = {1}/{(v_i + \tau^2)}$,  
-  the alternative \alert{Hartung-Knapp} adjustment accounts for 
-  the uncertainty of $\hat \tau^2$. 
+\item Standard \alert{DerSimonian-Laird} approach plugs $\hat \tau^2$ in $w_i^* = {1}/{(v_i + \tau^2)}$. %% ,  
+  %% the alternative \alert{Hartung-Knapp} adjustment accounts for 
+  %% the uncertainty of $\hat \tau^2$. 
 %\item Standard deviation $\hat \tau$ rather than $\hat \tau^2$ is often reported. 
 %where $Q = \sum w_i (\hat \theta_i - \hat \theta)^2$
 <<ch3, echo=F>>=
@@ -3868,7 +3868,7 @@ wald.star.z <- (theta.star.hat)/se.theta.star.hat
 wald.star.p <- 2*pnorm(abs(wald.star.z), lower.tail=FALSE)
 
 @ 
-\item Easier to interpret is \alert{Higgins $I^2$}: 
+\item Easier to interpret is \alert{Higgins' $I^2$}: 
   {Percentage of variance} that is attributable to study heterogeneity.
 %% \item For the preeclampsia data we obtain $\hat
 %%   \tau^2=\Sexpr{round((sigma2.hat),2)}$, 
@@ -4049,7 +4049,7 @@ For each experiment in the Protzko dataset
   \end{block}
 
   \begin{block}{Exercise 4.2}
-  Compute Higgin's $I^2$.
+  Compute Higgins' $I^2$.
   \end{block}
 
 \end{frame}
@@ -4175,7 +4175,7 @@ matplot(ma_mat[, c(1, 4)],
      pch = 19,
      xaxt = "n",
      xlab = "",
-     ylab = expression(paste("Higgins ", I^2, " (%)")),
+     ylab = expression(paste("Higgins' ", I^2, " (%)")),
      cex.axis = 1.5,
      cex.lab = 1.5,
      ylim = c(0, 100),
@@ -4193,7 +4193,7 @@ axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
 \end{frame}
 
 \begin{frame}[fragile]{Forest plots}
-  \framesubtitle{Higgin's $I^2$ in brackets}
+  \framesubtitle{Higgins' $I^2$ in brackets}
 <<echo = F>>=
 parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(4, 4))
 experiments <- unique(protzko2020$experiment)
@@ -4227,7 +4227,7 @@ arrows(x0 = plotDF$lower, x1 = plotDF$upper, y0 = yseq, angle = 90,
        code = 3, length = 0.05, col = cols)
 points(y = yseq, x = plotDF$est, pch = 20, lwd = 2, col = cols)
 axis(side = 2, at = yseq, las = 1, labels = dat$type, cex.axis = 0.85)
-title(main = paste0(ex , " (",round(I2*100, 2),")"), cex.main = 0.9)
+title(main = paste0(ex , " (", round(I2*100)," %)"), cex.main = 0.9)
 }
 par(parOld)
 @
