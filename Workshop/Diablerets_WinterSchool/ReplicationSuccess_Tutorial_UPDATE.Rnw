@@ -4005,8 +4005,6 @@ zo_FSD <- FSD_ori$smd/FSD_ori$se
 {\color{red} Replication success with the sceptical $p$-value}
 \end{center}
   \end{block}
-  
-  \pause
 
 \begin{center}
 \end{center}
