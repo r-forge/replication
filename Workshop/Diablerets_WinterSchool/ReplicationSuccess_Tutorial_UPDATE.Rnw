@@ -1,4 +1,4 @@
- %\documentclass[english, handout]{beamer}
+% \documentclass[english, handout]{beamer}
 % handout options: version without solutions for the participants
 \documentclass[english]{beamer}
 
@@ -4192,7 +4192,7 @@ axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
 }
 \end{frame}
 
-\begin{frame}[fragile]{Forest plots}
+\begin{frame}<handout:0>[fragile]{Forest plots}
   \framesubtitle{Higgins' $I^2$ in brackets}
 <<echo = F>>=
 parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(4, 4))
