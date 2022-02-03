@@ -1,4 +1,4 @@
-% \documentclass[english, handout]{beamer}
+ %\documentclass[english, handout]{beamer}
 % handout options: version without solutions for the participants
 \documentclass[english]{beamer}
 
@@ -1610,8 +1610,7 @@ points(0.011, 0.38, col=4, pch=19)
     \end{center}
 \end{frame}
 
-\begin{frame}{Shrinkage penalization}
-  \framesubtitle{in the sceptical $p$-value approach}
+\begin{frame}{Calibration of the sceptical $p$-value}
     \vspace{1cm}
   \begin{center}
     Bordeline significant original studies 
@@ -2238,6 +2237,15 @@ ggplot(data= dmin_DF, aes(x = dmin_sign, y = dmin_rs)) +
   % \end{block}
 \end{frame}
 
+\begin{frame}
+\section{Exercise 2 -- Design of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Large \textbf{Design based on the two-trials rule}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
 
 \begin{frame}{Design of replication studies}
 \begin{block}{Sample size of replication study}
@@ -2554,7 +2562,7 @@ uncertainty about the true effect after the original experiment
   \pause
     \begin{block}{Predictive design prior}
     \begin{eqnarray*}
-   \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{1}{c+1}}}
+   \mbox{Power} = \Phi\left({\color{red} \frac{1}{\sqrt{c+1}}}
    \left(z_o \sqrt{c} - z_{1- \alpha}\right)\right)
     \end{eqnarray*}
   \end{block}
@@ -2571,7 +2579,7 @@ uncertainty about the true effect after the original experiment
   \pause
     \begin{block}{Predictive design prior}
     \begin{eqnarray*}
-   \mbox{Power} = \Phi\left({\color{black} \sqrt{\frac{1}{c+1}}}
+   \mbox{Power} = \Phi\left({\color{black} \frac{1}{\sqrt{c+1}}}
    \left( {\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)\right)
     \end{eqnarray*}
   \end{block}
@@ -2990,6 +2998,32 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 % \end{frame}
 
+\begin{frame}
+\section{Exercise 2 -- Design of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Large \textbf{Design based on replication success 
+  (the sceptical $p$-value)}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}{Power for replication success}
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+    \mbox{Power} = \Phi\left( z_o \sqrt{c} (1 - \dmin)\right)
+    \end{eqnarray*}
+  \end{block}
+  
+  \pause
+  
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+    \mbox{Power} = \Phi\left({\color{red} \frac{1}{\sqrt{c + 1}}}
+    \left(z_o \sqrt{c} (1 - \dmin)\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
 
 \begin{frame}
   \section{Exercise 3 -- Design of replication studies}
@@ -3000,23 +3034,6 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
   {\LARGE Design based on replication success (sceptical $p$-value)}
    \end{center}
   % \end{block}
-\end{frame}
-
-\begin{frame}{Power for replication success}
-  \begin{block}{Conditional design prior}
-    \begin{eqnarray*}
-    \mbox{Power} = \Phi\left(\sqrt{c} z_o (1 - \dmin)\right)
-    \end{eqnarray*}
-  \end{block}
-  
-  \pause
-  
-    \begin{block}{Predictive design prior}
-    \begin{eqnarray*}
-    \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{1}{c + 1}}}
-    \left(\sqrt{c} z_o (1 - \dmin)\right)\right)
-    \end{eqnarray*}
-  \end{block}
 \end{frame}
 
 
@@ -3828,7 +3845,7 @@ so marginally
 \frametitle{Estimate of heterogeneity variance and Higgins' $I^2$}
   \begin{itemize}
   \item \alert{Moment estimator} of heterogeneity variance $\tau^2$ compares
-    $Q$-statistic to its expectation ($n-1$) under homogeneity.
+    $Q$-statistic to its expectation $n-1$ under homogeneity.
 \item Truncation at zero and appropriate scaling gives estimate  $\hat \tau^2$.
   %% \[
   %% \hat \tau^2 = \left\{Q-(n-1)\right\}_{+} / \left\{\textstyle\sum w_i - \textstyle\sum w_i^2/\textstyle\sum w_i\right\}
@@ -3866,12 +3883,8 @@ wald.star.p <- 2*pnorm(abs(wald.star.z), lower.tail=FALSE)
 \begin{frame}[fragile]
 \frametitle{Presentation in forest plot}
 \framesubtitle{Random effects model}
-\vspace{2cm}
+\vspace{1cm}
 
-\begin{center}
-\begin{figure}[h!]
-\setkeys{Gin}{width = 1\textwidth}
-%%\vspace*{-1cm}
 <<ch4, echo = FALSE>>=
 
 pree <- read.csv("data/preeclampsia.csv", header = TRUE, sep = ",", dec = ".", fill = TRUE)     
@@ -3888,17 +3901,17 @@ b <- treatedTot
 c <- controlPre
 d <- controlTot
 @ 
-\vspace*{-2cm}
 
-<<ch4b, echo = TRUE, fig.height=7.5, fig.width=9.75>>=
-
+<<ch4b, echo = TRUE, eval = F>>=
 library(meta)
 forest(meta1, comb.fixed=TRUE, comb.random=TRUE)
 @ 
+\vspace{-1.5cm}
+<<ch4bis, echo = FALSE>>=
+forest(meta1, comb.fixed = TRUE, comb.random = TRUE)
+@ 
 
-\end{figure}
-\end{center}
-\vspace{1cm}
+
 <<ch5, echo=F>>=
 
 or.fixed <- exp(meta1$TE.fixed)
@@ -3917,17 +3930,6 @@ ci.random <- c(or.lower, or.upper)
 \end{frame}
 
 
-\begin{frame}
-\section{Exercise 4 -- Multiple replication studies}
-  % \begin{block}{}
-  \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Exercise Session 4}} 
-  \\~\\
-  {\LARGE Multiple replication studies}
-   \end{center}
-  % \end{block}
-\end{frame}
-
 \begin{frame}{Assessing replication success}
   \begin{block}{How to assess replication success with multiple replication 
   studies?}
@@ -3937,7 +3939,13 @@ ci.random <- c(or.lower, or.upper)
       \begin{enumerate}
       \item Perform a {\color{red} meta-analysis} with the replication studies
       \pause
-      \item Use the {\color{red} meta-analytic result} as a single replication studies
+      \item Retrieve/compute: 
+        \begin{itemize}
+        \item the {\color{foo} meta-analytic combined effect} $\hat\theta_r$
+        \item the {\color{foo} standard error of the combined effect} $\sigma_r = \se(\hat\theta_r)$
+        \item the {\color{foo} meta-analytic $z$-value} $z_r = \hat\theta_r/\sigma_r$
+        \item the {\color{foo} variance ratio (relative sample size)} $c = \sigma_o^2/\sigma_r^2$
+        \end{itemize}
       \pause
       \item Apply the {\color{red} same methods} as in a 1-1 scenario
       \end{enumerate}
@@ -3963,15 +3971,68 @@ FSD <-  subset(protzko2020, experiment == "FSD")
 \begin{frame}[fragile]{Retrieving results}
 <<eval = T, size="tiny">>=
 
-(thetar <- meta_FSD$TE.fixed) # meta-analytic estimate
-(se_thetar <- meta_FSD$seTE.fixed) # standard error of estimate
-(zr <- meta_FSD$zval.fixed) # meta-analytic z-value
+(thetar_FSD <- meta_FSD$TE.fixed) # meta-analytic estimate
+(se_thetar_FSD <- meta_FSD$seTE.fixed) # standard error of estimate
+(zr_FSD <- meta_FSD$zval.fixed) # meta-analytic z-value
 
 
 FSD_ori <- subset(FSD, type == "original")
-(c <- FSD_ori$se^2/se_thetar^2) # variance ratio (relative sample size)
+(c_FSD <- FSD_ori$se^2/se_thetar_FSD^2) # variance ratio (relative sample size)
 
 @
+\end{frame}
+
+\begin{frame}[fragile]{Assessing replication success}
+\vspace{0.5cm}
+  
+  \begin{block}{Two-trials rule}
+<<size = "tiny">>=
+zo_FSD <- FSD_ori$smd/FSD_ori$se
+(po_FSD <- z2p(zo_FSD, alternative = "one.sided"))
+(pr_FSD <- z2p(zr_FSD, alternative = "one.sided"))
+@
+\begin{center}
+{\color{red} Replication success with the two-trials rule}
+\end{center}
+  \end{block}
+\pause
+  \begin{block}{Sceptical $p$-value}
+<<size = "tiny">>=
+(pS_FSD <- pSceptical(zo = zo_FSD, zr = zr_FSD, c = c_FSD, 
+                     alternative = "one.sided", type = "golden"))
+@
+  \begin{center}
+{\color{red} Replication success with the sceptical $p$-value}
+\end{center}
+  \end{block}
+  
+  \pause
+
+\begin{center}
+\end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]{Forest plot of experiment FSD}
+\vspace{1cm}
+<<echo = T, eval = F>>=
+forest(meta_FSD)
+@
+\vspace{-1cm}
+<<echo = F, eval = T>>=
+forest(meta_FSD)
+@
+\end{frame}
+
+\begin{frame}
+\section{Exercise 4 -- Multiple replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Exercise Session 4}} 
+  \\~\\
+  {\LARGE Multiple replication studies}
+   \end{center}
+  % \end{block}
 \end{frame}
 
 \begin{frame}
@@ -3984,6 +4045,8 @@ For each experiment in the Protzko dataset
 
   \begin{block}{Exercise 4.1}
   Compute a fixed and random-effects meta-analysis for the external replications. \\
+  Extract the meta-analytic combined estimate ($\hat\theta_r$) and compute 
+  the relative effect size ($d = \hat\theta_r/\hat\theta_o$). \\
  {\it Hint: Use the function} \texttt{metagen} {\it from the R package} \texttt{meta}.
   \end{block}
 
@@ -4017,23 +4080,73 @@ For each experiment in the Protzko dataset
 <<echo = T>>=
 
 for(i in unique(protzko2020$experiment)){
-  dat = subset(protzko2020, experiment == i)
+  dat <-  subset(protzko2020, experiment == i)
   ma <- metagen(TE = smd, seTE = se, studlab = lab,
                 exclude = (type == "original" | type == "self-replication"),
                 data = dat, sm = "SMD")
-   # print(ma)
-   # forest(ma)
+  thetar_fixed <- ma$TE.fixed
+  thetar_random <- ma$TE.random
 }
 @
 \end{frame}
 
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 4.1}
-  \framesubtitle{Forest plot FSD experiment}
 <<echo = F>>=
-forest(meta_FSD)
+d_mat <- matrix(NA, 
+                nrow = 16, 
+                ncol = 3) 
+
+for(i in 1:length(unique(protzko2020$experiment))){
+  ex <- unique(protzko2020$experiment)[i]
+  dat <-  subset(protzko2020, experiment == ex)
+  ma <- metagen(TE = smd, seTE = se, studlab = lab,
+                exclude = (type == "original" | type == "self-replication"),
+                data = dat, sm = "SMD")
+  ori_dat <- subset(dat, type == "original")
+  thetao <- ori_dat$smd
+  thetar_fixed <- ma$TE.fixed
+  thetar_random <- ma$TE.random
+  d_mat[i, 1] <-  ex
+  d_mat[i, 2] <- thetar_fixed/thetao
+  d_mat[i, 3] <- thetar_random/thetao
+
+}
+
+par(las = 1, mar = c(10, 5, 4, 2) + 0.1)
+
+
+matplot(d_mat[, c(1, 2)], 
+        ylim = c(-2.5, 2.5), 
+        col = alpha("blue", 0.5), 
+        pch = 19, 
+        xaxt = "n", 
+        cex = 2.5, 
+        ylab = "Relative effect size", 
+        cex.lab = 1.5)
+matpoints(d_mat[, c(1,3)], 
+          col = alpha("red", 0.5), 
+          pch = 19, 
+          cex = 2.5)
+
+
+axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
+     las = 3,
+     cex.axis = 1.5)
+
+abline(h = 1, 
+       col = "darkgrey", lty = 2)
+
+legend("bottomright", 
+       c("fixed effect", "random effects"), 
+       col = c(alpha("blue", 0.5), alpha("red", 0.5)), 
+       pch = 19, 
+       cex = 1.9, 
+       bty = "n")
+
+
+
 @
 \end{frame}
-
 
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 4.2}
 
@@ -4079,6 +4192,48 @@ axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
 @
   }
 }
+\end{frame}
+
+\begin{frame}[fragile]{Forest plots}
+  \framesubtitle{Higgin's $I^2$ in brackets}
+<<echo = F>>=
+parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(4, 4))
+experiments <- unique(protzko2020$experiment)
+for (ex in experiments) {
+  ## compute CIs
+  dat <- subset(protzko2020, experiment == ex)
+  ma <- metagen(TE = smd, seTE = se, 
+                data = dat, 
+                sm = "SMD", 
+                exclude = (type == "original" | type == "self-replication"))
+  I2 <- ma$I2
+  # re-ordering
+  ori.index <- which(dat$type == "original")
+  self.index <- which(dat$type == "self-replication")
+  extern.index <- which(dat$type == "external-replication")
+  dat <- dat[ c(extern.index, self.index, ori.index),]
+  za <- qnorm(p = 0.975)
+  plotDF <- data.frame(lower = dat$smd - za*dat$se,
+                       est = dat$smd,
+                       upper = dat$smd + za*dat$se)
+colpalette <- c("#000000", "#1B9E77", "#D95F02")
+cols <- colpalette[dat$type]
+yseq <- seq(1, nrow(dat))
+
+## forestplot
+plot(x = plotDF$est, y = yseq, xlim = c(-0.15, 0.8),
+     ylim = c(0.8*min(yseq), 1.05*max(yseq)), type = "n",
+     yaxt = "n", xlab = "Effect estimate (SMD)", ylab = "")
+abline(v = 0, col = "#0000004D")
+arrows(x0 = plotDF$lower, x1 = plotDF$upper, y0 = yseq, angle = 90,
+       code = 3, length = 0.05, col = cols)
+points(y = yseq, x = plotDF$est, pch = 20, lwd = 2, col = cols)
+axis(side = 2, at = yseq, las = 1, labels = dat$type, cex.axis = 0.85)
+title(main = paste0(ex , " (",round(I2*100, 2),")"), cex.main = 0.9)
+}
+par(parOld)
+@
+
 \end{frame}
 
 
