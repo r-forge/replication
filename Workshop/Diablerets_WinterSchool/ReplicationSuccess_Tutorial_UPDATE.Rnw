@@ -2092,7 +2092,7 @@ for (p in unique(RProjects$project)) {
        ylab = expression(italic(r)[r]), col = col_discord, pch = 20,
        cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
   legend("topleft", legend = c(expression(paste(italic(p)[s], " only")),
-                      "significance only"),
+                      "two-trials rule only"),
          title = "success",
          pch = 20, pt.cex = 2, cex = 1.4,
          col = c("#8B0000B3", "#00008AB3"), bty = "n")
@@ -2171,7 +2171,7 @@ discrepantDF$d <- paste0("\\textcolor{blue}{", round(discrepantDF$d, 2) , "}")
 
 discTab2 <- xtable(discrepantDF[, -c(3:4, 6:12)])
 colnames(discTab2) <- c("Study", "$n_r / n_o$", "$p_o$",
-                        "$d$", "$d_{min} (2TR)$", "$d_{min} (RS)$")
+                        "$d$", "$d_{min} (2TR)$", "$d_{min} (p_S)$")
 print(discTab2, include.rownames = FALSE, booktabs = TRUE,
       sanitize.text.function = function(x) {x}, size = "small",
       floating = FALSE)
@@ -3052,6 +3052,7 @@ Main arguments (\texttt{default}):
 \item \texttt{c} (\texttt{1})
 \item \texttt{power}
 \item \texttt{designPrior} (\texttt{"conditional"})
+\item \texttt{shrinkage} (\texttt{0})
 \item \texttt{level} (\texttt{0.025})
 \item \texttt{alternative} (\texttt{"one.sided"})
 \item \texttt{type} (\texttt{"golden"})
@@ -3219,8 +3220,8 @@ axis(2, at = 50, label = "50", cex.axis = 1.5,
 ##        lwd = 1.5)
 
 legend("topright", 
-       c("Replication success", "Significance"), 
-       lty = c(1, 2), col=2, 
+       c("Sceptical p-value", "Two-trials rule"), 
+       lty = c(1, 2), col = "red", 
        bty = "n", 
        cex = 2.2, 
        lwd = 1.5)
@@ -4331,6 +4332,26 @@ par(parOld)
   % \end{block}
 \end{frame}
 
+\begin{frame}{Interim analyses}
+
+  \begin{block}{Stopping a study at an interim analysis}
+    \begin{itemize}
+    \item popular in {\color{foo} clinical trials} 
+    \item saves {\color{foo} time and money} 
+    \item Two situations
+    \pause
+    \item [] \begin{center}
+    {\color{springgreen4} Efficacy stopping}
+    \end{center}
+    \pause
+    \item[] \begin{center}
+    {\color{darkred} Futility stopping}
+    \end{center}
+    \end{itemize} 
+  \end{block}
+  
+\end{frame}
+
 
 \begin{frame}
 \frametitle{Social Sciences Replication Project}
@@ -4342,7 +4363,7 @@ par(parOld)
 \begin{itemize}
 \item[--] 21 studies replicated
 \pause
-\item[--] \textcolor{purple!50!red}{11 stopped} at stage 1
+\item[--] \textcolor{springgreen4}{11 stopped} at stage 1
 \item[] \textcolor{white}{10 continued in stage 2}
 \end{itemize}
 % \vspace{-2.5cm}
@@ -4370,7 +4391,7 @@ text(3.5, 0.7, "Stage 2", cex = 2, col = "white")
 \vspace{-1cm}
 \begin{itemize}
 \item[] {\scriptsize Significant $p$-value and effect in the same direction:
-\textcolor{purple!50!red}{stop}}
+\textcolor{springgreen4}{stop for efficacy}}
 \item[] \textcolor{gray!20}{ \scriptsize Otherwise: stage 2}
 \end{itemize}
 \end{column}
@@ -4386,7 +4407,7 @@ text(3.5, 0.7, "Stage 2", cex = 2, col = "white")
 \end{center}
 \begin{itemize}
 \item[--] 21 studies replicated
-\item[--] \textcolor{purple!50!red}{11 stopped} at stage 1
+\item[--] \textcolor{springgreen4}{11 stopped} at stage 1
 \item[--] \textcolor{purple!50!red}{10 continued} in stage 2
 \end{itemize}
 % \vspace{-2.5cm}
@@ -4415,29 +4436,29 @@ points(5, 0.5, pch = "|", cex = 2)
 \vspace{-1cm}
 \begin{itemize}
 \item[] \textcolor{gray!20} {\scriptsize Significant $p$-value and effect in the same direction:
-\textcolor{gray!20}{stop}}
+\textcolor{gray!20}{stop for efficacy}}
 \item[] { \scriptsize Otherwise: stage 2}
 \end{itemize}
 \end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Interim analyses}
-
-  \begin{block}{Stopping a study at an interim analysis}
+\begin{frame}{Futility stopping}
+  \begin{block}{}
     \begin{itemize}
-    \item popular in {\color{foo} clinical trials} 
-    \item saves {\color{foo} time and money} 
-    \item Two situations
-    \item [] \begin{center}
-    {\color{springgreen4} Efficacy stopping}
+      \item In \emph{SSRP}, only {\color{springgreen4} efficacy stopping}
+      \item Which criterion for {\color{red} futility stopping}?
+      \vspace{0.75cm}
+      \pause
+      \item[] $\rightarrow$ Futility stopping when 
+          \begin{center}
+    {\color{red} Interim power} is smaller than {\color{red} 
+    futility boundary}  \\
+    {\color{foo} (e.g. 10\%)}
     \end{center}
-    \item[] \begin{center}
-    {\color{darkred} Futility stopping}
-    \end{center}
-    \end{itemize} 
+    \end{itemize}
+
   \end{block}
-  
 \end{frame}
 
 \begin{frame}{Interim power}
@@ -4445,9 +4466,10 @@ points(5, 0.5, pch = "|", cex = 2)
   \begin{block}{}
     \begin{itemize}
     \item Power of a replication study taking into account 
-    {\bf data from an interim analysis}
-    \item {\it Conditional} vs {\it predictive} 
-    \item Depends on {\bf $p_o$}, {\bf $c$}, but also
+    {\color{foo} data from an interim analysis}
+    \item Based on the {\color{foo} two-trials rule}
+    \item {\color{foo} Conditional} vs {\color{foo} predictive} 
+    \item Depends on {\color{foo} $p_o$}, {\color{foo} $c$}, but also
       \begin{itemize}
         \item {\color{red} $p_i$:} the $p$-value at interim
         \item {\color{red} $f$:} the fraction of the replication study already
@@ -4456,6 +4478,9 @@ points(5, 0.5, pch = "|", cex = 2)
     \end{itemize}
   \end{block}
 \end{frame}
+
+
+
 
 \begin{frame}
 \frametitle{Conditional power at interim}
@@ -4960,7 +4985,22 @@ print(xt5,
 
 \end{frame}
 
-
+\begin{frame}[fragile]{Interim power}
+  \framesubtitle{in the package}
+  \begin{block}{SSRP dataset}
+<<>>=
+# dataset 
+data("SSRP")
+@
+  \end{block}
+  
+  \begin{block}{Function}
+<<>>=
+?powerSignificanceInterim
+@
+  
+  \end{block}
+\end{frame}
 \begin{frame}{Conclusion/Outlook}
 
 \begin{itemize}
