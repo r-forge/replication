@@ -1,4 +1,4 @@
-% \documentclass[english, handout]{beamer}
+%\documentclass[english, handout]{beamer}
 % handout options: version without solutions for the participants
 \documentclass[english]{beamer}
 
@@ -5044,6 +5044,28 @@ data("SSRP")
     \end{column}
   \end{columns}
 
+\end{frame}
+
+
+\begin{frame}{Advertisement}
+  \begin{block}{Swiss Reproducibility Network}
+   \begin{center}
+    \includegraphics[width=3cm]{images_presentation/SwissRNLogowide.png} \\
+    \end{center}
+  \end{block}
+    \pause
+  \begin{block}{Swiss Reproducibility Network {\color{red} Academy}}
+    \begin{itemize}
+  \item {\color{red} Aim:} connect early-career researchers interested in {\color{foo} reproducibility,
+  open science, good research practices, etc.}
+  \item {\color{red} First event:} Friday, Feb 25 (16:00 - 17:15) - online
+  \item {\color{red} Interested in joining?} please email 
+  \begin{center}
+  \url{swissrnacademy@gmail.com}
+  \end{center}
+    \end{itemize}
+  \end{block}
+  
 \end{frame}
 % ============================================================================
 \nocite{Pyc2010, open2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, 
