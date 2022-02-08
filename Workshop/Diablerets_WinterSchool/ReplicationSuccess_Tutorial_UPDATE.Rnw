@@ -5047,7 +5047,7 @@ data("SSRP")
 \end{frame}
 
 
-\begin{frame}{Advertisement}
+\begin{frame}{Interested to participate?}
   \begin{block}{Swiss Reproducibility Network}
    \begin{center}
     \includegraphics[width=3cm]{images_presentation/SwissRNLogowide.png} \\
@@ -5058,6 +5058,7 @@ data("SSRP")
     \begin{itemize}
   \item {\color{red} Aim:} connect early-career researchers interested in {\color{foo} reproducibility,
   open science, good research practices, etc.}
+  \item {\color{red} More info} \url{https://www.swissrn.org/academy/}
   \item {\color{red} First event:} Friday, Feb 25 (16:00 - 17:15) - online
   \item {\color{red} Interested in joining?} please email 
   \begin{center}
