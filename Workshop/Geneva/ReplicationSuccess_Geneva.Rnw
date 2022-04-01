@@ -1,6 +1,6 @@
-\documentclass[english, handout]{beamer}
+% \documentclass[english, handout]{beamer}
 % handout options: version without solutions for the participants
-% \documentclass[english]{beamer}
+ \documentclass[english]{beamer}
 
 % Leos shortcuts
 \input{newCommands.tex}
