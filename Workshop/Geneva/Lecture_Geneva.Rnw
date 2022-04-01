@@ -137,7 +137,7 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{frame}{Large-scale replication projects}
 \begin{block}{}
   \begin{itemize}
-    \item<1->                {2015: Reproducibility project psychology}
+    \item<1->                {2015: Psychology reproducibility project}
     \item<2->                {2016: Experimental economics replication project}
     \item<3->                {2018: Experimental philosophy replicability project}
     \item<4->               {2018: Social sciences replication project}
@@ -197,7 +197,7 @@ opts_chunk$set(fig.path = "figures/fig",
 \begin{frame}{Large-scale replication projects}
 \begin{block}{}
   \begin{itemize}
-    \item<1-> \color<1>{gray}{2015: Reproducibility project psychology}
+    \item<1-> \color<1>{gray}{2015: Psychology reproducibility project}
     \item<1-> \color<1>{gray}{2016: Experimental economics replication project}
     \item<1-> \color<1>{gray}{2018: Experimental philosophy replicability project}
     \item<1-> \color<1>{red}{2018: Social sciences replication project}
@@ -485,8 +485,17 @@ study_plot
 \end{minipage}
 \end{frame}
 
+
+\begin{frame}
+\section{Replication success}
+  \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Replication success}} 
+   \end{center}
+  \end{block}
+\end{frame}
+
 \begin{frame}{When is a replication successful?}
-\section{When is a replication successful?}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \vspace{-1.5em}
 \begin{block}{Some proposed criteria}
@@ -2038,20 +2047,86 @@ axis(1, 0.025, 0.025, col.axis = "red", col.ticks = "red",
 %%   \end{block}
 %% \end{frame}
 
-\begin{frame}{}
-\begin{minipage}[t][5cm][t]{\textwidth}
-  \centering
-  \includegraphics[width=0.8\textwidth]{images_presentation/osc2015.png}
-\end{minipage}
-
-  
+\begin{frame}
+\section{Outlook}
+  \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Outlook}} 
+   \end{center}
+  \end{block}
 \end{frame}
 
-\begin{frame}{Conclusion/Outlook}
+\begin{frame}{Real-world evidence studies}
+\framesubtitle{\citet{Franklin_etal2021}}
+  \vspace{-2cm}
+  \begin{minipage}[t][5cm][t]{\textwidth}
+  \centering
+  \includegraphics[width=0.8\textwidth]{images_presentation/Circ.RCT-D.2021Top.png}\\[.5cm]
+  \includegraphics[width=0.8\textwidth]{images_presentation/circulationaha.120.051718.fig02.png}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Multiple replications}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{ProtzkoScreenshot.png}
+\end{center}
+<<size="tiny">>=
+data("protzko2020")
+head(protzko2020, 10)
+@
+\end{frame}
+
+\begin{frame}
+\frametitle{Forest plots}
+  \framesubtitle{$16$ experiments}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1\textwidth}{!} {
+<<echo = F>>=
+# graphics.off()
+parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(4, 4))
+experiments <- unique(protzko2020$experiment)
+for (ex in experiments) {
+  ## compute CIs
+  dat <- subset(protzko2020, experiment == ex)
+  # re-ordering
+  ori.index <- which(dat$type == "original")
+  self.index <- which(dat$type == "self-replication")
+  extern.index <- which(dat$type == "external-replication")
+  dat <- dat[ c(extern.index, self.index, ori.index),]
+  za <- qnorm(p = 0.975)
+  plotDF <- data.frame(lower = dat$smd - za*dat$se,
+                       est = dat$smd,
+                       upper = dat$smd + za*dat$se)
+colpalette <- c("#000000", "#1B9E77", "#D95F02")
+cols <- colpalette[dat$type]
+yseq <- seq(1, nrow(dat))
+
+## forestplot
+plot(x = plotDF$est, y = yseq, xlim = c(-0.15, 0.8),
+     ylim = c(0.8*min(yseq), 1.05*max(yseq)), type = "n",
+     yaxt = "n", xlab = "Effect estimate (SMD)", ylab = "")
+abline(v = 0, col = "#0000004D")
+arrows(x0 = plotDF$lower, x1 = plotDF$upper, y0 = yseq, angle = 90,
+       code = 3, length = 0.05, col = cols)
+points(y = yseq, x = plotDF$est, pch = 20, lwd = 2, col = cols)
+axis(side = 2, at = yseq, las = 1, labels = dat$type, cex.axis = 0.85)
+title(main = ex)
+}
+par(parOld)
+@
+  }
+} 
+\end{frame}
+
+\begin{frame}{Outlook}
 
 \begin{itemize}
-  \item Incorporation of \alert{smallest effect size of interest}
   \item Replication of \alert{non-inferiority} and \alert{equivalence} studies
+  \item \alert{Multisite} replication studies
+  \item Incorporation of \alert{smallest effect size of interest}
   \item \alert{Bayes factors} to assess replication success
   \end{itemize}
   
