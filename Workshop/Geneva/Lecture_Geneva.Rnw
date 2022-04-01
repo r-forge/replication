@@ -1653,389 +1653,398 @@ axis(1, 0.025, 0.025, col.axis = "red", col.ticks = "red",
 \end{frame}
 
 
-\begin{frame}
-\section{Exercise 2 -- Design of replication studies}
-  % \begin{block}{}
-  \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Design of replication studies}}
-   \end{center}
-  % \end{block}
-\end{frame}
+%% \begin{frame}
+%% \section{Exercise 2 -- Design of replication studies}
+%%   % \begin{block}{}
+%%   \begin{center}
+%%   \color{uzh@blue}{\Huge \textbf{Design of replication studies}}
+%%    \end{center}
+%%   % \end{block}
+%% \end{frame}
 
-\begin{frame}
-\section{Exercise 2 -- Design of replication studies}
-  % \begin{block}{}
-  \begin{center}
-  \color{uzh@blue}{\Large \textbf{Design based on the two-trials rule}}
-   \end{center}
-  % \end{block}
-\end{frame}
-
-
-\begin{frame}{Design of replication studies}
-\begin{block}{Sample size of replication study}
-  \begin{itemize}
-  \item Direct replication $\rightarrow$ procedures of replication study as closely matched as possible to original study 
-\item \alert{But} same sample size as in original study can lead to a very low power \citep{Goodman1992}
-\item[] $\rightarrow$ proper sample size calculation is essential 
-  \end{itemize}
-\end{block}
-\centering
-\includegraphics[width=0.8\textwidth]{images_presentation/goodmana.pdf}
-\end{frame}
-
-\begin{frame}[fragile]{What is used in practice}
-\begin{block}{Standard sample size calculation}
-  \begin{itemize}
-<< echo = FALSE, eval = FALSE >>=
-sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
-  u <- qnorm(p = power)
-  v <- qnorm(p = 1 - sig.level/2)
-  n <- 2*(u + v)^2*sd^2/delta^2
-  return(n)
-}
-sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
-@
-    \item Goal is to have between 80\%  and 95\% power in the replication study to detect the {\color{red}{effect estimate from the original study}}.
-    \item Original effect estimate is sometimes shrunken by a factor of 50\%.
-    \item Uncertainty of original effect estimate is ignored
-  \end{itemize}
-\end{block}
-\end{frame}
-
-\begin{frame}{Standard sample size calculation}
-<<echo = F>>=
-sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
-  u <- qnorm(p = power)
-  v <- qnorm(p = 1 - sig.level/2)
-  n <- 2*(u + v)^2*sd^2/delta^2
-  return(n)
-}
-
-grid <- seq(0.09, 0.225, 0.001)
-deltahat <- 0.15
-se <- 0.025
-ss <- sampleSizeZtest(delta = grid, sd = 0.4, sig.level = 0.01, power = 0.95)
-ss1 <- sampleSizeZtest(delta = deltahat, sd = 0.4, sig.level = 0.01, power = 0.95)
-
-set.seed(12345)
-nsim <- 100000
-deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
-ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
-
-library(gplots)
-par(las=1)
-
-plot(grid, 
-     ss, 
-     type="l", 
-     xlab="Original effect estimate", 
-     ylab="Replication sample size", 
-     ylim=c(0, 800), 
-     cex.lab = 1.5, 
-     cex.axis = 1.2, 
-     lwd = 2)
-
-legend("topright", 
-       "Power = 95%", 
-       bty = "n", 
-       cex = 1.75)
-
-@
-
-\end{frame}
+%% \begin{frame}
+%% \section{Exercise 2 -- Design of replication studies}
+%%   % \begin{block}{}
+%%   \begin{center}
+%%   \color{uzh@blue}{\Large \textbf{Design based on the two-trials rule}}
+%%    \end{center}
+%%   % \end{block}
+%% \end{frame}
 
 
-\begin{frame}{Standard sample size calculation}
-<<echo = F>>=
+%% \begin{frame}{Design of replication studies}
+%% \begin{block}{Sample size of replication study}
+%%   \begin{itemize}
+%%   \item Direct replication $\rightarrow$ procedures of replication study as closely matched as possible to original study 
+%% \item \alert{But} same sample size as in original study can lead to a very low power \citep{Goodman1992}
+%% \item[] $\rightarrow$ proper sample size calculation is essential 
+%%   \end{itemize}
+%% \end{block}
+%% \centering
+%% \includegraphics[width=0.8\textwidth]{images_presentation/goodmana.pdf}
+%% \end{frame}
 
-set.seed(12345)
-nsim <- 100000
-deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
-ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+%% \begin{frame}[fragile]{What is used in practice}
+%% \begin{block}{Standard sample size calculation}
+%%   \begin{itemize}
+%% << echo = FALSE, eval = FALSE >>=
+%% sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
+%%   u <- qnorm(p = power)
+%%   v <- qnorm(p = 1 - sig.level/2)
+%%   n <- 2*(u + v)^2*sd^2/delta^2
+%%   return(n)
+%% }
+%% sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
+%% @
+%%     \item Goal is to have between 80\%  and 95\% power in the replication study to detect the {\color{red}{effect estimate from the original study}}.
+%%     \item Original effect estimate is sometimes shrunken by a factor of 50\%.
+%%     \item Uncertainty of original effect estimate is ignored
+%%   \end{itemize}
+%% \end{block}
+%% \end{frame}
 
-library(gplots)
-par(las=1)
+%% \begin{frame}{Standard sample size calculation}
+%% <<echo = F>>=
+%% sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
+%%   u <- qnorm(p = power)
+%%   v <- qnorm(p = 1 - sig.level/2)
+%%   n <- 2*(u + v)^2*sd^2/delta^2
+%%   return(n)
+%% }
 
-plot(grid, 
-     ss, 
-     type="l", 
-     xlab="Original effect estimate", 
-     ylab="Replication sample size", 
-     ylim=c(0, 800), 
-     cex.lab = 1.5, 
-     cex.axis = 1.2, 
-     lwd = 2)
-lines(rep(deltahat, 2), 
-      c(0, ss1), 
-      lty=2,
-      lwd = 2)
-points(deltahat, 
-       ss1, 
-       pch=19, 
-       cex=1.2, 
-       col=1) 
-points(deltahat, 
-       0, 
-       pch=19, 
-       cex=1.2, 
-       col=1) 
-lines(c(0, deltahat), 
-      rep(ss1, 2), 
-      lty = 2,
-      col = 1, 
-      lwd = 2)
-axis(2, 
-     at=ss1, 
-     label=round(ss1), 
-     col=1, 
-     col.axis=1, 
-     cex.axis = 1.2)
+%% grid <- seq(0.09, 0.225, 0.001)
+%% deltahat <- 0.15
+%% se <- 0.025
+%% ss <- sampleSizeZtest(delta = grid, sd = 0.4, sig.level = 0.01, power = 0.95)
+%% ss1 <- sampleSizeZtest(delta = deltahat, sd = 0.4, sig.level = 0.01, power = 0.95)
 
-legend("topright", 
-       "Power = 95%", 
-       bty = "n",
-       cex = 1.75)
+%% set.seed(12345)
+%% nsim <- 100000
+%% deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+%% ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
 
-@
+%% library(gplots)
+%% par(las=1)
 
-\end{frame}
-\begin{frame}{Incorporation of uncertainty}
-<<echo = F>>=
+%% plot(grid, 
+%%      ss, 
+%%      type="l", 
+%%      xlab="Original effect estimate", 
+%%      ylab="Replication sample size", 
+%%      ylim=c(0, 800), 
+%%      cex.lab = 1.5, 
+%%      cex.axis = 1.2, 
+%%      lwd = 2)
 
-set.seed(12345)
-nsim <- 100000
-deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
-ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+%% legend("topright", 
+%%        "Power = 95%", 
+%%        bty = "n", 
+%%        cex = 1.75)
 
-library(gplots)
-par(las=1)
+%% @
 
-plot(grid, 
-     ss, 
-     type="l", 
-     xlab="Original effect estimate", 
-     ylab="Replication sample size", 
-     ylim=c(0, 800), 
-     cex.lab = 1.5, 
-     cex.axis = 1.2, 
-     lwd = 2)
-lines(rep(deltahat, 2), 
-      c(0, ss1), 
-      lty=2,
-      lwd = 2)
-points(deltahat, 
-       ss1, 
-       pch=19, 
-       cex=1.2, 
-       col=1) 
-points(deltahat, 
-       0, 
-       pch=19, 
-       cex=1.2, 
-       col=2) 
-lines(c(0, deltahat), 
-      rep(ss1, 2), 
-      lty = 2,
-      col = 1, 
-      lwd = 2)
-axis(2, 
-     at=ss1, 
-     label=round(ss1), 
-     col=1, 
-     col.axis=1, 
-     cex.axis = 1.2)
-
-plotCI(x = deltahat,
-       y = 0, 
-       li = quantile(deltahat2, 0.025), 
-       ui = quantile(deltahat2, 0.975),
-       col=2, lwd=2, add=TRUE, err="x")
+%% \end{frame}
 
 
-legend("topright", 
-       "Power = 95%", 
-       bty = "n",
-       cex = 1.75)
+%% \begin{frame}{Standard sample size calculation}
+%% <<echo = F>>=
 
-@
-\end{frame}
+%% set.seed(12345)
+%% nsim <- 100000
+%% deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+%% ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
 
-\begin{frame}{Incorporation of uncertainty}
-<<echo = F>>=
-set.seed(12345)
-nsim <- 100000
-deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
-ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+%% library(gplots)
+%% par(las=1)
 
-library(gplots)
-par(las=1)
+%% plot(grid, 
+%%      ss, 
+%%      type="l", 
+%%      xlab="Original effect estimate", 
+%%      ylab="Replication sample size", 
+%%      ylim=c(0, 800), 
+%%      cex.lab = 1.5, 
+%%      cex.axis = 1.2, 
+%%      lwd = 2)
+%% lines(rep(deltahat, 2), 
+%%       c(0, ss1), 
+%%       lty=2,
+%%       lwd = 2)
+%% points(deltahat, 
+%%        ss1, 
+%%        pch=19, 
+%%        cex=1.2, 
+%%        col=1) 
+%% points(deltahat, 
+%%        0, 
+%%        pch=19, 
+%%        cex=1.2, 
+%%        col=1) 
+%% lines(c(0, deltahat), 
+%%       rep(ss1, 2), 
+%%       lty = 2,
+%%       col = 1, 
+%%       lwd = 2)
+%% axis(2, 
+%%      at=ss1, 
+%%      label=round(ss1), 
+%%      col=1, 
+%%      col.axis=1, 
+%%      cex.axis = 1.2)
 
-plot(grid, 
-     ss, 
-     type="l", 
-     xlab="Original effect estimate", 
-     ylab="Replication sample size", 
-     ylim=c(0, 800), 
-     cex.lab = 1.5, 
-     cex.axis = 1.2, 
-     lwd = 2)
-lines(rep(deltahat, 2), 
-      c(0, ss1), 
-      lty=2,
-      lwd = 2)
-points(deltahat, 
-       ss1, 
-       pch=19, 
-       cex=1.2, 
-       col=1) 
-points(deltahat, 
-       0, 
-       pch=19, 
-       cex=1.2, 
-       col=2) 
-points(min(grid), 
-       mean(ss2), 
-       pch=19, 
-       cex=1.2, 
-       col=2) 
-lines(c(0, deltahat), 
-      rep(ss1, 2), 
-      lty = 2,
-      col = 1, 
-      lwd = 2)
-axis(2, 
-     at=ss1, 
-     label=round(ss1), 
-     col=1, 
-     col.axis=1, 
-     cex.axis = 1)
+%% legend("topright", 
+%%        "Power = 95%", 
+%%        bty = "n",
+%%        cex = 1.75)
 
-plotCI(x = deltahat, y=0, li=quantile(deltahat2, 0.025), ui = quantile(deltahat2, 0.975),
-       col=2, lwd=2, add=TRUE, err="x")
+%% @
 
-plotCI(x = min(grid), y=mean(ss2), li=quantile(ss2, 0.025), ui = quantile(ss2, 0.975),
-       col=2, lwd=2, add=TRUE, err="y")
-lines(rep(quantile(deltahat2, 0.025), 2), 
-      c(0, quantile(ss2, 0.975)), 
-      lty=2, col=2,  
-      lwd = 2)
-lines(rep(quantile(deltahat2, 0.975), 2), 
-      c(0, quantile(ss2, 0.025)), 
-      lty=2, col=2, 
-      lwd = 2)
-lines(c(0, quantile(deltahat2, 0.975)), 
-      rep(quantile(ss2, 0.025), 2), 
-      lty=2, 
-      col=2, 
-      lwd = 2)
-lines(c(0, quantile(deltahat2, 0.025)), 
-      rep(quantile(ss2, 0.975), 2), 
-      lty =2, 
-      col=2, 
-      lwd = 2)
-axis(2, 
-     at=mean(ss2), 
-     label=round(mean(ss2)), 
-     col = 2, 
-     col.axis = 2, 
-     cex.axis = 1.2)
+%% \end{frame}
+%% \begin{frame}{Incorporation of uncertainty}
+%% <<echo = F>>=
 
-legend("topright", 
-       "Power = 95%", 
-       bty = "n",
-       cex = 1.75)
+%% set.seed(12345)
+%% nsim <- 100000
+%% deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+%% ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
 
-@
-\end{frame}
+%% library(gplots)
+%% par(las=1)
 
+%% plot(grid, 
+%%      ss, 
+%%      type="l", 
+%%      xlab="Original effect estimate", 
+%%      ylab="Replication sample size", 
+%%      ylim=c(0, 800), 
+%%      cex.lab = 1.5, 
+%%      cex.axis = 1.2, 
+%%      lwd = 2)
+%% lines(rep(deltahat, 2), 
+%%       c(0, ss1), 
+%%       lty=2,
+%%       lwd = 2)
+%% points(deltahat, 
+%%        ss1, 
+%%        pch=19, 
+%%        cex=1.2, 
+%%        col=1) 
+%% points(deltahat, 
+%%        0, 
+%%        pch=19, 
+%%        cex=1.2, 
+%%        col=2) 
+%% lines(c(0, deltahat), 
+%%       rep(ss1, 2), 
+%%       lty = 2,
+%%       col = 1, 
+%%       lwd = 2)
+%% axis(2, 
+%%      at=ss1, 
+%%      label=round(ss1), 
+%%      col=1, 
+%%      col.axis=1, 
+%%      cex.axis = 1.2)
 
-\begin{frame}{Incorporation of uncertainty}
-\begin{block}{Design prior}
-\begin{itemize}
-\item{\color{red} \emph{Conditional}}: ignores uncertainty of original study
-\item {\color{red} \emph{Predictive}}: reflects that there is 
-uncertainty about the true effect after the original experiment
-\end{itemize}
-\end{block}
-\end{frame}
-
-\begin{frame}{Power of the two-trials rule} 
-  \framesubtitle{in absolute terms}
-  \begin{block}{Conditional design prior}
-    \begin{eqnarray*}
-  \mbox{Power} = \Phi\left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)
-    \end{eqnarray*}
-  \end{block}
-  \pause
-    \begin{block}{Predictive design prior}
-    \begin{eqnarray*}
-   \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{n_o}{n_o + n_r}}}
-   \left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)\right)
-    \end{eqnarray*}
-  \end{block}
-\end{frame}
+%% plotCI(x = deltahat,
+%%        y = 0, 
+%%        li = quantile(deltahat2, 0.025), 
+%%        ui = quantile(deltahat2, 0.975),
+%%        col=2, lwd=2, add=TRUE, err="x")
 
 
-\begin{frame}{Power of the two-trials rule} 
-  \framesubtitle{in relative terms}
-  \begin{block}{Conditional design prior}
-    \begin{eqnarray*}
-  \mbox{Power} = \Phi\left(z_o \sqrt{c} - z_{1- \alpha}\right)
-    \end{eqnarray*}
-  \end{block}
-  \pause
-    \begin{block}{Predictive design prior}
-    \begin{eqnarray*}
-   \mbox{Power} = \Phi\left({\color{red} \frac{1}{\sqrt{c+1}}}
-   \left(z_o \sqrt{c} - z_{1- \alpha}\right)\right)
-    \end{eqnarray*}
-  \end{block}
-\end{frame}
+%% legend("topright", 
+%%        "Power = 95%", 
+%%        bty = "n",
+%%        cex = 1.75)
+
+%% @
+%% \end{frame}
+
+%% \begin{frame}{Incorporation of uncertainty}
+%% <<echo = F>>=
+%% set.seed(12345)
+%% nsim <- 100000
+%% deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+%% ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+%% library(gplots)
+%% par(las=1)
+
+%% plot(grid, 
+%%      ss, 
+%%      type="l", 
+%%      xlab="Original effect estimate", 
+%%      ylab="Replication sample size", 
+%%      ylim=c(0, 800), 
+%%      cex.lab = 1.5, 
+%%      cex.axis = 1.2, 
+%%      lwd = 2)
+%% lines(rep(deltahat, 2), 
+%%       c(0, ss1), 
+%%       lty=2,
+%%       lwd = 2)
+%% points(deltahat, 
+%%        ss1, 
+%%        pch=19, 
+%%        cex=1.2, 
+%%        col=1) 
+%% points(deltahat, 
+%%        0, 
+%%        pch=19, 
+%%        cex=1.2, 
+%%        col=2) 
+%% points(min(grid), 
+%%        mean(ss2), 
+%%        pch=19, 
+%%        cex=1.2, 
+%%        col=2) 
+%% lines(c(0, deltahat), 
+%%       rep(ss1, 2), 
+%%       lty = 2,
+%%       col = 1, 
+%%       lwd = 2)
+%% axis(2, 
+%%      at=ss1, 
+%%      label=round(ss1), 
+%%      col=1, 
+%%      col.axis=1, 
+%%      cex.axis = 1)
+
+%% plotCI(x = deltahat, y=0, li=quantile(deltahat2, 0.025), ui = quantile(deltahat2, 0.975),
+%%        col=2, lwd=2, add=TRUE, err="x")
+
+%% plotCI(x = min(grid), y=mean(ss2), li=quantile(ss2, 0.025), ui = quantile(ss2, 0.975),
+%%        col=2, lwd=2, add=TRUE, err="y")
+%% lines(rep(quantile(deltahat2, 0.025), 2), 
+%%       c(0, quantile(ss2, 0.975)), 
+%%       lty=2, col=2,  
+%%       lwd = 2)
+%% lines(rep(quantile(deltahat2, 0.975), 2), 
+%%       c(0, quantile(ss2, 0.025)), 
+%%       lty=2, col=2, 
+%%       lwd = 2)
+%% lines(c(0, quantile(deltahat2, 0.975)), 
+%%       rep(quantile(ss2, 0.025), 2), 
+%%       lty=2, 
+%%       col=2, 
+%%       lwd = 2)
+%% lines(c(0, quantile(deltahat2, 0.025)), 
+%%       rep(quantile(ss2, 0.975), 2), 
+%%       lty =2, 
+%%       col=2, 
+%%       lwd = 2)
+%% axis(2, 
+%%      at=mean(ss2), 
+%%      label=round(mean(ss2)), 
+%%      col = 2, 
+%%      col.axis = 2, 
+%%      cex.axis = 1.2)
+
+%% legend("topright", 
+%%        "Power = 95%", 
+%%        bty = "n",
+%%        cex = 1.75)
+
+%% @
+%% \end{frame}
 
 
-\begin{frame}{Power of the two-trials rule} 
-  \framesubtitle{with shrinkage}
-  \begin{block}{Conditional design prior}
-    \begin{eqnarray*}
-  \mbox{Power} = \Phi\left({\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)
-    \end{eqnarray*}
-  \end{block}
-  \pause
-    \begin{block}{Predictive design prior}
-    \begin{eqnarray*}
-   \mbox{Power} = \Phi\left({\color{black} \frac{1}{\sqrt{c+1}}}
-   \left( {\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)\right)
-    \end{eqnarray*}
-  \end{block}
-\end{frame}
+%% \begin{frame}{Incorporation of uncertainty}
+%% \begin{block}{Design prior}
+%% \begin{itemize}
+%% \item{\color{red} \emph{Conditional}}: ignores uncertainty of original study
+%% \item {\color{red} \emph{Predictive}}: reflects that there is 
+%% uncertainty about the true effect after the original experiment
+%% \end{itemize}
+%% \end{block}
+%% \end{frame}
+
+%% \begin{frame}{Power of the two-trials rule} 
+%%   \framesubtitle{in absolute terms}
+%%   \begin{block}{Conditional design prior}
+%%     \begin{eqnarray*}
+%%   \mbox{Power} = \Phi\left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)
+%%     \end{eqnarray*}
+%%   \end{block}
+%%   \pause
+%%     \begin{block}{Predictive design prior}
+%%     \begin{eqnarray*}
+%%    \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{n_o}{n_o + n_r}}}
+%%    \left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)\right)
+%%     \end{eqnarray*}
+%%   \end{block}
+%% \end{frame}
 
 
-\begin{frame}
-\section{Exercise 2 -- Design of replication studies}
-  % \begin{block}{}
-  \begin{center}
-  \color{uzh@blue}{\Large \textbf{Design based on replication success 
-  (the sceptical $p$-value)}}
-   \end{center}
-  % \end{block}
-\end{frame}
+%% \begin{frame}{Power of the two-trials rule} 
+%%   \framesubtitle{in relative terms}
+%%   \begin{block}{Conditional design prior}
+%%     \begin{eqnarray*}
+%%   \mbox{Power} = \Phi\left(z_o \sqrt{c} - z_{1- \alpha}\right)
+%%     \end{eqnarray*}
+%%   \end{block}
+%%   \pause
+%%     \begin{block}{Predictive design prior}
+%%     \begin{eqnarray*}
+%%    \mbox{Power} = \Phi\left({\color{red} \frac{1}{\sqrt{c+1}}}
+%%    \left(z_o \sqrt{c} - z_{1- \alpha}\right)\right)
+%%     \end{eqnarray*}
+%%   \end{block}
+%% \end{frame}
 
-\begin{frame}{Power for replication success}
-  \begin{block}{Conditional design prior}
-    \begin{eqnarray*}
-    \mbox{Power} = \Phi\left( z_o \sqrt{c} (1 - \dmin)\right)
-    \end{eqnarray*}
-  \end{block}
+
+%% \begin{frame}{Power of the two-trials rule} 
+%%   \framesubtitle{with shrinkage}
+%%   \begin{block}{Conditional design prior}
+%%     \begin{eqnarray*}
+%%   \mbox{Power} = \Phi\left({\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)
+%%     \end{eqnarray*}
+%%   \end{block}
+%%   \pause
+%%     \begin{block}{Predictive design prior}
+%%     \begin{eqnarray*}
+%%    \mbox{Power} = \Phi\left({\color{black} \frac{1}{\sqrt{c+1}}}
+%%    \left( {\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)\right)
+%%     \end{eqnarray*}
+%%   \end{block}
+%% \end{frame}
+
+
+%% \begin{frame}
+%% \section{Exercise 2 -- Design of replication studies}
+%%   % \begin{block}{}
+%%   \begin{center}
+%%   \color{uzh@blue}{\Large \textbf{Design based on replication success 
+%%   (the sceptical $p$-value)}}
+%%    \end{center}
+%%   % \end{block}
+%% \end{frame}
+
+%% \begin{frame}{Power for replication success}
+%%   \begin{block}{Conditional design prior}
+%%     \begin{eqnarray*}
+%%     \mbox{Power} = \Phi\left( z_o \sqrt{c} (1 - \dmin)\right)
+%%     \end{eqnarray*}
+%%   \end{block}
   
-  \pause
+%%   \pause
   
-    \begin{block}{Predictive design prior}
-    \begin{eqnarray*}
-    \mbox{Power} = \Phi\left({\color{red} \frac{1}{\sqrt{c + 1}}}
-    \left(z_o \sqrt{c} (1 - \dmin)\right)\right)
-    \end{eqnarray*}
-  \end{block}
+%%     \begin{block}{Predictive design prior}
+%%     \begin{eqnarray*}
+%%     \mbox{Power} = \Phi\left({\color{red} \frac{1}{\sqrt{c + 1}}}
+%%     \left(z_o \sqrt{c} (1 - \dmin)\right)\right)
+%%     \end{eqnarray*}
+%%   \end{block}
+%% \end{frame}
+
+\begin{frame}{}
+\begin{minipage}[t][5cm][t]{\textwidth}
+  \centering
+  \includegraphics[width=0.8\textwidth]{images_presentation/osc2015.png}
+\end{minipage}
+
+  
 \end{frame}
 
 \begin{frame}{Conclusion/Outlook}
