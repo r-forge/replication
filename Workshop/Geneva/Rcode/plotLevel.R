@@ -370,7 +370,7 @@ plotLevel <- function(c = Inf,
       }
       if(method=="meta"){
         zalpha <- qnorm(p = alpha^2, lower.tail = FALSE)
-        d <- (sqrt(2)*zalpha/zo-1)/sqrt(c)
+        d <- zalpha*sqrt(c + 1)/(c*zo) - 1/c
       }
       return(d)
     }
