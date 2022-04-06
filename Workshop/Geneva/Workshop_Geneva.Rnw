@@ -217,6 +217,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 
 \begin{frame}[fragile]{Data sets}
 <<eval=FALSE, size = "small" >>=
+data("RProjects")
 ?RProjects # Documentation
 @
 \begin{block}{Most important variables}
