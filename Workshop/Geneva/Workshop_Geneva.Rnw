@@ -141,7 +141,11 @@ plot_df <- data.frame(Study = c("Original study",
   \\~\\
   {\LARGE Analysis of replication studies}
    \end{center}
-  % \end{block}
+     \begin{center}
+{\scriptsize Solutions and slides available at}
+\url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}
+  \end{center}
+
 \end{frame}
 
 
