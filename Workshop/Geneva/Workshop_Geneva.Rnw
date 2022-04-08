@@ -255,14 +255,14 @@ c <- study$se_fiso^2/study$se_fisr^2
 << size = "small" >>=
 RProjects$zo <- RProjects$fiso/RProjects$se_fiso
 RProjects$po1 <- z2p(RProjects$zo, 
-                     alternative = "one.sided")
+                     alternative = "greater")
 @
 \pause
 \item $z$-value $z_r$ or (one-sided) $p$-value $p_r$ of replication study
 << size = "small" >>=
 RProjects$zr <- RProjects$fisr/RProjects$se_fisr
 RProjects$pr1 <- z2p(RProjects$zr, 
-                     alternative = "one.sided")
+                     alternative = "greater")
 @
 \pause
 \item relative sample size (or variance ratio) $c = \sigma_o^2/\sigma_r^2 =  n_r/n_o$
@@ -288,9 +288,9 @@ RProjects$zo <- RProjects$fiso/RProjects$se_fiso
 RProjects$zr <- RProjects$fisr/RProjects$se_fisr
 RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 RProjects$po1 <- z2p(RProjects$zo, 
-                     alternative = "one.sided")
+                     alternative = "greater")
 RProjects$pr1 <- z2p(RProjects$zr, 
-                     alternative = "one.sided")
+                     alternative = "greater")
 @
 \end{block}
 \end{frame}
@@ -679,7 +679,7 @@ print(discTab2, include.rownames = FALSE, booktabs = TRUE,
   \makebox[1\textwidth][c]{  
   \resizebox{0.75\textwidth}{!} {
 <<echo = F>>=
-RProjects$po1 <- z2p(RProjects$fiso/RProjects$se_fiso, "one.sided")
+RProjects$po1 <- z2p(RProjects$fiso/RProjects$se_fiso, alternative = "greater")
 RProjects_sign <- which(RProjects$po1 < 0.025)
 dmin_sign <- effectSizeSignificance(zo = RProjects$zo[RProjects_sign],
                                     c = RProjects$c[RProjects_sign],
