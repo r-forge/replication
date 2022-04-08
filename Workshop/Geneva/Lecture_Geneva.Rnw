@@ -623,11 +623,10 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 \begin{frame}{3. Meta-analysis of effect estimates}
 \begin{minipage}[t][3cm][t]{\textwidth}
 \begin{block}{}
-{\large \textit{Is a meta-analytic estimate statistically significant?}} 
+{\large \textit{Is the combined effect estimate statistically significant?}} 
 
 $\rightarrow$ Which threshold? \\
-$\rightarrow$ {\color{tan3} one-sided $\alpha = 0.025$ or $0.0025$} used in 
-practice\\
+$\rightarrow$ {\color{tan3} one-sided $\alpha = 0.025$ or $0.0025$} is often used\\
 \end{block}
 \end{minipage}
 \begin{minipage}[t][6cm][t]{\textwidth}
@@ -636,7 +635,7 @@ var_ma_estimate <- with(study, 1/(1/se_fiso^2 + 1/se_fisr^2))
 ma_estimate <- with(study, fiso/se_fiso^2 + fisr/se_fisr^2)*
                var_ma_estimate
 p_ma <- pnorm(abs(ma_estimate/sqrt(var_ma_estimate)),
-              lower.tail = FALSE)*2
+              lower.tail = FALSE)
 ma_data <- data.frame(se = sqrt(var_ma_estimate),
                       ma_estimate = ma_estimate,
                       ma_estimate_r = tanh(ma_estimate),
@@ -881,12 +880,12 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 
 \begin{frame}[fragile]
 \frametitle{Type-I error rate and project power}
-%% \framesubtitle{Dashed line is the project power based on significant original studies}
+\framesubtitle{Two-trials rule vs.~sceptical $p$-value}
 
 \vspace{0cm}
 %%\hspace{-.5cm}
 
-<<typeIE-projPower-fixedc2b, cache = TRUE, echo=FALSE>>=
+<<typeIE-projPower-fixedc2b, fig.height = 5.5, cache = TRUE, echo=FALSE>>=
 
 myc <- exp(seq(log(0.25), log(10), length.out = 100))
 
@@ -1209,9 +1208,9 @@ box()
 \end{frame}
 
 \begin{frame}[fragile]{The relative effect size}
-  \framesubtitle{For the assessment of replication success}
+  \framesubtitle{Pyc and Rawson (2010) example}%% For the assessment of replication success}
   
-  \begin{block}{Pyc and Rawson (2010) example}
+%%  \begin{block}{Pyc and Rawson (2010) example}
 <<echo = FALSE>>=
 
 dmin2TR <-  effectSizeSignificance(zo = study$fiso/study$se_fiso, 
@@ -1231,26 +1230,26 @@ dminRS <- effectSizeReplicationSuccess(zo = study$fiso/study$se_fiso,
     \begin{itemize}
       \item {\color{foo} $d = \Sexpr{round(study$fisr, 2)}/\Sexpr{round(study$fiso, 2)} = 
       \Sexpr{round(study$fisr/study$fiso, 2)}$ }
-      \item Minimum relative effect size
+\visible<2->{\item Minimum relative effect size}
         \begin{itemize}
 \visible<2->{  
-          \item With the two-trials rule: \\
+          \item with the two-trials rule: \\
             \begin{center} 
             {\color{springgreen4} $\dmin = \Sexpr{round(dmin2TR, 2)} < \Sexpr{round(study$fisr/study$fiso, 2)}\quad$ 
               Replication Success} \end{center}}
 \visible<3->{  
-          \item With the 
+          \item with the 
           sceptical $p$-value: \begin{center} 
             {\color{red} $\dmin = \Sexpr{round(dminRS, 2)} > \Sexpr{round(study$fisr/study$fiso, 2)}\quad$  No Replication Success} 
             \end{center}}
         \end{itemize}
     \end{itemize}
-      \pause
-  \end{block}
+%%      \pause
+%%  \end{block}
   
 \visible<4->{  
       \begin{center}
-    {\color{darkred} Why do the two methods disagree?}
+    {\color{darkred} When do the two methods disagree?}
     \end{center}
     }
     
@@ -1599,13 +1598,13 @@ points(0.011, 0.38, col=4, pch=19)
 
 \begin{frame}{Shrinkage of effect estimates}
   \framesubtitle{Definition and example}
-  \begin{block}{Shrinkage}
+  \begin{block}{Shrinkage $s = 1 - d$}
     \begin{itemize}
       \item represents how much the {\color{red} replication effect estimate}
-      is decreased as compared to the {\color{red} original effect estimate}:
-      \begin{center}
-      \fbox{\color{foo} $s = 1 - d$}
-    \end{center}
+      is decreased as compared to the {\color{red} original effect estimate}.
+%%      \begin{center}
+%%      \fbox{\color{foo}Shrinkage $s = 1 - d$}
+%%    \end{center}
     \item Pyc and Rawson example: {\color{foo} $s = 1 - 
       \Sexpr{round(study$fisr/study$fiso, 2)} = 
       \Sexpr{round(1 -study$fisr/study$fiso, 2) }$}
@@ -1622,7 +1621,8 @@ points(0.011, 0.38, col=4, pch=19)
 \end{frame}
 
 \begin{frame}{Calibration of the sceptical $p$-value}
-    \vspace{1cm}
+\framesubtitle{Relative sample size $c \rightarrow \infty$}
+  \vspace{1cm}
   \begin{center}
     Bordeline significant original studies 
     {\color{red} ($p_o = \alpha$)}
@@ -2064,7 +2064,6 @@ axis(1, 0.025, 0.025, col.axis = "red", col.ticks = "red",
   \includegraphics[width=0.8\textwidth]{images_presentation/Circ.RCT-D.2021Top.png}\\[.5cm]
   \includegraphics[width=0.8\textwidth]{images_presentation/circulationaha.120.051718.fig02.png}
 \end{minipage}
-
 \end{frame}
 
 \begin{frame}[fragile]
@@ -2118,10 +2117,21 @@ title(main = ex)
 par(parOld)
 @
   }
-} 
+}
+
 \end{frame}
 
-\begin{frame}{Outlook}
+\begin{frame}{Automated reproducibility testing}
+\framesubtitle{\citet{Roper_etal2022}}
+  \vspace{-2cm}
+  \begin{minipage}[t][5cm][t]{\textwidth}
+  \centering
+  \includegraphics[width=0.8\textwidth]{images_presentation/Roper_etal2022Top.png}\\[.5cm]
+  \includegraphics[width=0.6\textwidth]{images_presentation/rsif20210821f01.jpg}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{Current work}
 
 \begin{itemize}
   \item Replication of \alert{non-inferiority} and \alert{equivalence} studies
