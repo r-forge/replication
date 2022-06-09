@@ -248,11 +248,8 @@ plotLevel <- function(c = Inf,
          col.axis = "black",
          cex.lab = 0.8, cex.axis = 0.8)
   } else if (method == "BFs"){
-    ## define x-values for whole range
-    pos <- seq(10e-200, myupper - eps, length.out = 1000)
-    zos <- p2z(pos, alternative = alternative)
-
-    ## compute BF level based on significance level
+    ## compute BF level based on significance level (with unit variance
+    ## recalibration)
     zalpha <- qnorm(p = 1 - level)
     if (type == "nominal") gammaS <- exp(1/2)*zalpha*exp(-0.5*zalpha^2)
     if (type == "golden") gammaS <- sqrt(2)*exp(-0.25*zalpha^2) ## gamma_S = BF0:S(zalpha, g = 1)
@@ -314,11 +311,7 @@ plotLevel <- function(c = Inf,
     polygon(x, y, col="lightgreen")
     lines(x, y, type = "l")
 
-  } else if (method == "BFr"){
-      ## define x-values for whole range
-      pos <- seq(10e-200, myupper - eps, length.out = 1000)
-    zos <- p2z(pos, alternative = alternative)
-
+    } else if (method == "BFr"){
       ## compute BF level based on significance level
       zalpha <- qnorm(p = 1 - level)
       gammaBFR <- exp(1/2)*zalpha*exp(-0.5*zalpha^2) ## nominal
@@ -370,7 +363,7 @@ plotLevel <- function(c = Inf,
       }
       if(method=="meta"){
         zalpha <- qnorm(p = alpha^2, lower.tail = FALSE)
-        d <- zalpha*sqrt(c + 1)/(c*zo) - 1/c
+        d <- (sqrt(2)*zalpha/zo-1)/sqrt(c)
       }
       return(d)
     }

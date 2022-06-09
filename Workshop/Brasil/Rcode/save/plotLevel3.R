@@ -83,8 +83,8 @@ dBFs <- function (zo, c = Inf, gamma, paradox = FALSE) {
           g/(1 + g) + 1/(1 - g)
         B <- (1 - g)/(1/c + g)/(1/c + 1)
         M <- (1/c + g)/(g - 1)
-        lower <- M - sqrt(A/B)
-        upper <- M + sqrt(A/B)
+        lower <- M - sqrt(abs(A/B))
+        upper <- M + sqrt(abs(A/B))
         if (g < 1) {
           if (paradox == FALSE) {
             dmin <- upper
@@ -145,17 +145,14 @@ plotLevel <- function(c = Inf,
   require(scales)
   require(ReplicationSuccess)
   par(las = 1, mgp = c(3, 0.6, 0), pty = "s")
-
-  myupper <- round(levelSceptical(level)*100)/100
-  myplim <- c(0, myupper)
-#  myplim <- c(0, 0.06)
+    
+  myplim <- c(0, round(levelSceptical(level)*100)/100)
   mydlim <- c(0, 3)
   alpha <- level
   eps <- 10e-10
   pos <- seq(10e-200, levelSceptical(level = level,
                                      alternative = alternative,
                                      type = type) - eps, length.out = 1000)
-##  pos <- seq(10e-200, myupper - eps, length.out = 1000)
   zos <- p2z(pos, alternative = alternative)
 
   ## plot skeleton for all methods
@@ -233,14 +230,14 @@ plotLevel <- function(c = Inf,
             col = scales::alpha("red", 0.4),
             lwd = 3)
 
-      polygon(c(0, pos, levelSceptical(max(pos)), levelSceptical(max(pos)), 0), c(0, minres, max(minres), 0, 0),
+      polygon(c(0, pos, max(pos), max(pos), 0), c(0, minres, max(minres), 0, 0),
               density = 5,
               border = NA,
               col = scales::alpha("red", 0.5))
       if(type=="nominal")
-        text(0.04, 1.5, labels="Never success", col=2)
+        text(8/5*alpha, 1.5, labels="Never success", col=2)
       if(type=="golden")
-        text(0.04, .5, labels="Never success", col=2)
+        text(8/5*alpha, .5, labels="Never success", col=2)
 
     }
     axis(3, at = level, label = as.character(format(level, nsmall=2, digits=2)),
@@ -248,11 +245,8 @@ plotLevel <- function(c = Inf,
          col.axis = "black",
          cex.lab = 0.8, cex.axis = 0.8)
   } else if (method == "BFs"){
-    ## define x-values for whole range
-    pos <- seq(10e-200, myupper - eps, length.out = 1000)
-    zos <- p2z(pos, alternative = alternative)
-
-    ## compute BF level based on significance level
+    ## compute BF level based on significance level (with unit variance
+    ## recalibration)
     zalpha <- qnorm(p = 1 - level)
     if (type == "nominal") gammaS <- exp(1/2)*zalpha*exp(-0.5*zalpha^2)
     if (type == "golden") gammaS <- sqrt(2)*exp(-0.25*zalpha^2) ## gamma_S = BF0:S(zalpha, g = 1)
@@ -274,17 +268,7 @@ plotLevel <- function(c = Inf,
               density = 5,
               border = NA,
               col = scales::alpha("red", 0.5))
-      ## xpoly2 <- c(alpha, levelSceptical(alpha), levelSceptical(alpha), alpha)
-      ## ypoly2 <- c(0, 0, 3, 3)
-      ## polygon(xpoly2, ypoly2,
-      ##         density = 5,
-      ##         border = NA,
-      ##         col = scales::alpha("red", 0.5))
-      axis(3, at = level, label = as.character(format(level, nsmall=2, digits=2)),
-           col = "black",
-           col.axis = "black",
-           cex.lab = 0.8, cex.axis = 0.8)
-      text(0.04, .5, labels="Never success", col=2)
+        text(8/5*alpha, .5, labels="Never success", col=2)
     }
 
     ## compute success regions for finite c
@@ -313,12 +297,11 @@ plotLevel <- function(c = Inf,
                rev(dminmax_c[limitInd2:limitIndc,2]), 100, 0)
     polygon(x, y, col="lightgreen")
     lines(x, y, type = "l")
+    axis(3, at = level, label = as.character(format(level, nsmall=2, digits=2)), col = "black",
+         col.axis = "black",
+         cex.axis=0.8, cex.lab = 0.8)
 
-  } else if (method == "BFr"){
-      ## define x-values for whole range
-      pos <- seq(10e-200, myupper - eps, length.out = 1000)
-    zos <- p2z(pos, alternative = alternative)
-
+    } else if (method == "BFr"){
       ## compute BF level based on significance level
       zalpha <- qnorm(p = 1 - level)
       gammaBFR <- exp(1/2)*zalpha*exp(-0.5*zalpha^2) ## nominal
@@ -355,7 +338,7 @@ plotLevel <- function(c = Inf,
               density = 5,
               border = NA,
               col = alpha("red", 0.5))
-      text(0.0425, 1.5, labels="Never success", col=2)
+      text((round(levelSceptical(level)*100)/100-alpha)/2, 1.5, labels="Never success", col=2)
       abline(v = alpha,
              col = alpha("grey"),
              lty = 2,
@@ -370,7 +353,7 @@ plotLevel <- function(c = Inf,
       }
       if(method=="meta"){
         zalpha <- qnorm(p = alpha^2, lower.tail = FALSE)
-        d <- zalpha*sqrt(c + 1)/(c*zo) - 1/c
+        d <- (sqrt(2)*zalpha/zo-1)/sqrt(c)
       }
       return(d)
     }
@@ -380,7 +363,7 @@ plotLevel <- function(c = Inf,
     if(method=="signif")
       posigplot <- seq(1e-20, level, length.out = 1000)
     if(method=="meta")
-      posigplot <- seq(1e-20, 0.06, length.out = 1000)
+      posigplot <- seq(1e-20, max(myplim), length.out = 1000)
     zosigplot <- p2z(p = posigplot, alternative = "one.sided")
 
     x <- c(posigplot, max(posigplot), rep(min(posigplot), 2))

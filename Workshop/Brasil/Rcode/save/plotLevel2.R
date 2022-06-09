@@ -113,31 +113,12 @@ dBFs <- function (zo, c = Inf, gamma, paradox = FALSE) {
   return(t(drangeVec))
 }
 
-## function to compute success region for replication BF in terms of
-## relative effect estimate d
-dBFr <- function(zo, c, gamma, paradox = FALSE) {
-  drangeVec <- mapply(FUN = function(zo, c, gamma, paradox) {
-    if (c == Inf) K <- 0
-    else  K <- (1 + (log(1 + c) - 2*log(gamma))/zo^2)*(1/c + 1)/c
-    H <- (1/c + 1)/(1 + c)
-    if (paradox == FALSE) {
-      dmin <- sqrt(K) - H
-      dmax <- Inf
-    } else {
-      dmin <- -Inf
-      dmax <- -sqrt(K) - H
-    }
-    return(c("dmin" = dmin, "dmax" = dmax))
-  }, zo, c, gamma, paradox)
-  return(t(drangeVec))
-}
-
 ## plot representing replication success/significance
 ## as a function of original $p$-value 
 plotLevel <- function(c = Inf,
                       level = 0.025,
                       type = "golden",
-                      method = "RS", # "RS", "signif", "meta", "BFr", or "BFs"
+                      method = "RS", # "RS", "signif", "meta", or "BFs"
                       alternative = "one.sided",
                       minRES = TRUE,
                       title = TRUE){ # showing minRES (only for RS)
@@ -146,16 +127,13 @@ plotLevel <- function(c = Inf,
   require(ReplicationSuccess)
   par(las = 1, mgp = c(3, 0.6, 0), pty = "s")
 
-  myupper <- round(levelSceptical(level)*100)/100
-  myplim <- c(0, myupper)
-#  myplim <- c(0, 0.06)
+  myplim <- c(0, 0.06)
   mydlim <- c(0, 3)
   alpha <- level
   eps <- 10e-10
   pos <- seq(10e-200, levelSceptical(level = level,
                                      alternative = alternative,
                                      type = type) - eps, length.out = 1000)
-##  pos <- seq(10e-200, myupper - eps, length.out = 1000)
   zos <- p2z(pos, alternative = alternative)
 
   ## plot skeleton for all methods
@@ -173,7 +151,6 @@ plotLevel <- function(c = Inf,
     if(method == "meta") title("Meta-analysis")
     if (method == "RS") title("Sceptical p-value")
     if (method == "BFs") title("Sceptical Bayes factor")
-    if (method == "BFr") title("Replication Bayes factor")
   }
 
   ## sceptical p-value
@@ -233,7 +210,7 @@ plotLevel <- function(c = Inf,
             col = scales::alpha("red", 0.4),
             lwd = 3)
 
-      polygon(c(0, pos, levelSceptical(max(pos)), levelSceptical(max(pos)), 0), c(0, minres, max(minres), 0, 0),
+      polygon(c(0, pos, max(pos), max(pos), 0), c(0, minres, max(minres), 0, 0),
               density = 5,
               border = NA,
               col = scales::alpha("red", 0.5))
@@ -248,14 +225,11 @@ plotLevel <- function(c = Inf,
          col.axis = "black",
          cex.lab = 0.8, cex.axis = 0.8)
   } else if (method == "BFs"){
-    ## define x-values for whole range
-    pos <- seq(10e-200, myupper - eps, length.out = 1000)
-    zos <- p2z(pos, alternative = alternative)
-
-    ## compute BF level based on significance level
+    ## compute BF level based on significance level (with unit variance
+    ## recalibration)
     zalpha <- qnorm(p = 1 - level)
-    if (type == "nominal") gammaS <- exp(1/2)*zalpha*exp(-0.5*zalpha^2)
-    if (type == "golden") gammaS <- sqrt(2)*exp(-0.25*zalpha^2) ## gamma_S = BF0:S(zalpha, g = 1)
+    gammaS <- exp(1/2)*zalpha*exp(-0.5*zalpha^2) ## gamma_S = BF0:S(zalpha, g = 1
+##     gammaS <- sqrt(2)*exp(-0.25*zalpha^2) ## gamma_S = BF0:S(zalpha, g = 1
 
     ## compute success region for c = infty
     if(minRES == TRUE){
@@ -274,17 +248,7 @@ plotLevel <- function(c = Inf,
               density = 5,
               border = NA,
               col = scales::alpha("red", 0.5))
-      ## xpoly2 <- c(alpha, levelSceptical(alpha), levelSceptical(alpha), alpha)
-      ## ypoly2 <- c(0, 0, 3, 3)
-      ## polygon(xpoly2, ypoly2,
-      ##         density = 5,
-      ##         border = NA,
-      ##         col = scales::alpha("red", 0.5))
-      axis(3, at = level, label = as.character(format(level, nsmall=2, digits=2)),
-           col = "black",
-           col.axis = "black",
-           cex.lab = 0.8, cex.axis = 0.8)
-      text(0.04, .5, labels="Never success", col=2)
+        text(0.04, .5, labels="Never success", col=2)
     }
 
     ## compute success regions for finite c
@@ -314,39 +278,6 @@ plotLevel <- function(c = Inf,
     polygon(x, y, col="lightgreen")
     lines(x, y, type = "l")
 
-  } else if (method == "BFr"){
-      ## define x-values for whole range
-      pos <- seq(10e-200, myupper - eps, length.out = 1000)
-    zos <- p2z(pos, alternative = alternative)
-
-      ## compute BF level based on significance level
-      zalpha <- qnorm(p = 1 - level)
-      gammaBFR <- exp(1/2)*zalpha*exp(-0.5*zalpha^2) ## nominal
-
-      ## compute success regions for finite c
-      where <- which.min((pos - 0.005)^2)
-      dminmax_cmax <- dBFr(zo = zos, c = max(c), gamma = gammaBFR, paradox =  FALSE)
-      xpoly <- c(pos, max(pos), rep(min(pos), 2))
-      ypoly <- c(dminmax_cmax[,1], rep(max(mydlim), 2), min(dminmax_cmax[,1]))
-      polygon(xpoly, ypoly, col="lightgreen")
-
-      for(i in 1:length(c)){
-        dminmax_c <- dBFr(zo = zos, c = c[i], gamma = gammaBFR, paradox =  FALSE)
-
-        x <- c(0, pos, max(pos))
-        y <- c(0, dminmax_c[,1], 0)
-        lines(x, y,
-              type = "l",
-              lty = 1,
-              col = scales::alpha("black", 0.5))
-        text(pos[where],
-             dBFr(zo = zos[where], c = c[i], gamma = gammaBFR, paradox =  FALSE),
-             paste0("c = ", as.character(c[i])),
-             col = scales::alpha("black", 0.5),
-             cex = 0.8)
-
-      }
-
     } else {
 
     if(method=="signif"){
@@ -370,7 +301,7 @@ plotLevel <- function(c = Inf,
       }
       if(method=="meta"){
         zalpha <- qnorm(p = alpha^2, lower.tail = FALSE)
-        d <- zalpha*sqrt(c + 1)/(c*zo) - 1/c
+        d <- (sqrt(2)*zalpha/zo-1)/sqrt(c)
       }
       return(d)
     }
