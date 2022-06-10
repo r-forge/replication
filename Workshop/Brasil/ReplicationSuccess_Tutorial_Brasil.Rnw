@@ -1318,9 +1318,9 @@ dminRS <- effectSizeReplicationSuccess(zo = study$fiso/study$se_fiso,
 
 
 <<echo=FALSE>>=
-mygrey <- "gray30"
+mygrey <- "gray30"      
 ## source("Rcode/plotAncred.R")
-source("Rcode/plotLevel.R")
+source("Rcode/plotLevel.R")      
 source("Rcode/plotLevel2.R")
 @
 
@@ -1609,6 +1609,41 @@ points(0.011, 0.38, col=4, pch=19)
 }
 \end{frame}
 
+\begin{frame}[fragile]{Comparison of success regions}
+\framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d > \dmin$}
+\end{center}
+\vspace{-1cm}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
+<<golden-controlled, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
+mycval <- c(0.5, 1, 2, 9, 1000)
+par(mfrow = c(1,2))
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "golden",
+          alternative = "one.sided",
+          minRES = T, # not showing minres
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
+
+
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "controlled",  
+          alternative = "one.sided",
+          minRES = F, # not showing minres 
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)   
+  
+@
+  } 
+}
+\end{frame}
 
 \begin{frame}{Shrinkage of effect estimates}
   \framesubtitle{Definition and example}
@@ -1855,13 +1890,14 @@ For all studies from the replication projects investigate
 
 For all studies from the replication projects investigate
   \begin{block}{Exercise 1.3}
-    Compute the one-sided \textbf{sceptical $p$-value}. How many replication 
+    Compute the one-sided \textbf{sceptical $p$-value} (with golden 
+    and controlled recalibration). How many replication 
     studies are successful at $0.025$? 
-      Use the function \texttt{pSceptical()}
+      Use the function \texttt{pSceptical()}. 
   \end{block}
   \begin{block}{Exercise 1.4}
     Look closer at the studies which show \textbf{discrepancies} in terms of replication 
-    success based on the two-trials rule and the sceptical $p$-value. How do their 
+    success based on the two-trials rule and the sceptical $p$-value (golden). How do their 
     effect estimates and sample sizes compare?
   \end{block}
 \end{frame}
@@ -2049,14 +2085,25 @@ for (p in unique(RProjects$project)) {
 RProjects$ps <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
                                            alternative = "one.sided",
                                            type = "golden"))
+RProjects$psC <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
+                                           alternative = "one.sided",
+                                           type = "controlled"))
 
 ## compute for all projects
 RProjects$pSsuccess <- RProjects$ps < 0.025
+RProjects$pSsuccessC <- RProjects$psC < 0.025
 allpsDF <- data.frame(project = "all", success = mean(RProjects$pSsuccess)*100, 
                       type = "psceptical",
                       successFormat = paste0(round(mean(RProjects$pSsuccess)*100, 0),
                                              "\\% (", sum(RProjects$pSsuccess), 
                                              "/", length(RProjects$pSsuccess), ")"))
+
+allpsDFC <- data.frame(project = "all", success = mean(RProjects$pSsuccessC)*100, 
+                      type = "pscepticalC",
+                      successFormat = paste0(round(mean(RProjects$pSsuccessC)*100, 0),
+                                             "\\% (", sum(RProjects$pSsuccessC), 
+                                             "/", length(RProjects$pSsuccessC), ")"))
+
 
 ## compute for each project
 psList <- lapply(X = unique(RProjects$project), FUN = function(p) {
@@ -2069,22 +2116,61 @@ psList <- lapply(X = unique(RProjects$project), FUN = function(p) {
 })
 psDF <- do.call("rbind", psList)
 
+# also for type = "controlled
+psList <- lapply(X = unique(RProjects$project), FUN = function(p) {
+  data_project <- subset(RProjects, project == p)
+  data.frame(project = p, success = mean(data_project$pSsuccessC)*100, 
+             type = "pscepticalC",
+             successFormat = paste0(round(mean(data_project$pSsuccessC)*100, 0), 
+                                    "\\% (", sum(data_project$pSsuccessC), "/",
+                                    length(data_project$pSsuccessC), ")"))
+})
+psDFC <- do.call("rbind", psList)
+
 ## table
-dfTable3 <- rbind(psDF, allpsDF)[,c(1, 4)]
+dfTable3 <- cbind(rbind(psDF, allpsDF), rbind(psDFC, allpsDFC))[,c(1, 4, 8)]
 Table3 <- xtable(dfTable3, digits = 1)
-colnames(Table3) <- c("Project", "sceptical $p$-value $< 0.025$")
+colnames(Table3) <- c("Project", "$p_S$ (golden) $< 0.025$", 
+                      "$p_S$ (controlled) $< 0.025$")
 print(Table3, include.rownames = FALSE, booktabs = TRUE,
       add.to.row = list(pos = list(4), command = "\\midrule \n"),
-      sanitize.text.function = function(x) {x})
+      sanitize.text.function = function(x) {x}, 
+      scalebox = '0.8')
 @
 \end{frame}
 
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+\framesubtitle{golden recalibration}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
   success <- data_project$ps < 0.025
+  col_success <- ifelse(success == FALSE, "#333333B3", "#8B0000B3")
+  title <- paste0(p, ": ", round(mean(success)*100, 0), "% (",
+                  sum(success), "/",  length(success), ")")
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
+       xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]), col = col_success, pch = 20,
+       cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
+  legend("topleft", c(expression(italic(p)[s] < 0.025),
+                      expression(italic(p)[s] >= 0.025)),
+         pch = 20, pt.cex = 2, cex = 1.4,
+         col = c("#8B0000B3", "#333333B3"), bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
+}
+@
+\end{frame}
+
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+\framesubtitle{controlled recalibration}
+<< echo = FALSE >>=
+par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  success <- data_project$psC < 0.025
   col_success <- ifelse(success == FALSE, "#333333B3", "#8B0000B3")
   title <- paste0(p, ": ", round(mean(success)*100, 0), "% (",
                   sum(success), "/",  length(success), ")")

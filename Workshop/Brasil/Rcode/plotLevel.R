@@ -154,6 +154,7 @@ plotLevel <- function(c = Inf,
   eps <- 10e-10
   pos <- seq(10e-200, levelSceptical(level = level,
                                      alternative = alternative,
+                                     c = c[length(c)],
                                      type = type) - eps, length.out = 1000)
 ##  pos <- seq(10e-200, myupper - eps, length.out = 1000)
   zos <- p2z(pos, alternative = alternative)
@@ -171,13 +172,26 @@ plotLevel <- function(c = Inf,
   if (title == TRUE) {
     if(method == "signif") title("Two-trials rule")
     if(method == "meta") title("Meta-analysis")
-    if (method == "RS") title("Sceptical p-value")
+    if (method == "RS") title(paste0("Sceptical p-value (", type, ")"))
     if (method == "BFs") title("Sceptical Bayes factor")
     if (method == "BFr") title("Replication Bayes factor")
   }
 
+
   ## sceptical p-value
   if(method == "RS"){
+    
+    if(type == "controlled"){
+      
+      resultsS <- matrix(NA, nrow = length(zos), ncol = length(c))
+      for(i in 1:length(c)){
+        resultsS[, i] <- effectSizeReplicationSuccess(zo = zos,
+                                                      c = c[i],
+                                                      level = level,
+                                                      alternative = alternative,
+                                                      type = "controlled")
+      }
+    } else {
 
     ## compute for c = infty
     minres <- effectSizeReplicationSuccess(zo = zos,
@@ -194,6 +208,7 @@ plotLevel <- function(c = Inf,
                                                     alternative = alternative,
                                                     type = type)
     }
+    }
 
     x <- c(pos, rep(min(pos), 2))
     z <- resultsS[, length(c)]
@@ -203,6 +218,8 @@ plotLevel <- function(c = Inf,
       text(0.009, 2.5, labels="Success", col="darkgreen")
     if(type == "golden")
       text(0.02, 2.5, labels="Success", col="darkgreen")
+  
+    if(type != "controlled")
     abline(v = c(alpha, levelSceptical(level = level,
                                        alternative = alternative,
                                        type = type)),
@@ -413,3 +430,4 @@ plotLevel <- function(c = Inf,
   ## surround with box
   box()
 }
+
