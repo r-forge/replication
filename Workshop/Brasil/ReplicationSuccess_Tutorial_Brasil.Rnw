@@ -901,9 +901,10 @@ library(ReplicationSuccess)
 
 alpha <- 0.025
 mythresholds <- c(levelSceptical(alpha, type = c("nominal")), 
-                levelSceptical(alpha, type = c("controlled")), 
+                levelSceptical(alpha, type = c("controlled"), c = 1), 
                 levelSceptical(alpha, type = c("liberal")), 
                 levelSceptical(alpha, type = c("golden"))) 
+mytypes <- c("nominal", "controlled", "liberal", "golden")
 
 ## thresholds for one-sided sceptical p-value
 
@@ -919,7 +920,7 @@ y1 <- alpha
 typeI1 <- typeIError(y1)
 
 ## controlled
-y2 <- levelSceptical(alpha, type = c("controlled"))
+y2 <- levelSceptical(alpha, type = c("controlled"), c = 1)
 typeI2 <- typeIError(y2)
                          
 ## liberal
@@ -931,7 +932,10 @@ y4 <- levelSceptical(level = alpha, alternative = "one.sided", type = "golden")
 typeI4 <- typeIError(y4)
 z4 <- p2z(y4, alternative="one.sided")
 
-T1E1 <- T1E2 <- POWER1 <- POWER2 <- matrix(NA, ncol = length(mythresholds), nrow = length(myc))
+# T1E1 <- T1E2 <- POWER1 <- POWER2 <- matrix(NA, ncol = length(mythresholds), nrow = length(myc))
+T1E1 <- T1E2 <- POWER1 <- POWER2 <- matrix(NA, ncol = length(mytypes), nrow = length(myc))
+
+
 ## one-sided level for two-trials
 newalpha <- alpha^2
 
@@ -939,41 +943,60 @@ newalpha <- alpha^2
 myorigPower <- 0.9
 
 
-for(i in 1:length(mythresholds)){
-    for(j in 1:length(myc)){
-        T1E1[j, i] <- integrate(f, 
-                                lower = qnorm(mythresholds[i], 
-                                                 lower.tail = FALSE), 
-                                upper = Inf, 
-                                level = mythresholds[i], 
-                                c = myc[j])$value
-        T1E2[j, i] <- integrate(f, 
-                                lower = qnorm(alpha, 
-                                                 lower.tail = FALSE), 
-                                upper = Inf, 
-                                level = mythresholds[i], 
-                                c = myc[j])$value
-        
-        POWER1[j, i] <- integrate(f2, 
-                                  lower = qnorm(mythresholds[i], 
-                                                lower.tail = FALSE), 
-                                  upper = Inf,
-                                  level = mythresholds[i], 
-                                  c = myc[j], 
-                                  sig.level = alpha, 
-                                  origPower = myorigPower)$value
-        POWER2[j, i] <- integrate(f2, 
-                                  lower = qnorm(alpha, 
-                                                lower.tail = FALSE), 
-                                  upper = Inf,
-                                  level = mythresholds[i], 
-                                  c = myc[j], 
-                                  sig.level = alpha, 
-                                  origPower = myorigPower)$value
-    }
+for (i in 1:length(mytypes)){
+  for (j in 1:length(myc)){
+    T1E1[j, i] <- T1EpSceptical(level = alpha, 
+                                c = myc[j], 
+                                type = mytypes[i], 
+                                alternative = "greater")
+    POWER1[j, i] <- PPpSceptical(level = alpha, 
+                                 c = myc[j], 
+                                 alpha = alpha, 
+                                 power = myorigPower, 
+                                 alternative = "greater", 
+                                 type = mytypes[i])
+  }
 }
 
-colnames(T1E1) <- colnames(T1E2) <- colnames(POWER1) <-  colnames(POWER2) <- as.character(round(mythresholds, 3))
+
+# CM: we only need this code if we want to restrict to significant 
+# original studies only - otherwise we do it with functions from pkg
+
+# for(i in 1:length(mythresholds)){
+#     for(j in 1:length(myc)){
+#         T1E1[j, i] <- integrate(f, 
+#                                 lower = qnorm(mythresholds[i], 
+#                                                  lower.tail = FALSE), 
+#                                 upper = Inf, 
+#                                 level = mythresholds[i], 
+#                                 c = myc[j])$value
+#         T1E2[j, i] <- integrate(f, 
+#                                 lower = qnorm(alpha, 
+#                                                  lower.tail = FALSE), 
+#                                 upper = Inf, 
+#                                 level = mythresholds[i], 
+#                                 c = myc[j])$value
+#         
+#         POWER1[j, i] <- integrate(f2, 
+#                                   lower = qnorm(mythresholds[i], 
+#                                                 lower.tail = FALSE), 
+#                                   upper = Inf,
+#                                   level = mythresholds[i], 
+#                                   c = myc[j], 
+#                                   sig.level = alpha, 
+#                                   origPower = myorigPower)$value
+#         POWER2[j, i] <- integrate(f2, 
+#                                   lower = qnorm(alpha, 
+#                                                 lower.tail = FALSE), 
+#                                   upper = Inf,
+#                                   level = mythresholds[i], 
+#                                   c = myc[j], 
+#                                   sig.level = alpha, 
+#                                   origPower = myorigPower)$value
+#     }
+# }
+
+colnames(T1E1) <- colnames(T1E2) <- colnames(POWER1) <-  colnames(POWER2) <- as.character(mytypes)
 rownames(T1E1) <- rownames(T1E2) <- rownames(POWER1) <- as.character(round(myc, 3))
 
 
@@ -984,7 +1007,7 @@ rownames(T1E1) <- rownames(T1E2) <- rownames(POWER1) <- as.character(round(myc, 
 
 ## grey-scale color-scale
 greycols <- c("darkgrey", "orange", 6) ##adjustcolor(col = c("#1B1B1B", "#6D6D6D", "#BEBEBE"), alpha.f = 0.95)
-greycols <- c("orange", 6) ##adjustcolor(col = c("#1B1B1B", "#6D6D6D", "#BEBEBE"), alpha.f = 0.95)
+greycols <- c("black", "orange", "red") ##adjustcolor(col = c("#1B1B1B", "#6D6D6D", "#BEBEBE"), alpha.f = 0.95)
 # greycols <- grey.colors(n = 3, start = 0.01, end = 0.88, alpha = 0.95)
 
 myylim <- c(0, 0.0009)*100
@@ -999,8 +1022,8 @@ myylim <- c(0, 0.0009)*100
  
 mycex <- 0.8
 
-sel = c(1,4) ## select nominal and golden threshold
-sel = c(4) ## select golden level
+sel = c(1, 2, 4) ## select nominal and controlled and golden
+sel = c(2, 4) ## select golden level and controlled
 T1E1_s <- T1E1[, sel]
 ## T1Es_s <- T1Es[, sel]
 ## T1E_s <- T1E[, sel]
@@ -1033,9 +1056,9 @@ abline(v = 1, lty = 2, col = "black")
 
 ## w <-  which(T1E1_s[, 1] < alpha^2)
 ## w.pos <- myc[w[1]]
-lines(range(myc), rep(alpha^2*100, 2), lty = 1, lwd = 2, 
+lines(range(myc), rep(alpha^2*100, 2), lty = 2, lwd = 2, 
        # col = 6)
-      col = greycols[2])
+      col = greycols[3])
 ## abline(v = w.pos, lty = 2, 
 ##        col = "grey")
 
@@ -1051,9 +1074,10 @@ lines(range(myc), rep(alpha^2*100, 2), lty = 1, lwd = 2,
 legend("topright", 
        # c("nominal", "controlled", "liberal", "golden"), 
 ##       rev(c("nominal", "golden", "2TR")),
-       rev(c("sceptical p-value", "two-trials rule")),
+       c(expression(paste(p[S], " controlled")),
+             expression(paste(p[S], " golden")),"two-trials rule"),
        # col = mycol[sel], 
-       col = rev(greycols),
+       col = greycols,
        lty = 1, 
        lwd = 2, 
        cex = 0.9*mycex, 
@@ -1085,8 +1109,8 @@ axis(4,
      as.character(format(100*typeI4, digits = 2, nsmall = 2, 
                          scientific = FALSE)), 
      col = greycols[1], # mycol[1], 
-     col.ticks = greycols[1], # mycol[1],  
-     col.axis = greycols[1], # mycol[1], 
+     col.ticks = greycols[2], # mycol[1],  
+     col.axis = greycols[2], # mycol[1], 
      cex.axis = mycex,
      tck = -0.025)
 lines(c(1, 10), c(100*typeI4, 100*typeI4), col = greycols[1], # mycol[1], 
@@ -1100,9 +1124,9 @@ axis(4,
      at = 100*alpha^2, 
      as.character(round(100*alpha^2,4)), 
      cex.axis = mycex, 
-     col = greycols[2], # 6, ## mycol[2], 
-     col.axis = greycols[2], # 6, ## mycol[2], 
-     col.ticks = greycols[2], # 6 ## mycol[2]
+     col = greycols[3], # 6, ## mycol[2], 
+     col.axis = greycols[3], # 6, ## mycol[2], 
+     col.ticks = greycols[3], # 6 ## mycol[2]
      tck = -0.025) 
 box()
 
@@ -1152,7 +1176,7 @@ powerSig <- myorigPower*pnorm(sqrt(myc)*mu-zalpha)
 
 abline(h = myorigPower*100, lty = 2, 
        col = "grey")
-lines(myc, powerSig*100, col=greycols[2], lty=1, lwd=2)
+lines(myc, powerSig*100, col=greycols[3], lty=1, lwd=2)
 ## lines(myc, 100*POWER2[,4], col=greycols[1], lty=5, lwd=2)
 
 
