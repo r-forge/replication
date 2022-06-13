@@ -1,0 +1,3419 @@
+%\documentclass[english, handout]{beamer}
+% handout options: version without solutions for the participants
+\documentclass[english]{beamer}
+
+% Leos shortcuts
+\input{newCommands.tex}
+\def\SE{\mbox{se}}
+\def\PE{\mbox{PE}}
+\def\OR{\mbox{OR}}
+\def\HR{\mbox{HR}}
+\def\RR{\mbox{RR}}
+\def\EF{\mbox{EF}}
+\def\RV{\mbox{RV}}
+\def\RD{\mbox{RD}}
+\def\ARR{\mbox{ARR}}
+\def\RRR{\mbox{RRR}}
+\def\NNT{\mbox{NNT}}
+% nicer tables
+\usepackage{booktabs}
+
+% define same colors as in plots
+\definecolor{purple3}{RGB}{125,38,205}
+\definecolor{springgreen4}{RGB}{0, 139, 69}
+\definecolor{Rred}{RGB}{255,0,0}
+\definecolor{tan3}{RGB}{205,133,63}
+\definecolor{foo}{rgb}{0.2,0.2,0.7}
+
+\usepackage{colortbl}
+\definecolor{Gray}{gray}{0.85}
+\newcolumntype{a}{>{\columncolor{Gray}}c}
+% citing
+\usepackage[round]{natbib}
+
+% biostat beamer theme
+\usepackage{beamerthemebiostat}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{wasysym}
+\definecolor{darkred}{rgb}{0.8,0,0}
+\usepackage{color}
+\definecolor{magenta}{cmyk}{0,1,0,0}
+\newcommand{\dmin}{d_{\tiny \mbox{min}}}
+\setbeamertemplate{footline}[page number]
+
+
+% hyperref options
+\usepackage{hyperref}  
+\hypersetup{
+  bookmarksopen=true, 
+  breaklinks=true,
+  pdftitle={Design and Analysis of Replication Studies}, 
+  pdfauthor={Leonhard Held, Charlotte Micheloud, Samuel Pawel},
+  colorlinks=false
+}
+
+% Installation of non-free fonts in ubuntu 18.04:
+% cd Downloads/
+% wget -q https://www.tug.org/fonts/getnonfreefonts/install-getnonfreefonts
+% sudo texlua ./install-getnonfreefonts
+% sudo getnonfreefonts --sys -a
+\def\uzhunit{}
+\def\uzhunitext{}
+\title{\centering The statistical analysis of replication success}
+\author{\centering \bf  Leonhard Held}
+\institute{University of Zurich}
+
+  
+\date{Feb 6-9, 2022}
+
+
+% ----------------------------------------------------------------------------
+<< include = FALSE, purl = FALSE >>=
+library(knitr)
+library(scales)
+opts_chunk$set(fig.path = "figures/fig", 
+               cache = TRUE, 
+               fig.align = "center",
+               fig.height = 8,
+               fig.width = 10,
+               dpi = 1000,
+               echo = TRUE,
+               size = "scriptsize",
+               warning = FALSE,
+               message = FALSE)
+@
+% ----------------------------------------------------------------------------
+
+\begin{document}
+
+\begin{frame}
+\vspace{1cm}
+\maketitle
+\vspace{-0.5cm}
+\begin{columns}
+  \begin{column}{0.5\textwidth}
+  \begin{center}
+\includegraphics[width=0.6\textwidth]{images_presentation/CRS.png}
+  \end{center}
+  \end{column}
+    \begin{column}{0.5\textwidth}
+  \includegraphics[width=0.8\textwidth]{images_presentation/logo.png}
+    \end{column}
+  \end{columns}
+    \begin{center}
+    {\color{darkred} 24th SINAPE, Gramado-RS}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\section{Introduction}
+  \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Introduction}} 
+   \end{center}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Replication studies}
+\begin{block}{Direct replication}
+  \begin{itemize}
+    \item Repeating original study using the same methodology
+    \item[$\rightarrow$] Tool to assess credibility of scientific discoveries
+    \item[$\rightarrow$] Regulatory requirement
+  \end{itemize}
+\end{block}
+\pause
+\begin{block}{Replication crisis}
+  \begin{itemize}
+    \item Low replicability of many scientific discoveries
+    \item[$\rightarrow$] Large-scale replication projects
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Large-scale replication projects}
+\begin{block}{}
+  \begin{itemize}
+    \item<1->                {2015: Reproducibility project psychology}
+    \item<2->                {2016: Experimental economics replication project}
+    \item<3->                {2018: Experimental philosophy replicability project}
+    \item<4->               {2018: Social sciences replication project}
+    \item<5->                {2021: Reproducibility Project: Cancer Biology}
+  \end{itemize}
+\end{block}
+\begin{minipage}[t][5cm][t]{\textwidth}
+  \centering
+  \only<1>{
+  \includegraphics[width=0.8\textwidth]{images_presentation/osc2015.png}
+  }
+  \only<2>{
+  \includegraphics[width=0.9\textwidth]{images_presentation/camerer2016.png}
+  }
+  \only<3>{
+  \includegraphics[width=0.6\textwidth]{images_presentation/cova2018.png}
+  }
+  \only<4>{
+  \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
+  }
+  \only<5>{
+  \includegraphics[width=0.8\textwidth]{images_presentation/errington2021.png}
+  }
+%%  \only<6>{
+%%  \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
+%%  }
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{The four horsemen of irreproducibility}
+%% \framesubtitle{Dorothy Bishop, Oxford Reproducibility Lecture  (2017)}
+\framesubtitle{Dorothy Bishop (2019) in Nature}
+%\vspace{-.5cm}
+\begin{multicols}{2}
+\begin{center}
+\begin{minipage}{7cm}
+\begin{center}
+\vspace{-1cm}
+%%\includegraphics[width=2.5cm]{figures/Bishop.jpg} \\[.5cm]
+    \includegraphics[width=7cm]{horsemen.jpg}\\
+%\hspace{-2cm}
+%%    \includegraphics[width=5cm]{figures/King1995Top2.pdf}
+\end{center}
+{\scriptsize $\qquad \quad$ Questionable research practices (QRPs)}
+\end{minipage}
+\end{center}
+   \hspace{2cm}
+  \begin{minipage}{3cm}
+\vspace{.5cm}
+\includegraphics[width=3cm]{Bishop.jpg}
+\end{minipage}
+\end{multicols}
+  
+\end{frame}
+\begin{frame}{Large-scale replication projects}
+\begin{block}{}
+  \begin{itemize}
+    \item<1-> \color<1>{gray}{2015: Reproducibility project psychology}
+    \item<1-> \color<1>{gray}{2016: Experimental economics replication project}
+    \item<1-> \color<1>{gray}{2018: Experimental philosophy replicability project}
+    \item<1-> \color<1>{red}{2018: Social sciences replication project}
+    \item<1-> \color<1>{gray}{2021: Reproducibility Project: Cancer Biology}
+  \end{itemize}
+\end{block}
+\begin{minipage}[t][5cm][t]{\textwidth}
+  \centering
+  \only<1>{
+  \includegraphics[width=0.7\textwidth]{images_presentation/camerer2018.png}
+  }
+\end{minipage}
+\end{frame}
+
+
+
+% CM: delete 
+<< size = "normalsize", eval = F>>=
+ library(ReplicationSuccess)
+ data("RProjects")
+ social <- subset(RProjects,
+                  project == "Social Sciences")
+ @
+
+
+\begin{frame}[fragile]{Social sciences replication project}
+  \framesubtitle{Correlation scale}
+<< echo = FALSE >>=
+library(ReplicationSuccess)
+library(ggplot2)
+data("RProjects")
+SSRP <- subset(RProjects, project == "Social Sciences")
+
+gg_r <-  ggplot(data = SSRP, aes(x = ro, y = rr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.7, size = 7, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = expression(paste("Original effect estimate ", r[o])), 
+       y = expression(paste("Replication effect estimate ", r[r]))) +
+  lims(x = c(-0.15, 1), y = c(-0.15, 1)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)); gg_r
+@
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Statistical framework of package}
+\begin{block}{}
+\begin{itemize}
+\item Effect estimates are assumed to be {\color{red} normally distributed} after suitable transformation \\
+$\rightarrow$ {\color{red} Fisher's $z$-transformation} for correlation 
+coefficients $r$ with (effective) sample size $n - 3$
+\end{itemize}
+\end{block}
+<< fig.height = 4.5, echo = FALSE>>=
+r <- seq(-1, 1, 0.001)
+ztrans_df <- data.frame(r, z = atanh(r))
+ggplot(data = ztrans_df, aes(x = r, y = z)) +
+  geom_abline(intercept = 0, slope = 1, lty = 2, size = 1,
+              alpha = 0.6) +
+  geom_line(size = 1) + 
+  labs(x = expression(paste("Correlation ", italic(r))), 
+       y = expression(paste("Fisher-", italic(z)))) +
+  theme_bw() +
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30))
+@
+\end{frame}
+
+\begin{frame}[fragile]{Social sciences replication project}
+  \framesubtitle{Fisher-$z$ scale}
+<< echo = FALSE >>=
+library(ReplicationSuccess)
+library(ggplot2)
+data("RProjects")
+SSRP <- subset(RProjects, project == "Social Sciences")
+
+gg_z <- ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.7, size = 7, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = expression(paste("Original effect estimate ", hat(theta)[o])), 
+       y = expression(paste("Replication effect estimate ", hat(theta)[r]))) +
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)); gg_z
+@
+\end{frame}
+
+
+\begin{frame}[fragile]{Correlation vs Fisher-$z$ scale}
+<< echo = FALSE >>=
+library(ReplicationSuccess)
+library(ggplot2)
+library(gridExtra)
+
+gg_r2 <- ggplot(data = SSRP, aes(x = ro, y = rr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.7, size = 5, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = "Original effect estimate", 
+       y = "Replication effect estimate") +
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 15), 
+        axis.title = element_text(size = 15)) + 
+  ggtitle("Correlation scale ") + 
+  theme(plot.title = element_text(color = "red", size = 25))
+
+gg_z2 <- ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.7, size = 5, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = "Original effect estimate", 
+       y = "Replication effect estimate") +
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 15), 
+        axis.title = element_text(size = 15)) +
+  ggtitle("Fisher-z scale") + 
+  theme(plot.title = element_text(color = "red", size = 25))
+
+grid.arrange(gg_r2, gg_z2, 
+             ncol = 2)
+@
+\end{frame}
+
+\begin{frame}{Social sciences replication project}
+  \framesubtitle{Pyc and Rawson (2010), Science}
+<< echo = FALSE >>=
+study <- subset(SSRP,
+                study == "Pyc and Rawson (2010), Science")
+
+ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.2, size = 7, shape = 21, 
+             fill = "midnightblue") +
+  geom_point(data = study,
+             alpha = 1, size = 7, shape = 21, 
+             fill = "red") +
+  
+   labs(x = expression(paste("Original effect estimate ", hat(theta)[o])), 
+       y = expression(paste("Replication effect estimate ", hat(theta)[r]))) +
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{frame}
+
+\begin{frame}{\citet{Pyc2010}. Science}
+\framesubtitle{Original discovery: ``Testing improves memory'' }
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+library(biostatUZH)
+options(scipen = 5)
+plot_df <- data.frame(Study = c("Original study", 
+                                "Replication study"),
+                      z = c(study$fiso, study$fisr),
+                      r = c(study$ro, study$rr),
+                      p = formatPval(x = c(study$po/2,
+                                           study$pr/2)),
+                      se = c(study$se_fiso, study$se_fisr),
+                      n = c(1/study$se_fiso^2 + 3, 
+                            1/study$se_fisr^2 + 3)) 
+study_plot <- ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  ylim(-0.05, 1) +
+   labs(x = " ", y = "Effect Size") + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+study_plot
+@
+\begin{center}
+\vspace{-.6cm}
+\hspace{.75cm}
+{\small
+\begin{tabular}{rcl}
+$n_o$ $\qquad$ & Sample size & $\qquad$ $n_r$ \\
+$\hat \theta_o$ $\qquad$ & Effect estimate & $\qquad$ $\hat \theta_r$ \\
+$\sigma_o$ $\qquad$ & Standard error & $\qquad$ $\sigma_r$ \\
+ $p_o$ $\qquad$ & one-sided $p$-value &$\qquad$  $p_r$ \\
+  &&
+  \end{tabular}
+}
+\end{center}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{\citet{Pyc2010}. Science}
+\framesubtitle{Original discovery: ``Testing improves memory'' }
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+library(biostatUZH)
+options(scipen = 5)
+plot_df <- data.frame(Study = c("Original study", 
+                                "Replication study"),
+                      z = c(study$fiso, study$fisr),
+                      r = c(study$ro, study$rr),
+                      p = formatPval(x = c(study$po/2,
+                                           study$pr/2)),
+                      se = c(study$se_fiso, study$se_fisr),
+                      n = c(1/study$se_fiso^2 + 3, 
+                            1/study$se_fisr^2 + 3)) 
+study_plot <- ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  annotate("text", x = 1.5, y = study$ro, 
+           label = "?", size = 55, 
+           color = "red") + 
+  ylim(-0.05, 1) +
+   labs(x = " ", y = "Effect Size") + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+study_plot
+@
+\vspace{-0.5cm}
+\begin{block}{}
+\begin{itemize}
+  \item[] {\color{red} Relative effect size} $d = \hat\theta_r/\hat\theta_o = 
+  \Sexpr{round(study$fisr/study$fiso, 2)}$
+  \item[] {\color{red} Relative sample size} $c = n_r/n_o = 9$
+\end{itemize}
+\end{block}
+\end{minipage}
+\end{frame}
+
+\begin{frame}{When is a replication successful?}
+\section{When is a replication successful?}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\vspace{-1.5em}
+\begin{block}{Some proposed criteria}
+  \begin{enumerate}
+    \item Two-trials rule (statistical significance)
+    \item Compatibility of effect estimates
+    \item Meta-analysis of estimates
+    \item Sceptical $p$-value
+  \end{enumerate}
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+study_plot
+@
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}{1. Two-trials rule}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\begin{block}{}
+{\large \textit{Are both estimates statistically significant in the same direction?}} 
+
+$\rightarrow$ Which threshold? \\
+$\rightarrow$ one-sided {$\color{red} \alpha = 0.025$} 
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 10, color = "red") +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 10, color = "red") +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  ylim(-0.05, 1) +
+   labs(x = " ", y = "Effect Size") + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{minipage}
+\end{frame}
+
+\begin{frame}{2. Compatibility of effect estimates}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\begin{block}{}
+% {\large \textit{Is the replication estimate contained in its prediction interval?}} \\
+{\large \textit{Is the meta-analytic $Q$-test of the estimates statistically 
+significant?}} 
+
+% Replication effect contained in its prediction interval? \\ 
+% $\rightarrow$ function \texttt{predictionInterval()} \\
+% $\rightarrow$ $Q$-test statistically significant at two-sided $\alpha = 0.05$? \\ 
+$\rightarrow$ Which threshold? \\
+$\rightarrow$ two-sided {\color{springgreen4}$\alpha = 0.05$}
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+pi_df <- predictionInterval(thetao = study$fiso,
+                            seo = study$se_fiso,
+                            ser = study$se_fisr)
+pi_df <- tanh(pi_df)
+q_pval <- Qtest(thetao = study$fiso, thetar = study$fisr, 
+                seo = study$se_fiso, ser = study$se_fisr)
+
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  annotate(geom = "text", x = 1.47, y = 0.8,
+           label = paste("italic(p)[Q] ==~", formatPval(q_pval)),
+           color = "springgreen4", size = 10, parse = TRUE) +
+   geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  ylim(-0.05, 1) +
+  labs(x = " ", y = "Effect Size") + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{minipage}
+\end{frame}
+
+\begin{frame}{3. Meta-analysis of effect estimates}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\begin{block}{}
+{\large \textit{Is a meta-analytic estimate statistically significant?}} 
+
+$\rightarrow$ Which threshold? \\
+$\rightarrow$ {\color{tan3} one-sided $\alpha = 0.025$ or $0.0025$} used in 
+practice\\
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+var_ma_estimate <- with(study, 1/(1/se_fiso^2 + 1/se_fisr^2))
+ma_estimate <- with(study, fiso/se_fiso^2 + fisr/se_fisr^2)*
+               var_ma_estimate
+p_ma <- pnorm(abs(ma_estimate/sqrt(var_ma_estimate)),
+              lower.tail = FALSE)*2
+ma_data <- data.frame(se = sqrt(var_ma_estimate),
+                      ma_estimate = ma_estimate,
+                      ma_estimate_r = tanh(ma_estimate),
+                      p_ma = formatPval(p_ma),
+                      stringsAsFactors = FALSE)
+
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_pointrange(data = ma_data,
+                  aes(x = 1.5, y = ma_estimate_r, 
+                      ymin = ma_estimate - qnorm(0.975)*se,
+                      ymax = ma_estimate + qnorm(0.975)*se),
+                  size = 1.5, color = "tan3") +
+  geom_text(data = ma_data, color = "tan3",
+            aes(x = 1.4, y = ma_estimate_r, 
+                label = paste("italic(p)[M] ==~", p_ma)),
+            nudge_y = 0.31, nudge_x = 0.12, 
+            size = 10, parse = TRUE) +
+    geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  ylim(-0.05, 1) +
+  labs(x = " ", y = "Effect Size") + 
+  theme_bw() +
+  theme(axis.text = element_text(size = 25),
+        axis.title = element_text(size = 30))
+@
+\end{minipage}
+\end{frame}
+
+\begin{frame}{4. Sceptical $p$-value}
+\framesubtitle{New definition of replication success}
+\vspace{1cm}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+  % \centering
+\includegraphics[width=1.1\textwidth]{images_presentation/Held2020.png}
+
+\vspace{6em}
+\begin{center}
+{\scriptsize \url{https://doi.org/10.1111/rssa.12493}}\\
+  \color{white}{\scriptsize published in JRSSA}
+\end{center}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\includegraphics[width=0.95\textwidth]{images_presentation/Heldetal2021.png}
+
+\vspace{0.8em}
+\begin{center}
+{\scriptsize \url{https://arxiv.org/abs/2009.07782}}\\
+  \color{darkred}{\scriptsize AOAS, to appear}
+  \end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{4. Sceptical $p$-value}
+\framesubtitle{New definition of replication success}
+\begin{minipage}[t][2.7cm][t]{\textwidth}
+\vspace{-2.5em}
+\begin{block}{}
+{\large \textit{Can we convince a sceptic whose priof beliefs make
+the original study not significant?}}
+\vspace{0.5em}
+% 
+% $\rightarrow$ \texttt{pSceptical()} returns one-sided sceptical $p$-value $p_S$ \\
+% % per default 
+% $\rightarrow$ recalibration by default
+
+\vspace{.15cm}
+\begin{center}
+{\color{purple3} If $p_S \leq \alpha$ we have replication success at level $\alpha$} 
+\end{center}
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+ssv <- function(zo, so, a) {
+  tau2 <- so^2/(zo^2/qnorm(p = a/2, lower.tail = FALSE)^2 - 1)
+  return(tau2)
+}
+S <- function(U, L) (U - L)^2/(4*sqrt(U*L))
+
+ps_uncalibrated <- pSceptical(zo = study$fiso/study$se_fiso, 
+                              zr = study$fisr/study$se_fisr, 
+                              c = study$se_fiso^2/study$se_fisr^2,
+                              alternative = "one.sided", 
+                              type = "nominal")
+ps <- pSceptical(zo = study$fiso/study$se_fiso, 
+                 zr = study$fisr/study$se_fisr, 
+                 c = study$se_fiso^2/study$se_fisr^2,
+                 alternative = "one.sided",
+                 type = "golden")
+
+s <- S(U = study$fiso + qnorm(0.975)*study$se_fiso,
+       L = study$fiso - qnorm(0.975)*study$se_fiso)
+tau2 <- ssv(zo = study$fiso/study$se_fiso, 
+            so = study$se_fiso, a = ps_uncalibrated*2)
+sprior_df <- data.frame(x = 1.5, mu = 0,
+                        upper = qnorm(p = 0.975)*sqrt(tau2),
+                        lower = qnorm(p = 0.025)*sqrt(tau2))
+scept_plot <- ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_pointrange(data = sprior_df, 
+                  aes(x = 1.5, y = 0, 
+                      ymin = lower, ymax = upper),
+                  color = "purple3", size = 1.5) +
+  geom_text(data = sprior_df, 
+            aes(x = 1.5, y = upper,
+                label = "sceptical prior"),
+            nudge_y = 0.15, nudge_x = 0,
+            color = "purple3", size = 9) +
+  geom_text(data = data.frame(x = 1.5, y = 0.9, 
+                              ps = formatPval(ps)),
+            aes(x = x, y = y, 
+                label = paste("italic(p)[S] ==~", ps, sep = "")),
+            parse = TRUE, size = 10, color = "purple3") +
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  labs(x = " ", y = "Effect Size") + 
+  ylim(-0.35, 1) +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+scept_plot
+@
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}{Assessement of replication success}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\vspace{-1.5em}
+\begin{block}{}
+  \begin{itemize}
+    \item {\color{Rred} Two-trials rule} doesn't take into account effect size
+    \item {\color{springgreen4}$Q$-test} doesn't take into account significance
+    \item {\color{tan3}Meta-analysis} assumes exchangeability
+    \item {\color{purple3}Sceptical $p$-value} takes into account effect size
+    and significance
+%%    \item Estimates can be compatible but provide no information about true effect
+  \end{itemize} 
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_text(data = data.frame(x = 1.5, y = 0.9, 
+                              ps = formatPval(ps)),
+            aes(x = x, y = y, 
+                label = paste("italic(p)[S] ==~", ps, sep = "")),
+            parse = TRUE, size = 10, color = "purple3") +
+  geom_text(data = ma_data, color = "tan3",
+          aes(x = 1.4, y = ma_estimate_r, 
+              label = paste("italic(p)[M] ==~", p_ma)),
+          nudge_y = -0.31, nudge_x = 0.12, 
+          size = 10, parse = TRUE) +
+    annotate(geom = "text", x = 1.47, y = 0.7, 
+             label = paste("italic(p)[Q] ==~", formatPval(q_pval)),
+             color = "springgreen4", size = 10, parse = TRUE) +
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8, color = "red") +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8, color = "red") +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  geom_pointrange(data = ma_data,
+                  aes(x = 1.5, y = ma_estimate_r, 
+                      ymin = ma_estimate - qnorm(0.975)*se,
+                      ymax = ma_estimate + qnorm(0.975)*se),
+                  size = 1.5, color = "tan3") + 
+   labs(x = " ", y = "Effect Size") +  
+  ylim(-0.05, 1) +
+  theme_bw() +
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30))
+@
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Type-I error rate and project power}
+%% \framesubtitle{Dashed line is the project power based on significant original studies}
+
+\vspace{0cm}
+%%\hspace{-.5cm}
+
+<<typeIE-projPower-fixedc2b, cache = TRUE, echo=FALSE>>=
+
+myc <- exp(seq(log(0.25), log(10), length.out = 100))
+
+## Type I error rate and project power for fixed c
+f <- function(zo, level, c){
+    zrMin <- zrHowLarge(zo = zo, c = c, level = level)
+    return((1 - pnorm(zrMin)) * dnorm(zo))
+}
+
+f2 <- function(zo, level, c, sig.level, origPower){
+    zrMin <- zrHowLarge(zo = zo, c = c, level = level)
+    zalpha <- qnorm(1 - sig.level) 
+    mu <- zalpha + qnorm(origPower)
+    return((1 - pnorm(zrMin, mean = sqrt(c)*mu)) * dnorm(zo, mean = mu))
+}
+zrHowLarge <- function(zo, c, level){ 
+    z <- p2z(level, alternative = "one.sided")
+    result <- z*sqrt(1 + c/(zo^2/z^2 - 1))
+    return(result)
+}
+
+library(ReplicationSuccess)
+
+alpha <- 0.025
+mythresholds <- c(levelSceptical(alpha, type = c("nominal")), 
+                levelSceptical(alpha, type = c("controlled"), c = 1), 
+                levelSceptical(alpha, type = c("liberal")), 
+                levelSceptical(alpha, type = c("golden"))) 
+mytypes <- c("nominal", "controlled", "liberal", "golden")
+
+## thresholds for one-sided sceptical p-value
+
+## type I error of sceptical p-value at level
+typeIError <- function(level){ 
+    value <- (p2z(level, alternative = "one.sided"))^2
+    alpha <- pgamma(value, shape = .5, rate = 2, lower.tail = FALSE)/4
+    return(alpha)
+}
+  
+## nominal
+y1 <- alpha
+typeI1 <- typeIError(y1)
+
+## controlled
+y2 <- levelSceptical(alpha, type = c("controlled"), c = 1)
+typeI2 <- typeIError(y2)
+                         
+## liberal
+y3 <- levelSceptical(alpha, type = c("liberal"))
+typeI3 <- typeIError(y3)
+
+## golden
+y4 <- levelSceptical(level = alpha, alternative = "one.sided", type = "golden")
+typeI4 <- typeIError(y4)
+z4 <- p2z(y4, alternative="one.sided")
+
+# T1E1 <- T1E2 <- POWER1 <- POWER2 <- matrix(NA, ncol = length(mythresholds), nrow = length(myc))
+T1E1 <- T1E2 <- POWER1 <- POWER2 <- matrix(NA, ncol = length(mytypes), nrow = length(myc))
+
+
+## one-sided level for two-trials
+newalpha <- alpha^2
+
+## power for original study
+myorigPower <- 0.9
+
+
+for (i in 1:length(mytypes)){
+  for (j in 1:length(myc)){
+    T1E1[j, i] <- T1EpSceptical(level = alpha, 
+                                c = myc[j], 
+                                type = mytypes[i], 
+                                alternative = "greater")
+    POWER1[j, i] <- PPpSceptical(level = alpha, 
+                                 c = myc[j], 
+                                 alpha = alpha, 
+                                 power = myorigPower, 
+                                 alternative = "greater", 
+                                 type = mytypes[i])
+  }
+}
+
+
+# CM: we only need this code if we want to restrict to significant 
+# original studies only - otherwise we do it with functions from pkg
+
+# for(i in 1:length(mythresholds)){
+#     for(j in 1:length(myc)){
+#         T1E1[j, i] <- integrate(f, 
+#                                 lower = qnorm(mythresholds[i], 
+#                                                  lower.tail = FALSE), 
+#                                 upper = Inf, 
+#                                 level = mythresholds[i], 
+#                                 c = myc[j])$value
+#         T1E2[j, i] <- integrate(f, 
+#                                 lower = qnorm(alpha, 
+#                                                  lower.tail = FALSE), 
+#                                 upper = Inf, 
+#                                 level = mythresholds[i], 
+#                                 c = myc[j])$value
+#         
+#         POWER1[j, i] <- integrate(f2, 
+#                                   lower = qnorm(mythresholds[i], 
+#                                                 lower.tail = FALSE), 
+#                                   upper = Inf,
+#                                   level = mythresholds[i], 
+#                                   c = myc[j], 
+#                                   sig.level = alpha, 
+#                                   origPower = myorigPower)$value
+#         POWER2[j, i] <- integrate(f2, 
+#                                   lower = qnorm(alpha, 
+#                                                 lower.tail = FALSE), 
+#                                   upper = Inf,
+#                                   level = mythresholds[i], 
+#                                   c = myc[j], 
+#                                   sig.level = alpha, 
+#                                   origPower = myorigPower)$value
+#     }
+# }
+
+colnames(T1E1) <- colnames(T1E2) <- colnames(POWER1) <-  colnames(POWER2) <- as.character(mytypes)
+rownames(T1E1) <- rownames(T1E2) <- rownames(POWER1) <- as.character(round(myc, 3))
+
+
+@ 
+
+
+<<fig44b, fig.height=5, fig.width=10, cache = FALSE, echo=FALSE>>=
+
+## grey-scale color-scale
+greycols <- c("darkgrey", "orange", 6) ##adjustcolor(col = c("#1B1B1B", "#6D6D6D", "#BEBEBE"), alpha.f = 0.95)
+greycols <- c("black", "orange", "red") ##adjustcolor(col = c("#1B1B1B", "#6D6D6D", "#BEBEBE"), alpha.f = 0.95)
+# greycols <- grey.colors(n = 3, start = 0.01, end = 0.88, alpha = 0.95)
+
+myylim <- c(0, 0.0009)*100
+
+ par(las = 1, 
+     mfrow = c(1, 2),    
+     oma = c(1, 2, 0, 0), 
+     mar = c(5.1, 4, 1.5, 2),
+     mgp = c(2.7, 0.5,0), 
+     pty = "s"
+) 
+ 
+mycex <- 0.8
+
+sel = c(1, 2, 4) ## select nominal and controlled and golden
+sel = c(2, 4) ## select golden level and controlled
+T1E1_s <- T1E1[, sel]
+## T1Es_s <- T1Es[, sel]
+## T1E_s <- T1E[, sel]
+## T1EPred_s <- T1EPred[, sel]
+## T1ESig_s <- T1ESig[, sel]
+## T1ESigPred_s <- T1ESigPred[, sel]
+
+# Plot 1: Type-I error rate vs relative sample size
+matplot(myc, 
+        100*T1E1_s, 
+        type = "l", 
+        xlab = expression(paste("Relative sample size ", italic(c))), 
+        ylab = "Type-I error rate (in %)", 
+        ylim = myylim,
+        # col = mycol[sel], 
+        col = greycols[1:2],
+        lty = c(1,1,1,5), 
+        lwd = 2, 
+        cex.axis = mycex, 
+        log = "x", 
+        axes = FALSE)
+
+axis(1, cex.axis = mycex)
+
+myval = seq(0.1, 0.5, by = 0.1)
+axis(2, at = myval, as.character(myval), cex.axis = mycex, 
+     lty = 2)
+abline(v = 1, lty = 2, col = "black")
+
+
+## w <-  which(T1E1_s[, 1] < alpha^2)
+## w.pos <- myc[w[1]]
+lines(range(myc), rep(alpha^2*100, 2), lty = 2, lwd = 2, 
+       # col = 6)
+      col = greycols[3])
+## abline(v = w.pos, lty = 2, 
+##        col = "grey")
+
+## axis(3, 
+##      at = w.pos, 
+##      label = round(w.pos, 2),
+##      tck = -0.025,
+##      cex.axis = mycex, 
+##      col.axis = "grey", 
+##      col = "grey")
+
+
+legend("topright", 
+       # c("nominal", "controlled", "liberal", "golden"), 
+##       rev(c("nominal", "golden", "2TR")),
+       c(expression(paste(p[S], " controlled")),
+             expression(paste(p[S], " golden")),"two-trials rule"),
+       # col = mycol[sel], 
+       col = greycols,
+       lty = 1, 
+       lwd = 2, 
+       cex = 0.9*mycex, 
+       bty="n")
+
+axis(1, at = min(myc), as.character(min(myc)), cex.axis = mycex)
+myval <- seq(0.0, 0.2, 0.025)
+axis(2, at = myval, as.character(myval), cex.axis = mycex)
+
+## # nominal
+## axis(4, 
+##      at = 100*typeI1, 
+##      as.character(format(100*typeI1, digits = 2, nsmall = 2, 
+##                          scientific = FALSE)), 
+##      col = greycols[1], # mycol[1], 
+##      col.ticks = greycols[1], # mycol[1],  
+##      col.axis = greycols[1], # mycol[1], 
+##      cex.axis = mycex,
+##      tck = -0.025)
+## lines(c(1, 10), c(100*typeI1, 100*typeI1), col=greycols[1], # mycol[1], 
+##       lty = 2)
+## points(1, 100*typeI1, col=greycols[1], # mycol[1], 
+##        pch=19, cex = 0.75)
+
+
+# golden
+axis(4, 
+     at = 100*typeI4, 
+     as.character(format(100*typeI4, digits = 2, nsmall = 2, 
+                         scientific = FALSE)), 
+     col = greycols[1], # mycol[1], 
+     col.ticks = greycols[2], # mycol[1],  
+     col.axis = greycols[2], # mycol[1], 
+     cex.axis = mycex,
+     tck = -0.025)
+lines(c(1, 10), c(100*typeI4, 100*typeI4), col = greycols[1], # mycol[1], 
+      lty = 2)
+
+points(1, 100*typeI4, col = greycols[1], # mycol[1], 
+       pch = 19, cex = 0.75)
+
+# 2TR
+axis(4, 
+     at = 100*alpha^2, 
+     as.character(round(100*alpha^2,4)), 
+     cex.axis = mycex, 
+     col = greycols[3], # 6, ## mycol[2], 
+     col.axis = greycols[3], # 6, ## mycol[2], 
+     col.ticks = greycols[3], # 6 ## mycol[2]
+     tck = -0.025) 
+box()
+
+## Project power plot
+POWER1_s <- POWER1[, sel]
+POWER1_s <- cbind(POWER1[, sel], POWER2[, sel])
+## POWERs_s <- POWERs[, sel]
+## POWERSig_s <- POWERSig[, sel]
+## POWERSigPred_s <- POWERSigPred[, sel]
+## POWER_s <- POWER[, sel]
+## POWERPred_s <- POWERPred[, sel]
+
+
+# Plot 2: Project power vs relative sample size
+matplot(myc, 
+        100*POWER1[, sel],## POWER1_s, 
+        type = "l", 
+        xlab = expression(paste("Relative sample size ", italic(c))), 
+        ylab = "Project power (in %)", 
+        # col = mycol[sel], 
+        col = greycols[1:2],
+        lty = c(1,1,1,5), 
+        lwd = 2, 
+        cex.axis = mycex, 
+        log = "x", 
+        axes = FALSE, 
+        ylim=c(0, 100))
+
+axis(1, cex.axis = mycex)
+
+myval <- seq(0, 100, by = 20)
+axis(2, at = myval, label = as.character(myval), cex.axis = mycex)
+axis(2, at = 90, label = "90", cex.axis = mycex,
+     col = "grey", 
+     col.axis = "grey")
+
+## add significance    
+
+sig.level <- alpha
+zalpha <- qnorm(1-sig.level) 
+mu <- zalpha + qnorm(myorigPower)
+abline(v=1, lty=2)
+## abline(h=0.9^2*100, lty=2)
+
+## 2TR power
+powerSig <- myorigPower*pnorm(sqrt(myc)*mu-zalpha)
+
+abline(h = myorigPower*100, lty = 2, 
+       col = "grey")
+lines(myc, powerSig*100, col=greycols[3], lty=1, lwd=2)
+## lines(myc, 100*POWER2[,4], col=greycols[1], lty=5, lwd=2)
+
+
+## legend("bottomright", 
+##        rev(c("nominal", "golden", "2TR")),
+##        # col = mycol[sel], 
+##        col = rev(greycols),
+##        lty = 1, 
+##        lwd = 2, 
+##        cex = 0.9*mycex,
+##        bg = "white", 
+##        bty="n")
+box()
+
+@ 
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{The relative effect size}
+  \framesubtitle{For the assessment of replication success}
+    
+    \begin{block}{}
+      \begin{itemize}
+        \item Relative effect size {\color{red} $d = \hat\theta_r/\hat\theta_o$}
+        can be used in the assessment of replication success
+                \item[] $\rightarrow$ success if {\color{red} $d >\dmin$, the
+                minimum relative effect size}
+                \visible<2->{
+        \item {\color{red} $\dmin$} depends on 
+          \begin{itemize}
+            \item {\color{foo} relative sample size} $c$ 
+            \item {\color{foo} original $p$-value} $p_o$  
+            \item {\color{foo} one-sided level} $\alpha$
+          \end{itemize}
+          }
+                \visible<3->{
+          \item Equivalent to assessment based on (sceptical) $p$-value
+          }
+          \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{The relative effect size}
+  \framesubtitle{For the assessment of replication success}
+  
+  \begin{block}{Pyc and Rawson (2010) example}
+<<echo = FALSE>>=
+
+dmin2TR <-  effectSizeSignificance(zo = study$fiso/study$se_fiso, 
+                                   c = study$se_fiso^2/study$se_fisr^2, 
+                                   level = 0.025, 
+                                   alternative = "one.sided")
+
+dminRS <- effectSizeReplicationSuccess(zo = study$fiso/study$se_fiso, 
+                                   c = study$se_fiso^2/study$se_fisr^2, 
+                                   level = 0.025, 
+                                   type = "golden", 
+                                   alternative = "one.sided")
+@
+ 
+
+  
+    \begin{itemize}
+      \item {\color{foo} $d = \Sexpr{round(study$fisr, 2)}/\Sexpr{round(study$fiso, 2)} = 
+      \Sexpr{round(study$fisr/study$fiso, 2)}$ }
+      \item Minimum relative effect size
+        \begin{itemize}
+\visible<2->{  
+          \item With the two-trials rule: \\
+            \begin{center} 
+            {\color{springgreen4} $\dmin = \Sexpr{round(dmin2TR, 2)} < \Sexpr{round(study$fisr/study$fiso, 2)}\quad$ 
+              Replication Success} \end{center}}
+\visible<3->{  
+          \item With the 
+          sceptical $p$-value: \begin{center} 
+            {\color{red} $\dmin = \Sexpr{round(dminRS, 2)} > \Sexpr{round(study$fisr/study$fiso, 2)}\quad$  No Replication Success} 
+            \end{center}}
+        \end{itemize}
+    \end{itemize}
+      \pause
+  \end{block}
+  
+\visible<4->{  
+      \begin{center}
+    {\color{darkred} Why do the two methods disagree?}
+    \end{center}
+    }
+    
+\end{frame}
+
+% \begin{frame}[fragile]{The Relative Effect Size}
+% \framesubtitle{in the assessment of replication success}
+% 
+% \vspace{0.75cm}
+% \begin{multicols}{2}
+% 
+% \begin{minipage}{0.4\textwidth}
+% \visible<1->{
+%   \alert{Goal}: Comparison of 
+% \begin{itemize}
+%    \item {\bf two-trials rule} 
+%    \item {\bf meta-analysis} 
+%    \item {\bf sceptical $p$-value}
+%    \end{itemize}
+%    }
+% \end{minipage}
+% \begin{minipage}{0.5\textwidth}
+% \visible<2->{
+% \alert{Key}: Formulation in terms of
+% \begin{enumerate}
+%    \item {\bf Original $p$-value} $p_o$ 
+%    \item {\bf Relative effect size} $d=\hat \theta_r / \hat \theta_o$
+%    \item {\bf Relative sample size} $c = n_r / n_o$ 
+%    \end{enumerate}
+% }
+%  \end{minipage}
+% \end{multicols}
+% \vspace{.25cm}
+% \begin{multicols}{2}
+% 
+% \begin{minipage}{0.6\textwidth}
+% \visible<3->{
+%   \alert{Criterion}: Success if $d > \dmin$
+% }
+% \end{minipage}
+% % \begin{minipage}{0.5\textwidth}
+% % \visible<4->{
+% %    \begin{center}
+% %   \includegraphics[width=5cm]{images_presentation/Held-etal2021.png} \\
+% %   \color{darkred}{\scriptsize AOAS, to appear \\ \url{https://arxiv.org/abs/2009.07782}}
+% % \end{center}
+% % }
+% %  \end{minipage}
+% \end{multicols}
+% 
+% \end{frame}
+
+
+<<echo=FALSE>>=
+mygrey <- "gray30"      
+## source("Rcode/plotAncred.R")
+source("Rcode/plotLevel.R")      
+source("Rcode/plotLevel2.R")
+@
+
+<<echo = F>>=
+mycval <- 0.5 
+@
+\begin{frame}[fragile]{Comparison of success regions}
+\framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d > \dmin$}
+\end{center}
+\vspace{-1cm}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
+<<plot1, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = FALSE>>=
+ 
+par(mfrow = c(1,3))
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
+
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
+text(0.033, 1.2, expression(paste("minimum relative effect size ", d[min])), cex=0.9)
+arrows(x0=0.015, x1=0.01, y0=1.2, y1=1.3, cex=0.7, length=0.1)
+
+text(0.033, 0.38, "Pyc and Rawson (2010)", cex=0.9, col=4)
+arrows(x0=0.019, x1=0.013, y0=0.38, y1=0.38, cex=0.7, length=0.1, col=4)
+
+
+
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "golden",
+          alternative = "one.sided",
+          minRES = T, # not showing minres
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
+
+@
+  }
+}
+\end{frame}
+
+
+<<echo = F>>=
+mycval <- 1
+@
+\begin{frame}[fragile]{Comparison of success regions}
+\framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d > \dmin$}
+\end{center}
+\vspace{-1cm}
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
+<<plot1b, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = FALSE>>=
+
+par(mfrow = c(1,3))
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "golden",
+          alternative = "one.sided",
+          minRES = T, # not showing minres
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
+
+@
+  }
+}
+\end{frame}
+
+
+<<echo = F>>=
+mycval <- 2
+@
+\begin{frame}[fragile]{Comparison of success regions}
+\framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d > \dmin$}
+\end{center}
+\vspace{-1cm}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
+<<plot1c, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
+
+par(mfrow = c(1,3))
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "golden",
+          alternative = "one.sided",
+          minRES = T, # not showing minres
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
+
+@
+  } 
+}
+\end{frame}
+
+<<echo = F>>=
+mycval <- 5
+@
+\begin{frame}[fragile]{Comparison of success regions}
+\framesubtitle{{Relative sample size} $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d > \dmin$}
+\end{center}
+\vspace{-1cm}
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
+<<plot1d, fig.height = 6, fig.weight=12, cache=FALSE, out.width="1\\linewidth", echo = F>>=
+
+par(mfrow = c(1,3))
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "golden",
+          alternative = "one.sided",
+          minRES = T, # not showing minres
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
+
+@
+  }
+}
+\end{frame}
+
+<<echo = F>>=
+mycval <- 9
+@
+\begin{frame}[fragile]{Comparison of success regions}
+\framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d > \dmin$}
+\end{center}
+\vspace{-1cm}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
+<<plot1e, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
+
+par(mfrow = c(1,3))
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "golden",
+          alternative = "one.sided",
+          minRES = T, # not showing minres
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
+
+@
+  } 
+} 
+\end{frame}
+<<echo = F>>=
+mycval <- 1000
+@
+\begin{frame}[fragile]{Comparison of success regions}
+\framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d > \dmin$}
+\end{center}
+\vspace{-1cm}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
+<<plot1f, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
+
+par(mfrow = c(1,3))
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "signif") # Significance
+points(0.011, 0.38, col=4, pch=19)
+
+plotLevel(c = mycval,
+          level = 0.025,
+          type = "nominal",
+          alternative = "one.sided",
+          minRES = F,
+          method = "meta") # Meta-Analysis
+points(0.011, 0.38, col=4, pch=19)
+
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "golden",
+          alternative = "one.sided",
+          minRES = T, # not showing minres
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
+
+@
+  } 
+}
+\end{frame}
+
+\begin{frame}[fragile]{Comparison of success regions}
+\framesubtitle{Relative sample size $c=\Sexpr{mycval}$}
+
+\vspace{1cm}
+\begin{center}
+Success if {\color{darkred} $d > \dmin$}
+\end{center}
+\vspace{-1cm}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1.3\textwidth}{!} {
+<<golden-controlled, fig.height = 6, fig.weight=12, cache=TRUE, out.width="1\\linewidth", echo = F>>=
+mycval <- c(0.5, 1, 2, 9, 1000)
+par(mfrow = c(1,2))
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "golden",
+          alternative = "one.sided",
+          minRES = T, # not showing minres
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)
+
+
+plotLevel(c = mycval, # choosing one value of c
+          level = 0.025,
+          type = "controlled",  
+          alternative = "one.sided",
+          minRES = F, # not showing minres 
+          method = "RS") # Replication Success
+points(0.011, 0.38, col=4, pch=19)   
+  
+@
+  } 
+}
+\end{frame}
+
+\begin{frame}{Shrinkage of effect estimates}
+  \framesubtitle{Definition and example}
+  \begin{block}{Shrinkage}
+    \begin{itemize}
+      \item represents how much the {\color{red} replication effect estimate}
+      is decreased as compared to the {\color{red} original effect estimate}:
+      \begin{center}
+      \fbox{\color{foo} $s = 1 - d$}
+    \end{center}
+    \item Pyc and Rawson example: {\color{foo} $s = 1 - 
+      \Sexpr{round(study$fisr/study$fiso, 2)} = 
+      \Sexpr{round(1 -study$fisr/study$fiso, 2) }$}
+      \item[] $\rightarrow$ replication effect is 
+      {\color{red} $\Sexpr{round(1 -study$fisr/study$fiso, 2)*100}$\% smaller} 
+      than original one
+    \end{itemize}
+      \pause 
+  \end{block}
+    \begin{center}
+    {\color{darkred} Shrinkage is penalized in the sceptical $p$-value 
+  approach}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Calibration of the sceptical $p$-value}
+    \vspace{1cm}
+  \begin{center}
+    Bordeline significant original studies 
+    {\color{red} ($p_o = \alpha$)}
+    can only lead to success if there is no shrinkage {\color{foo} ($d > 1$)}
+  \end{center}
+
+    \vspace{-1.5cm}
+\makebox[1\textwidth][c]{  
+  \resizebox{0.5\textwidth}{!} { 
+<<echo = F, fig.width = 5>>=
+
+par(mfrow = c(1,1))
+plotLevel(c = Inf, 
+          level = 0.025,  
+          type = "golden", 
+          alternative = "one.sided", 
+          minRES = T, 
+          method = "RS")
+segments(x0 = 0.025, y0 = 1, x1 = 0, y1 = 1, 
+         col = "red", cex = 1.5, 
+         lty = 2)
+
+segments(x0 = 0.025, y0 = 0, x1 = 0.025, y1 = 1, 
+         col = "red", cex = 1.5, 
+         lty = 2)
+
+points(x = 0.025, y = 1, 
+       col = "red", 
+       pch = 19)
+axis(1, 0.025, 0.025, col.axis = "red", col.ticks = "red", 
+     cex.axis = 0.5)
+
+@
+  } 
+}
+
+\end{frame}
+
+
+
+<< echo = FALSE >>=
+# some needed quantities
+po <- study$po
+pr <- study$pr
+to <- study$fiso/study$se_fiso
+tr <- study$fisr/study$se_fisr
+c <- study$se_fiso^2/study$se_fisr^2
+RProjects$zo <- RProjects$fiso/RProjects$se_fiso
+RProjects$po1 <- z2p(RProjects$zo, 
+                     alternative = "one.sided")
+RProjects$zo <- RProjects$fiso/RProjects$se_fiso
+RProjects$po1 <- z2p(RProjects$zo, 
+                     alternative = "one.sided")
+RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
+@
+
+\begin{frame}
+\section{Exercise 2 -- Design of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Design of replication studies}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}
+\section{Exercise 2 -- Design of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Large \textbf{Design based on the two-trials rule}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+
+\begin{frame}{Design of replication studies}
+\begin{block}{Sample size of replication study}
+  \begin{itemize}
+  \item Direct replication $\rightarrow$ procedures of replication study as closely matched as possible to original study 
+\item \alert{But} same sample size as in original study can lead to a very low power \citep{Goodman1992}
+\item[] $\rightarrow$ proper sample size calculation is essential 
+  \end{itemize}
+\end{block}
+\centering
+\includegraphics[width=0.8\textwidth]{images_presentation/goodmana.pdf}
+\end{frame}
+
+\begin{frame}[fragile]{What is used in practice}
+\begin{block}{Standard sample size calculation}
+  \begin{itemize}
+<< echo = FALSE, eval = FALSE >>=
+sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
+  u <- qnorm(p = power)
+  v <- qnorm(p = 1 - sig.level/2)
+  n <- 2*(u + v)^2*sd^2/delta^2
+  return(n)
+}
+sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
+@
+    \item Goal is to have between 80\%  and 95\% power in the replication study to detect the {\color{red}{effect estimate from the original study}}.
+    \item Original effect estimate is sometimes shrunken by a factor of 50\%.
+    \item Uncertainty of original effect estimate is ignored
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Standard sample size calculation}
+<<echo = F>>=
+sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
+  u <- qnorm(p = power)
+  v <- qnorm(p = 1 - sig.level/2)
+  n <- 2*(u + v)^2*sd^2/delta^2
+  return(n)
+}
+
+grid <- seq(0.09, 0.225, 0.001)
+deltahat <- 0.15
+se <- 0.025
+ss <- sampleSizeZtest(delta = grid, sd = 0.4, sig.level = 0.01, power = 0.95)
+ss1 <- sampleSizeZtest(delta = deltahat, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+set.seed(12345)
+nsim <- 100000
+deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+library(gplots)
+par(las=1)
+
+plot(grid, 
+     ss, 
+     type="l", 
+     xlab="Original effect estimate", 
+     ylab="Replication sample size", 
+     ylim=c(0, 800), 
+     cex.lab = 1.5, 
+     cex.axis = 1.2, 
+     lwd = 2)
+
+legend("topright", 
+       "Power = 95%", 
+       bty = "n", 
+       cex = 1.75)
+
+@
+
+\end{frame}
+
+
+\begin{frame}{Standard sample size calculation}
+<<echo = F>>=
+
+set.seed(12345)
+nsim <- 100000
+deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+library(gplots)
+par(las=1)
+
+plot(grid, 
+     ss, 
+     type="l", 
+     xlab="Original effect estimate", 
+     ylab="Replication sample size", 
+     ylim=c(0, 800), 
+     cex.lab = 1.5, 
+     cex.axis = 1.2, 
+     lwd = 2)
+lines(rep(deltahat, 2), 
+      c(0, ss1), 
+      lty=2,
+      lwd = 2)
+points(deltahat, 
+       ss1, 
+       pch=19, 
+       cex=1.2, 
+       col=1) 
+points(deltahat, 
+       0, 
+       pch=19, 
+       cex=1.2, 
+       col=1) 
+lines(c(0, deltahat), 
+      rep(ss1, 2), 
+      lty = 2,
+      col = 1, 
+      lwd = 2)
+axis(2, 
+     at=ss1, 
+     label=round(ss1), 
+     col=1, 
+     col.axis=1, 
+     cex.axis = 1.2)
+
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
+
+@
+
+\end{frame}
+\begin{frame}{Incorporation of uncertainty}
+<<echo = F>>=
+
+set.seed(12345)
+nsim <- 100000
+deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+library(gplots)
+par(las=1)
+
+plot(grid, 
+     ss, 
+     type="l", 
+     xlab="Original effect estimate", 
+     ylab="Replication sample size", 
+     ylim=c(0, 800), 
+     cex.lab = 1.5, 
+     cex.axis = 1.2, 
+     lwd = 2)
+lines(rep(deltahat, 2), 
+      c(0, ss1), 
+      lty=2,
+      lwd = 2)
+points(deltahat, 
+       ss1, 
+       pch=19, 
+       cex=1.2, 
+       col=1) 
+points(deltahat, 
+       0, 
+       pch=19, 
+       cex=1.2, 
+       col=2) 
+lines(c(0, deltahat), 
+      rep(ss1, 2), 
+      lty = 2,
+      col = 1, 
+      lwd = 2)
+axis(2, 
+     at=ss1, 
+     label=round(ss1), 
+     col=1, 
+     col.axis=1, 
+     cex.axis = 1.2)
+
+plotCI(x = deltahat,
+       y = 0, 
+       li = quantile(deltahat2, 0.025), 
+       ui = quantile(deltahat2, 0.975),
+       col=2, lwd=2, add=TRUE, err="x")
+
+
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
+
+@
+\end{frame}
+
+\begin{frame}{Incorporation of uncertainty}
+<<echo = F>>=
+set.seed(12345)
+nsim <- 100000
+deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+library(gplots)
+par(las=1)
+
+plot(grid, 
+     ss, 
+     type="l", 
+     xlab="Original effect estimate", 
+     ylab="Replication sample size", 
+     ylim=c(0, 800), 
+     cex.lab = 1.5, 
+     cex.axis = 1.2, 
+     lwd = 2)
+lines(rep(deltahat, 2), 
+      c(0, ss1), 
+      lty=2,
+      lwd = 2)
+points(deltahat, 
+       ss1, 
+       pch=19, 
+       cex=1.2, 
+       col=1) 
+points(deltahat, 
+       0, 
+       pch=19, 
+       cex=1.2, 
+       col=2) 
+points(min(grid), 
+       mean(ss2), 
+       pch=19, 
+       cex=1.2, 
+       col=2) 
+lines(c(0, deltahat), 
+      rep(ss1, 2), 
+      lty = 2,
+      col = 1, 
+      lwd = 2)
+axis(2, 
+     at=ss1, 
+     label=round(ss1), 
+     col=1, 
+     col.axis=1, 
+     cex.axis = 1)
+
+plotCI(x = deltahat, y=0, li=quantile(deltahat2, 0.025), ui = quantile(deltahat2, 0.975),
+       col=2, lwd=2, add=TRUE, err="x")
+
+plotCI(x = min(grid), y=mean(ss2), li=quantile(ss2, 0.025), ui = quantile(ss2, 0.975),
+       col=2, lwd=2, add=TRUE, err="y")
+lines(rep(quantile(deltahat2, 0.025), 2), 
+      c(0, quantile(ss2, 0.975)), 
+      lty=2, col=2,  
+      lwd = 2)
+lines(rep(quantile(deltahat2, 0.975), 2), 
+      c(0, quantile(ss2, 0.025)), 
+      lty=2, col=2, 
+      lwd = 2)
+lines(c(0, quantile(deltahat2, 0.975)), 
+      rep(quantile(ss2, 0.025), 2), 
+      lty=2, 
+      col=2, 
+      lwd = 2)
+lines(c(0, quantile(deltahat2, 0.025)), 
+      rep(quantile(ss2, 0.975), 2), 
+      lty =2, 
+      col=2, 
+      lwd = 2)
+axis(2, 
+     at=mean(ss2), 
+     label=round(mean(ss2)), 
+     col = 2, 
+     col.axis = 2, 
+     cex.axis = 1.2)
+
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
+
+@
+\end{frame}
+
+
+\begin{frame}{Incorporation of uncertainty}
+\begin{block}{Design prior}
+\begin{itemize}
+\item{\color{red} \emph{Conditional}}: ignores uncertainty of original study
+\item {\color{red} \emph{Predictive}}: reflects that there is 
+uncertainty about the true effect after the original experiment
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Power of the two-trials rule} 
+  \framesubtitle{in absolute terms}
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+  \mbox{Power} = \Phi\left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)
+    \end{eqnarray*}
+  \end{block}
+  \pause
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+   \mbox{Power} = \Phi\left({\color{red} \sqrt{\frac{n_o}{n_o + n_r}}}
+   \left(\frac{\hat\theta_o \sqrt{n_r}}{\sigma} - z_{1 - \alpha}\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Power of the two-trials rule} 
+  \framesubtitle{in relative terms}
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+  \mbox{Power} = \Phi\left(z_o \sqrt{c} - z_{1- \alpha}\right)
+    \end{eqnarray*}
+  \end{block}
+  \pause
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+   \mbox{Power} = \Phi\left({\color{red} \frac{1}{\sqrt{c+1}}}
+   \left(z_o \sqrt{c} - z_{1- \alpha}\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Power of the two-trials rule} 
+  \framesubtitle{with shrinkage}
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+  \mbox{Power} = \Phi\left({\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)
+    \end{eqnarray*}
+  \end{block}
+  \pause
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+   \mbox{Power} = \Phi\left({\color{black} \frac{1}{\sqrt{c+1}}}
+   \left( {\color{red} (1 - s)} z_o \sqrt{c} - z_{1- \alpha}\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+\section{Exercise 2 -- Design of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Large \textbf{Design based on replication success 
+  (the sceptical $p$-value)}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}{Power for replication success}
+  \begin{block}{Conditional design prior}
+    \begin{eqnarray*}
+    \mbox{Power} = \Phi\left( z_o \sqrt{c} (1 - \dmin)\right)
+    \end{eqnarray*}
+  \end{block}
+  
+  \pause
+  
+    \begin{block}{Predictive design prior}
+    \begin{eqnarray*}
+    \mbox{Power} = \Phi\left({\color{red} \frac{1}{\sqrt{c + 1}}}
+    \left(z_o \sqrt{c} (1 - \dmin)\right)\right)
+    \end{eqnarray*}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+\section{More advanced topics}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{More advanced topics}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}
+\section{More advanced topics}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\huge \textbf{Meta-analysis and multiple replication studies}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Multiple replications}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{ProtzkoScreenshot.png}
+\end{center}
+<<size="tiny">>=
+data("protzko2020")
+head(protzko2020, 10)
+@
+\end{frame}
+
+\begin{frame}
+\frametitle{Forest plots}
+  \framesubtitle{$16$ experiments}
+
+\makebox[1\textwidth][c]{  
+  \resizebox{1\textwidth}{!} {
+<<echo = F>>=
+# graphics.off()
+parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(4, 4))
+experiments <- unique(protzko2020$experiment)
+for (ex in experiments) {
+  ## compute CIs
+  dat <- subset(protzko2020, experiment == ex)
+  # re-ordering
+  ori.index <- which(dat$type == "original")
+  self.index <- which(dat$type == "self-replication")
+  extern.index <- which(dat$type == "external-replication")
+  dat <- dat[ c(extern.index, self.index, ori.index),]
+  za <- qnorm(p = 0.975)
+  plotDF <- data.frame(lower = dat$smd - za*dat$se,
+                       est = dat$smd,
+                       upper = dat$smd + za*dat$se)
+colpalette <- c("#000000", "#1B9E77", "#D95F02")
+cols <- colpalette[dat$type]
+yseq <- seq(1, nrow(dat))
+
+## forestplot
+plot(x = plotDF$est, y = yseq, xlim = c(-0.15, 0.8),
+     ylim = c(0.8*min(yseq), 1.05*max(yseq)), type = "n",
+     yaxt = "n", xlab = "Effect estimate (SMD)", ylab = "")
+abline(v = 0, col = "#0000004D")
+arrows(x0 = plotDF$lower, x1 = plotDF$upper, y0 = yseq, angle = 90,
+       code = 3, length = 0.05, col = cols)
+points(y = yseq, x = plotDF$est, pch = 20, lwd = 2, col = cols)
+axis(side = 2, at = yseq, las = 1, labels = dat$type, cex.axis = 0.85)
+title(main = ex)
+}
+par(parOld)
+@
+  }
+} 
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Effect measures}
+\begin{itemize}
+\item For \alert{continuous outcomes}
+ \begin{itemize}
+\item    Standardized mean difference $\theta$ %% Difference in means $\theta$ between treatment groups
+\end{itemize}
+ \item For \alert{binary/event outcomes} relative treatment effects
+    are preferred:
+  \begin{itemize}
+\item  Relative risk $\RR$
+  \item Odds ratio $\OR$
+    \item Hazard ratio $\HR$
+      \end{itemize}
+  \item These are usually considered on a log-scale: $\theta=\log(\RR)$, 
+    $\theta=\log(\OR)$, $\theta=\log(\HR)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Incidence of preeclampsia}
+\framesubtitle{Effect measure: Odds ratio for diuretic vs.~control}
+
+\begin{center}
+    \begin{tabular}{lrlrlr}
+      \textbf{Study}   & \multicolumn{2}{c}{\textbf{Diuretic}} & \multicolumn{2}{c}{\textbf{Control}} %
+      & \textbf{OR} \\ \hline
+      Weseley           & 11\% & (14/131)       & 10\% & (14/136)       & 1.04 \\
+      Flowers           &  5\% & (21/385)       & 13\% & (17/134)       & 0.40 \\
+      Menzies           & 25\% & (14/57)        & 50\% & (24/48)        & 0.33 \\
+      Fallis            & 16\% & (6/38)         & 45\% & (18/40)        & 0.23 \\
+      Cuadros           &  1\% & (12/1011)      &  5\% & (35/760)       & 0.25 \\
+      Landesman         & 10\% & (138/1370)     & 13\% & (175/1336)     & 0.74 \\
+      Krans             &  3\% & (15/506)       &  4\% & (20/524)       & 0.77 \\
+      Tervila           &  6\% & (6/108)        &  2\% & (2/103)        & 2.97 \\
+      Campbell          & 42\% & (65/153)       & 39\% & (40/102)       & 1.14 \\  \hline
+    \end{tabular}
+\end{center}
+
+\end{frame}
+
+<<ch1, echo=F>>=
+
+preeclampsia <- read.table("data/preeclampsia.txt", header = TRUE)
+
+diuretics <- with (preeclampsia,
+                   c (sum (Diuretic[Preeclampsia == "yes"]), sum (Diuretic[Preeclampsia == "no"]))
+                   )
+controls <- with (preeclampsia,
+                   c (sum (Control[Preeclampsia == "yes"]), sum (Control[Preeclampsia == "no"]))
+                   )
+logOddsRatio <- log (diuretics[1] * controls[2] / diuretics[2] / controls[1])
+standardError <- sqrt (sum (1/diuretics) + sum (1/controls))
+waldKiLogOddsRatio <- logOddsRatio + c (-1, 1) * 1.96 * standardError
+waldData <- list (logOddsRatio, waldKiLogOddsRatio)
+
+
+## compute data
+oddsRatio <- function (square)
+    (square[1,1] * square[2,2]) / (square[1,2] * square[2,1])
+
+variance <- function (square)
+    sum (1 / square)
+
+groups <- split (subset (preeclampsia, select = c (Diuretic, Control)),
+                 preeclampsia[["Trial"]])
+
+logOddsRatios <- log (sapply (groups, oddsRatio))
+variances <- sapply (groups, variance)
+w <- 1/variances
+num <- sum(w*logOddsRatios)
+den <- sum(w)
+theta.hat <- num/den
+se.theta.hat <- 1/sqrt(sum(w))
+wald.z <- (theta.hat)/se.theta.hat
+wald.p <- 2*pnorm(abs(wald.z), lower.tail=FALSE)
+
+t.homo <- sum(w*(logOddsRatios-theta.hat)^2)
+n <- length(logOddsRatios)
+p.homo <- pchisq(t.homo, df=n-1, lower.tail=FALSE)
+
+@ 
+
+\begin{frame}[fragile]
+\framesubtitle{Effect estimates with 95\% CIs}
+\frametitle{Forest plot}
+\begin{center}
+\setkeys{Gin}{width=0.75\textwidth}
+<<ch2, echo=FALSE>>=
+## mar <- par("mar")
+## mar[2] <- 12
+## par(mar=c(5.1, 12, 4.1, 2.1))
+
+## plot intervals with point estimates
+library (lattice)
+
+## study effects
+postSd <- sqrt (variances)
+postLower <- logOddsRatios - postSd * 1.96
+postUpper <- logOddsRatios + postSd * 1.96
+
+## plot intervals with point estimates
+
+panel.ci <- function(x, y, lx, ux, subscripts, ...)
+{
+    x <- as.numeric(x)
+    y <- as.numeric(y)
+
+    lx <- as.numeric(lx[subscripts])
+    ux <- as.numeric(ux[subscripts])
+
+    panel.dotplot(x, y, lty = 2, ...)            # normal dotplot for point estimates
+    panel.arrows(lx, y, ux, y,          # draw intervals
+                 length = 0.1, unit = "native",
+                 angle = 90,            # deviation from line
+                 code = 3,              # left and right whisker
+                 ...)
+    panel.abline (v = 0, lty = 2)       # reference line
+}
+
+studyNames <- c (names (postLower))
+studyNames <- ordered (studyNames, levels = rev (studyNames)) # levels important for order!
+
+ciData <- data.frame (low = postLower, 
+                      up = postUpper,
+                      mid = logOddsRatios,
+                      names = studyNames
+                      )
+ciData[["signif"]] <- with (ciData,
+                            up < 0 | low > 0)
+ciData[["farbe"]] <- with (ciData,
+                           ifelse (signif, "black", "black"))
+
+randomEffectsCiPlot <- with (ciData,
+                             dotplot (names ~ mid,
+                                      panel = panel.ci,
+                                      lx = low, ux = up,
+                                      pch = 19, col = farbe,
+                                      xlim = c (-3, 3), xlab = "Log Odds Ratio",
+                                      scales = list (cex = 1)
+                                      )
+                             )
+print (randomEffectsCiPlot)
+
+
+@
+\end{center}
+\end{frame}
+
+%% \begin{frame}[fragile]
+%% \frametitle{Forest Plot in \texttt{R}}
+
+
+%% <<echo=FALSE>>=
+
+%% Preeclampsia <- data.frame(study=names(logOddsRatios), logOR=logOddsRatios, se=sqrt(variances), 
+%%                            row.names=NULL)
+
+%% @ 
+
+%% <<>>=
+%% head(Preeclampsia)
+%% library(meta)
+
+%% @ 
+
+%% \end{frame}
+
+\section{Meta-Analysis}
+\subsection{Fixed Effect Model}
+
+\begin{frame}
+\frametitle{Notation and overall effect}
+\framesubtitle{Fixed effect model}
+\begin{itemize}
+\item Notation: 
+  \begin{itemize}
+\item $i=1,\ldots, n$ trials
+\item $\theta_i$, $\hat \theta_i$: true and estimated study-specific treatment effect
+\item standard error $\sigma_i = \se(\hat \theta_i)$ of $\hat \theta_i$
+\item variance $v_i = \sigma_i^2$
+%%\item $w_i=1/v_i$: (estimated) precision of $\hat \theta_i$ 
+\end{itemize}
+\item \alert{Homogeneity} assumption: $\theta_i = \theta$ for all $i$
+\item The estimate $\hat \theta$ of the overall treatment effect $\theta$ is then a
+  \alert{weighted average} of study-specific estimates $\hat \theta_i$
+  with \alert{inverse variance weights} $w_i=1/v_i$:
+  \[
+  \hat \theta = \frac{\sum w_i \hat \theta_i}{\sum w_i}
+\mbox{  with }
+  \se(\hat \theta) =  1/\sqrt{\sum w_i}.
+  \]
+%% \item[$\rightarrow$]  Wald test statistic $z=\hat \theta/\se(\hat \theta)$
+%% for $H_0$: $\theta = 0$.
+%% \item For the preeclampsia study we obtain for $\theta=\log(\OR)$: $\hat
+%%   \theta=\Sexpr{format(theta.hat,digits=2, nsmall=2)}$, so $\widehat{\OR}=
+%%   \exp(\Sexpr{format(theta.hat,digits=2, nsmall=2)}) = 
+%%   \Sexpr{format(exp(theta.hat),digits=2, nsmall=2)}$, with  $\se(\hat
+%%   \theta)=\Sexpr{format(se.theta.hat,digits=2, nsmall=2)}$ %% and $z=\Sexpr{round(wald.z, 2)}$ 
+%%   ($p\Sexpr{format.pval(wald.p,digits=2, eps=0.0001, scientific=FALSE)}$ for $H_0$: $\theta = 0$.).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Presentation in forest plot}
+\framesubtitle{Fixed effect model}
+ \vspace{1cm}
+
+<<ch4.0, echo = FALSE>>=
+
+pree <- read.csv("data/preeclampsia.csv", header = TRUE, sep = ",", dec = ".", fill = TRUE)     
+pree <- pree[order(pree$study),]
+
+#transformVarNames(pree, "pree")
+study       <- pree$study
+treatedPre <- pree$diur_pre
+treatedTot <- pree$diur_tot
+controlPre <- pree$plac_pre
+controlTot <- pree$plac_tot
+a <- treatedPre
+b <- treatedTot
+c <- controlPre
+d <- controlTot
+@ 
+
+
+<<ch4b.0, echo = TRUE, eval = F, size = "tiny">>=
+library(meta)
+meta1 <- metabin(event.e = treatedPre, 
+                 n.e = treatedTot, 
+                 event.c = controlPre, 
+                 n.c = controlTot, 
+                 sm = "OR", method = "Inverse", studlab = study)
+
+forest(meta1, comb.fixed = TRUE, comb.random = FALSE) 
+@ 
+\vspace{-1.5cm}
+\makebox[1\textwidth][c]{  
+  \resizebox{0.9\textwidth}{!} {
+  <<ch4b.0bis, echo = FALSE, eval = T>>=
+library(meta)
+meta1 <- metabin(event.e = treatedPre, n.e = treatedTot, 
+                 event.c = controlPre, n.c = controlTot, 
+                 sm = "OR" , method = "Inverse", studlab = study)
+forest(meta1, comb.fixed=TRUE, comb.random=FALSE) 
+@ 
+  } 
+}
+
+% 
+% \end{figure}
+% \end{center}
+<<ch5.0, echo=F>>=
+
+or.fixed <- exp(meta1$TE.fixed)
+or.lower <- exp(meta1$lower.fixed)
+or.upper <- exp(meta1$upper.fixed)
+ci.fixed <- c(or.lower, or.upper)
+
+or.random <- exp(meta1$TE.random)
+or.lower <- exp(meta1$lower.random)
+or.upper <- exp(meta1$upper.random)
+ci.random <- c(or.lower, or.upper)
+@ 
+\end{frame}
+
+
+\subsection{Cochran's Test for Heterogeneity}
+
+\begin{frame}
+\frametitle{Test for heterogeneity}
+\begin{itemize}
+\item Under the \alert{homogeneity} assumption, we have
+\[
+Q = \sum w_i (\hat \theta_i - \hat \theta)^2 \sima \chi^2_{n-1}
+\]
+\item This can be used to calculate the $p$-value of \alert{Cochran's test for heterogeneity}. 
+\item For the preeclampsia data, this test yields $Q = \Sexpr{round(t.homo, 1)}$ at $n-1=8$ degrees of freedom ($p=\Sexpr{format.pval(p.homo,digits=1, eps=0.0001, scientific=FALSE)}$).
+\item[$\rightarrow$] Strong evidence for heterogeneity between studies. 
+\item[$\rightarrow$]  Fixed effect model questionable. 
+  %% \item But: ``test lacks power'', ``limited usefulness in the context
+%%   of meta-analysis''
+\end{itemize}
+\end{frame}
+
+
+\subsection{Random Effects Model}
+
+\begin{frame}
+\frametitle{Random effects model}
+\begin{itemize}
+\item 
+Assumes that the $\theta_i$'s come from a normal distribution with
+mean $\theta^*$ and \alert{heterogeneity variance} $\tau^2$:
+\[
+\hat \theta_i \given \theta_i  \sim   \Nor(\theta_i, v_i) \quad \mbox{ and }
+\quad \theta_i   \sim   \Nor(\theta^*, \tau^2),
+\]
+so marginally
+\[
+\hat \theta_i \sim   
+\Nor(\theta^*, v_i + \tau^2).
+\]
+\item The overall effect estimate $\hat \theta^*$ is now based on the weights
+  $$w_i^*  =  {1}/{(v_i + \tau^2)}.$$
+%% \[
+%%   \hat \theta^*  = \frac{\sum w_i^* \hat \theta_i}{\sum w_i^*}, 
+%%   \mbox{ with }
+%% %% w_i^*  =  \frac{1}{v_i + \tau^2} \mbox{ and }
+%%   \se(\hat \theta^*) = {1}/{\sqrt{\sum w_i^*}}.
+%% \]
+%% with weights $w_i^*  =  {1}/{(v_i + \tau^2)}$.
+\item Compared to the fixed effect model, 
+\begin{itemize}
+\item the confidence intervals for the
+  overall treatment effect will become wider, 
+\item  large studies will obtain less weight. 
+\end{itemize}
+%% \item[$\rightarrow$] $z^*=\hat \theta^*/\se(\hat \theta^*)$ can be used to test $H_0$: $\theta^*=0$.
+%  under heterogeneity.
+%\item For the preeclampsia data, the test gives $\chi^2_1 = 6.4$ ($p=0.011$)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Estimate of heterogeneity variance and Higgins' $I^2$}
+  \begin{itemize}
+  \item \alert{Moment estimator} of heterogeneity variance $\tau^2$ compares
+    $Q$-statistic to its expectation $n-1$ under homogeneity.
+\item Truncation at zero and appropriate scaling gives estimate  $\hat \tau^2$.
+  %% \[
+  %% \hat \tau^2 = \left\{Q-(n-1)\right\}_{+} / \left\{\textstyle\sum w_i - \textstyle\sum w_i^2/\textstyle\sum w_i\right\}
+  %% \]
+\item Standard \alert{DerSimonian-Laird} approach plugs $\hat \tau^2$ in $w_i^* = {1}/{(v_i + \tau^2)}$. %% ,  
+  %% the alternative \alert{Hartung-Knapp} adjustment accounts for 
+  %% the uncertainty of $\hat \tau^2$. 
+%\item Standard deviation $\hat \tau$ rather than $\hat \tau^2$ is often reported. 
+%where $Q = \sum w_i (\hat \theta_i - \hat \theta)^2$
+<<ch3, echo=F>>=
+
+Q <- t.homo
+sigma2.hat <- max(0, (Q-(n-1))/(sum(w)-sum(w^2)/sum(w)))
+w.star <- 1/(variances+sigma2.hat)
+num.star <- sum(w.star*logOddsRatios)
+den.star <- sum(w.star)
+theta.star.hat <- num.star/den.star
+se.theta.star.hat <- 1/sqrt(sum(w.star))
+wald.star.z <- (theta.star.hat)/se.theta.star.hat
+wald.star.p <- 2*pnorm(abs(wald.star.z), lower.tail=FALSE)
+
+@ 
+\item Easier to interpret is \alert{Higgins' $I^2$}: 
+  {Percentage of variance} that is attributable to study heterogeneity.
+%% \item For the preeclampsia data we obtain $\hat
+%%   \tau^2=\Sexpr{round((sigma2.hat),2)}$, 
+%%   $\hat \theta^*=\Sexpr{round(theta.star.hat,2)}$, {\it i.e.} $\widehat{\OR}=\Sexpr{format(exp(theta.star.hat),digits=2, nsmall=2)}$, with  
+%%   $\se(\hat \theta^*)=\Sexpr{round(sqrt(se.theta.star.hat),2)}$.
+%%   \item The Wald test for $H_0$: $\theta^*=0$ now gives $z^*
+%%     =\Sexpr{round(wald.star.z,2)}$
+%%     ($p=\Sexpr{format.pval(wald.star.p,digits=2,eps=0.0001, scientific=FALSE)}$).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Presentation in forest plot}
+\framesubtitle{Random effects model}
+\vspace{1cm}
+
+<<ch4, echo = FALSE>>=
+
+pree <- read.csv("data/preeclampsia.csv", header = TRUE, sep = ",", dec = ".", fill = TRUE)     
+pree <- pree[order(pree$study),]
+
+#transformVarNames(pree, "pree")
+study       <- pree$study
+treatedPre <- pree$diur_pre
+treatedTot <- pree$diur_tot
+controlPre <- pree$plac_pre
+controlTot <- pree$plac_tot
+a <- treatedPre
+b <- treatedTot
+c <- controlPre
+d <- controlTot
+@ 
+
+<<ch4b, echo = TRUE, eval = F>>=
+library(meta)
+forest(meta1, comb.fixed=TRUE, comb.random=TRUE)
+@ 
+\vspace{-1.5cm}
+<<ch4bis, echo = FALSE>>=
+forest(meta1, comb.fixed = TRUE, comb.random = TRUE)
+@ 
+
+
+<<ch5, echo=F>>=
+
+or.fixed <- exp(meta1$TE.fixed)
+or.lower <- exp(meta1$lower.fixed)
+or.upper <- exp(meta1$upper.fixed)
+ci.fixed <- c(or.lower, or.upper)
+
+or.random <- exp(meta1$TE.random)
+or.lower <- exp(meta1$lower.random)
+or.upper <- exp(meta1$upper.random)
+ci.random <- c(or.lower, or.upper)
+
+
+
+@ 
+\end{frame}
+
+
+\begin{frame}{Assessing replication success}
+  \begin{block}{How to assess replication success with multiple replication 
+  studies?}
+  \pause
+    \begin{itemize}
+    \item[] One option: 
+      \begin{enumerate}
+      \item Perform a {\color{red} meta-analysis} with the replication studies
+      \pause
+      \item Retrieve/compute: 
+        \begin{itemize}
+        \item the {\color{foo} meta-analytic combined effect} $\hat\theta_r$
+        \item the {\color{foo} standard error of the combined effect} $\sigma_r = \se(\hat\theta_r)$
+        \item the {\color{foo} meta-analytic $z$-value} $z_r = \hat\theta_r/\sigma_r$
+        \item the {\color{foo} variance ratio (relative sample size)} $c = \sigma_o^2/\sigma_r^2$
+        \end{itemize}
+      \pause
+      \item Apply the {\color{red} same methods} as in a 1-1 scenario
+      \end{enumerate}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Example for experiment FSD}
+  \begin{block}{Meta-analysis of the external replications}
+  \end{block}
+<<size = "tiny">>=
+FSD <-  subset(protzko2020, experiment == "FSD") 
+(meta_FSD <- metagen(TE = smd, seTE = se, studlab = lab, 
+                     exclude = (type == "original" | type == "self-replication"), 
+                     data = FSD, sm = "SMD"))
+@
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Retrieving results}
+<<eval = T, size="tiny">>=
+
+(thetar_FSD <- meta_FSD$TE.fixed) # meta-analytic estimate
+(se_thetar_FSD <- meta_FSD$seTE.fixed) # standard error of estimate
+(zr_FSD <- meta_FSD$zval.fixed) # meta-analytic z-value
+
+
+FSD_ori <- subset(FSD, type == "original")
+(c_FSD <- FSD_ori$se^2/se_thetar_FSD^2) # variance ratio (relative sample size)
+
+@
+\end{frame}
+
+\begin{frame}[fragile]{Assessing replication success}
+\vspace{0.5cm}
+  
+  \begin{block}{Two-trials rule}
+<<size = "tiny">>=
+zo_FSD <- FSD_ori$smd/FSD_ori$se
+(po_FSD <- z2p(zo_FSD, alternative = "one.sided"))
+(pr_FSD <- z2p(zr_FSD, alternative = "one.sided"))
+@
+\begin{center}
+{\color{red} Replication success with the two-trials rule}
+\end{center}
+  \end{block}
+\pause
+  \begin{block}{Sceptical $p$-value}
+<<size = "tiny">>=
+(pS_FSD <- pSceptical(zo = zo_FSD, zr = zr_FSD, c = c_FSD, 
+                     alternative = "one.sided", type = "golden"))
+@
+  \begin{center}
+{\color{red} Replication success with the sceptical $p$-value}
+\end{center}
+  \end{block}
+
+\begin{center}
+\end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]{Forest plot of experiment FSD}
+\vspace{1cm}
+<<echo = T, eval = F>>=
+forest(meta_FSD)
+@
+\vspace{-1cm}
+<<echo = F, eval = T>>=
+forest(meta_FSD)
+@
+\end{frame}
+
+
+
+\begin{frame}
+\section{More advanced topics}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\huge \textbf{Replication studies with a sequential design}}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}{Interim analyses}
+
+  \begin{block}{Stopping a study at an interim analysis}
+    \begin{itemize}
+    \item popular in {\color{foo} clinical trials} 
+    \item saves {\color{foo} time and money} 
+    \item Two situations
+    \pause
+    \item [] \begin{center}
+    {\color{springgreen4} Efficacy stopping}
+    \end{center}
+    \pause
+    \item[] \begin{center}
+    {\color{darkred} Futility stopping}
+    \end{center}
+    \end{itemize} 
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Social Sciences Replication Project}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\includegraphics[width = 1\textwidth]{images_presentation/camerer2018.png}
+\end{center}
+\begin{itemize}
+\item[--] 21 studies replicated
+\pause
+\item[--] \textcolor{springgreen4}{11 stopped} at stage 1
+\item[] \textcolor{white}{10 continued in stage 2}
+\end{itemize}
+% \vspace{-2.5cm}
+\end{column}
+
+
+
+\begin{column}{0.5\textwidth}
+<<fig.width = 10, fig.height = 5, echo = F>>=
+plot(NA, 
+     axes= F, 
+     xlim = c(0, 5), 
+     ylim = c(0, 1), 
+     xlab = "", 
+     ylab = "")
+
+segments(0, 0.5, 2, 0.5, lwd = 2)
+segments(2, 0.5, 5, 0.5, lwd = 2, col = "white")
+points(2, 0.5, pch = "|", cex = 2)
+text(1, 0.7, "Stage 1", cex = 2)
+text(3.5, 0.7, "Stage 2", cex = 2, col = "white")
+@
+
+
+\vspace{-1cm}
+\begin{itemize}
+\item[] {\scriptsize Significant $p$-value and effect in the same direction:
+\textcolor{springgreen4}{stop for efficacy}}
+\item[] \textcolor{gray!20}{ \scriptsize Otherwise: stage 2}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Social Sciences Replication Project}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\includegraphics[width = 1\textwidth]{images_presentation/camerer2018.png}
+\end{center}
+\begin{itemize}
+\item[--] 21 studies replicated
+\item[--] \textcolor{springgreen4}{11 stopped} at stage 1
+\item[--] \textcolor{purple!50!red}{10 continued} in stage 2
+\end{itemize}
+% \vspace{-2.5cm}
+\end{column}
+
+
+
+
+\begin{column}{0.5\textwidth}
+<<fig.width = 10, fig.height = 5, echo = F>>=
+plot(NA, 
+     axes= F, 
+     xlim = c(0, 5), 
+     ylim = c(0, 1), 
+     xlab = "", 
+     ylab = "")
+
+segments(0, 0.5, 2, 0.5, lwd = 2)
+segments(2, 0.5, 5, 0.5, lwd = 2)
+points(2, 0.5, pch = "|", cex = 2)
+text(1, 0.7, "Stage 1", cex = 2)
+text(3.5, 0.7, "Stage 2", cex = 2)
+points(5, 0.5, pch = "|", cex = 2)
+@
+
+\vspace{-1cm}
+\begin{itemize}
+\item[] \textcolor{gray!20} {\scriptsize Significant $p$-value and effect in the same direction:
+\textcolor{gray!20}{stop for efficacy}}
+\item[] { \scriptsize Otherwise: stage 2}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Futility stopping}
+  \begin{block}{}
+    \begin{itemize}
+      \item In \emph{SSRP}, only {\color{springgreen4} efficacy stopping}
+      \item Which criterion for {\color{red} futility stopping}?
+      \vspace{0.75cm}
+      \pause
+      \item[] $\rightarrow$ Futility stopping when 
+          \begin{center}
+    {\color{red} Interim power} is smaller than {\color{red} 
+    futility boundary}  \\
+    {\color{foo} (e.g. 10\%)}
+    \end{center}
+    \end{itemize}
+
+  \end{block}
+\end{frame}
+
+\begin{frame}{Interim power}
+
+  \begin{block}{}
+    \begin{itemize}
+    \item Power of a replication study taking into account 
+    {\color{foo} data from an interim analysis}
+    \item Based on the {\color{foo} two-trials rule}
+    \item {\color{foo} Conditional} vs {\color{foo} predictive} 
+    \item Depends on {\color{foo} $p_o$}, {\color{foo} $c$}, but also
+      \begin{itemize}
+        \item {\color{red} $p_i$:} the $p$-value at interim
+        \item {\color{red} $f$:} the fraction of the replication study already
+        completed
+      \end{itemize}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Conditional power at interim}
+\framesubtitle{Uncertainty of original result is ignored}
+<<schema2, fig.height = 5, echo = F>>=
+par(mfrow = c(1,1))
+## Conditional
+plot(NULL, xlim = c(0,12), ylim = c(0,5), 
+     axes = F,
+     xlab = "", 
+     ylab = "", 
+     # main = "Conditional power at interim"
+     )
+# title(main = "Conditional power at interim", 
+#       line = -1,
+#       cex.main = 1.5)
+
+
+segments(0,1,5,1)
+points(0,1, pch = "|")
+points(5,1, pch = "|")
+text(2.5, 3.5, "Original study", cex = 1.5)
+segments(7,1,8.5,1, lty = 1)
+segments(8.5,1,12,1, lty = 2)
+points(7,1, pch = "|")
+# points(8.5, 1, pch = "|", col = "red")
+points(12,1, pch = "|")
+text(9.5, 3.5, "Replication study", cex = 1.5)
+
+## To do CI
+#######
+segments(2.5, 2.4, 2.5, 3, col = "grey",
+         lwd = 2)
+points(2.5, 3, pch = "--", col = "grey", 
+       cex = 2)
+points(2.5, 2.4, pch = "--", col = "grey", 
+       cex = 2)
+points(2.5, 2.7, pch = 20, 
+       cex = 1.5)
+text(3,2.7, expression(hat(theta)[o]), 
+     cex = 1.3)
+#######
+
+segments(8.5, 0.7, 8.5, 1.3, col = "darkgrey")
+text(8.5, 2, " Interim power\ 
+calculation", col = "darkgrey", cex = 1.5)
+
+@ 
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Predictive power at interim}
+\framesubtitle{Uncertainty of original result is \textbf{not} ignored}
+
+<<schema3, fig.height  = 5, echo = F>>=
+
+par(mfrow = c(1,1))
+
+
+# Informed predictive
+plot(NULL, xlim = c(0,12), ylim = c(0,5), 
+     axes = F,
+     xlab = "", 
+     ylab = "", 
+     # main = "Informed predictive power at interim"
+     )
+# title(main = "Informed predictive power at interim", 
+#       line = -1,
+#       cex.main = 1.5)
+
+segments(0,1,5,1)
+points(0,1, pch = "|")
+points(5,1, pch = "|")
+text(2.5, 3.5, "Original study", cex = 1.5)
+segments(7,1,8.5,1, lty = 1)
+segments(8.5,1,12,1, lty = 2)
+points(7,1, pch = "|")
+points(12,1, pch = "|")
+text(9.5, 3.5, "Replication study", cex = 1.5)
+
+## To do the CI
+#######
+segments(2.5, 2.4, 2.5, 3, 
+         lwd = 2)
+points(2.5, 3, pch = "--", 
+       cex = 2)
+points(2.5, 2.4, pch = "--", 
+       cex = 2)
+points(2.5, 2.7, pch = 20, 
+       cex = 1.5)
+text(3,2.7, expression(hat(theta)[o]), 
+     cex = 1.3)
+#######
+
+segments(8.5, 0.7, 8.5, 1.3, col = "darkgrey")
+text(8.5, 2, "Interim power\
+calculation", col = "darkgrey",
+cex = 1.5)
+
+
+@
+
+\end{frame}
+
+
+
+<<echo = F>>=
+library(biostatUZH)
+col0 <- function(x){
+ ifelse(x< 0.05,
+        paste("\\cellcolor{green!25}{", formatC(x, dig=2, format="f"), "}"),
+        paste("\\cellcolor{red!25}{", formatC(x, dig=2, format="f"), "}"))
+}
+
+
+col1 <- function(x){
+ ifelse(x< 0.025,
+        paste("\\cellcolor{green!25}{", formatPval(x), "}"),
+        paste("\\cellcolor{red!25}{", formatPval(x), "}"))
+}
+
+col2 <- function(x){
+ ifelse(x< 30,
+        paste("\\cellcolor{blue!30}{", round(x, 1), "}"),
+        paste("\\cellcolor{white}{", round(x, 1), "}"))
+}
+
+col3 <- function(x){
+ ifelse(x< 30,
+        paste("\\cellcolor{white}{", round(x, 1), "}"),
+        paste("\\cellcolor{white}{", round(x, 1), "}"))
+}
+
+col4 <- function(x){
+  paste("\\cellcolor{white}{", formatPval(x), "}")
+}
+
+@
+
+<<echo = F>>=
+
+## Defining the variables 
+level = 0.025
+data("SSRP")
+
+## ratio and relative
+SSRP$c <- SSRP$se_fiso^2/SSRP$se_fisr^2
+SSRP$f = SSRP$se_fisr^2/SSRP$se_fisi^2 
+
+## we want to have everything one-sided
+SSRP$zo <- SSRP$fiso/SSRP$se_fiso
+SSRP$zi <- SSRP$fisi/SSRP$se_fisi
+SSRP$zr <- SSRP$fisr/SSRP$se_fisr 
+subs <- which(!is.na(SSRP$zr))
+
+SSRP$po1 <- z2p(SSRP$zo, alternative = "greater")
+SSRP$pi1 <- z2p(SSRP$zi, alternative = "greater")
+SSRP$pr1 <- rep(NA, times = length(SSRP$zr))
+SSRP$pr1[subs] <- z2p(SSRP$zr[subs], alternative = "greater")
+
+## studies which have been stopped and final p-value
+SSRP$stopped <- ifelse(is.na(SSRP$rr), 2, 1) # indicates if study has been stopped (2) or not (1) at interim
+SSRP$r_final <- ifelse(is.na(SSRP$rr), SSRP$ri, SSRP$rr) # final r
+SSRP$pval1_final <- ifelse(is.na(SSRP$pr1), SSRP$pi1, SSRP$pr1) # final p-value
+
+## studies which failed to replicate at final analysis
+SSRP[SSRP$stopped == 1 & SSRP$pval1_final > 0.025, "stopped"] <- 0 
+
+## Remove Journal and Publication Year from study
+SSRP$study <- gsub( ", Science|, Nature|[0-9]|et al.", "", SSRP$study)
+SSRP$study <- gsub("\\(\\)", '', SSRP$study)
+
+
+## new dataset: only studies not stopped at interim
+SSRP_red <- SSRP[SSRP$stopped != 2,]
+SSRP_red <- SSRP_red[-1, ]
+
+@
+
+<<preparation table interim, results = 'asis', echo = F>>=
+
+
+# Conditional Power at interim
+cpi <- with(SSRP_red,  
+            powerSignificanceInterim(zo = zo, 
+                                     zi = zi,
+                                     c = c, 
+                                     f = f,
+                                     designPrior = "conditional",
+                                     analysisPrior = "flat",
+                                     level = 0.025, 
+                                     alternative = "one.sided"))
+
+# predictive power at interim
+IPPi <- with(SSRP_red, 
+             powerSignificanceInterim(zo = zo, 
+                                      zi = zi,
+                                      c = c, 
+                                      f = f,
+                                      designPrior = "informed predictive",
+                                      analysisPrior = "flat", 
+                                      level = 0.025, 
+                                      alternative = "one.sided"))
+# predictive power at interim
+PPi <- with(SSRP_red, 
+            powerSignificanceInterim(zo = zo, 
+                                     zi = zi,
+                                     c = c, 
+                                     f = f,
+                                     designPrior = "predictive",
+                                     analysisPrior = "flat", 
+                                     level = 0.025, 
+                                     alternative = "one.sided"))
+
+@
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{white}{futility boundary: 10\%}}
+{\color{white} $\rightarrow$ no study stopped for futility with {\color{white} conditional power at interim}}
+\end{block}
+
+
+<<table-interim, echo = FALSE, results = 'asis', echo = F>>=
+source("Rcode/construct_header.R")
+# summary table
+mat_content <- c(SSRP_red$study, 
+                 col1(SSRP_red$po1),
+                 SSRP_red$fiso,
+                 col4(SSRP_red$
+                        pi1),
+                 SSRP_red$fisi,
+                 col3(cpi*100),
+                 col3(IPPi*100),
+                 col4(SSRP_red$pval1_final),
+                 SSRP_red$fisr)
+
+summary_table_interim <- matrix(mat_content, ncol = 9, byrow = F)
+
+colnames(summary_table_interim) <- c("Study", "po", "ro", "pi", "ri",
+                                     "CPi", "HPP",
+                                     "pr","rr")
+
+summary_table_interim <- as.data.frame(summary_table_interim)
+
+cols <- c(3,5,9)
+# make sure that c, f, r etc are numeric
+summary_table_interim[,cols] = apply(summary_table_interim[,cols], 2, function (x) as.numeric(as.character(x)))
+
+#order the table om decreasing ri
+summary_table_interim <- summary_table_interim[order(summary_table_interim$ri ,summary_table_interim$pi, decreasing = c(TRUE, FALSE)),]
+
+xt2 <- xtable(summary_table_interim,
+              align =  c("l", "l","c", "c", "c", "c", "c", "c",
+                         "c", "c"),
+              digits = c(0, 0, 0,  2, 0,  2,1, 1, 1, 2))
+
+names(xt2) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                " $p_i$",
+                "$\\hat\\theta_i$",
+                "Cond.",
+                "Pred.",
+                "$p_r$",
+                "$\\hat\\theta_r$")
+#formatting (second title row)
+  a_header <- construct_header(
+  # the data.frame or matrix that should be plotted
+  summary_table_interim,
+  # the labels of the groups that we want to insert
+  grp_names = c("", "Original", "Interim", "Interim power (in \\%)", "Replication"),
+  # the number of columns each group spans
+  span = c(1, 2, 2, 2, 2),
+  # the alignment of each group, can be a single character (lcr) or a vector
+  align = "c"
+)
+
+print(xt2,
+      add.to.row = a_header,
+      include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+
+@
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{white}{futility boundary: 10\%}}
+{\color{white} $\rightarrow$ no study stopped for futility with {\color{white} conditional power at interim}}
+\end{block}
+
+
+<<echo = F, results = 'asis'>>=
+mat_content2 <- c(SSRP_red$study,
+                 col1(SSRP_red$po1),
+                 SSRP_red$fiso,
+                 col1(SSRP_red$pi1),
+                 SSRP_red$fisi,
+                 col3(cpi*100),
+                 col3(IPPi*100),
+                 col4(SSRP_red$pval1_final),
+                 SSRP_red$fisr)
+ 
+summary_table_interim2 <- matrix(mat_content2, ncol = 9, byrow = F)
+
+colnames(summary_table_interim2) <- c("Study", "po", "ro", "pi", "ri",
+                                     "CPi", "HPP",
+                                     "pr","rr")
+
+summary_table_interim2 <- as.data.frame(summary_table_interim2)
+
+cols <- c(3,5,9)
+# make sure that c, f, r etc are numeric
+summary_table_interim2[,cols] = apply(summary_table_interim2[,cols], 2, function (x) as.numeric(as.character(x)))
+
+#order the table om decreasing ri
+summary_table_interim2 <- summary_table_interim2[order(summary_table_interim2$ri ,summary_table_interim2$pi, decreasing = c(TRUE, FALSE)),]
+
+xt3 <- xtable(summary_table_interim2,
+              align =  c("l", "l","c", "c", "c", "c", "c", "c",
+                         "c", "c"),
+              digits = c(0, 0, 0,  2, 0,  2,1, 1, 1, 2))
+
+names(xt3) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                "\\cellcolor{Gray}$p_i$",
+                "$\\hat\\theta_i$",
+                "Cond.",
+                "Pred.",
+                "$p_r$",
+                "$\\hat\\theta_r$")
+
+
+print(xt3,
+      add.to.row = a_header,
+      include.rownames = F, 
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+@
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{red}{futility boundary: 10\%}}
+$\rightarrow$ no study stopped for futility with {\color{foo} conditional power at interim}
+\end{block}
+
+<<echo = F, results = 'asis'>>=
+
+names(xt3) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                "\\cellcolor{Gray}$p_i$",
+                "$\\hat\\theta_i$",
+                "\\cellcolor{Gray}Cond.",
+                "Pred.",
+                "$p_r$",
+                "$\\hat\\theta_r$")
+
+
+print(xt3,
+      add.to.row = a_header,
+      include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6') 
+@
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{red}{futility boundary: 10\%}}
+$\rightarrow$ four studies stopped for futility with {\color{foo} 
+predictive power at interim}
+\end{block}
+
+
+<<echo = F, results = 'asis'>>=
+mat_content3 <- c(SSRP_red$study,
+                 col1(SSRP_red$po1),
+                 SSRP_red$fiso,
+                 col1(SSRP_red$pi1),
+                 SSRP_red$fisi,
+                 col3(cpi*100), 
+                 col2(IPPi*100),
+                 col4(SSRP_red$pval1_final),
+                 SSRP_red$fisr)
+
+summary_table_interim3 <- matrix(mat_content3, ncol = 9, byrow = F)
+
+colnames(summary_table_interim3) <- c("Study", "po", "ro", "pi", "ri",
+                                     "CPi", "HPP",
+                                     "pr","rr")
+
+summary_table_interim3 <- as.data.frame(summary_table_interim3)
+
+cols <- c(3,5,9)
+# make sure that c, f, r etc are numeric
+summary_table_interim3[,cols] = apply(summary_table_interim3[,cols], 2, function (x) as.numeric(as.character(x)))
+
+#order the table om decreasing ri
+summary_table_interim3 <- summary_table_interim3[order(summary_table_interim3$ri ,summary_table_interim3$pi, decreasing = c(TRUE, FALSE)),]
+
+xt4 <- xtable(summary_table_interim3,
+              align =  c("l", "l","c", "c", "c", "c", "c", "c",
+                         "c", "c"),
+              digits = c(0, 0, 0,  2, 0,  2,1, 1, 1, 2))
+
+names(xt4) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                "\\cellcolor{Gray}$p_i$",
+                "$\\hat\\theta_i$",
+                "Cond.",
+                "\\cellcolor{Gray}Pred.",
+                "$p_r$",
+                "$\\hat\\theta_r$")
+
+
+print(xt4,
+      add.to.row = a_header,
+      include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Results}
+\begin{block}{\textcolor{red}{futility boundary: 10\%}}
+$\rightarrow$ four studies stopped for futility with {\color{foo} 
+predictive power at interim}
+\end{block}
+
+<<echo = F, results = 'asis'>>=
+mat_content4 <- c(SSRP_red$study,
+                 col1(SSRP_red$po1), 
+                 SSRP_red$fiso,
+                 col1(SSRP_red$pi1),
+                 SSRP_red$fisi,
+                 col3(cpi*100),
+                 col2(IPPi*100),
+                 col1(SSRP_red$pval1_final),
+                 SSRP_red$fisr)
+
+summary_table_interim4 <- matrix(mat_content4, ncol = 9, byrow = F)
+
+colnames(summary_table_interim4) <- c("Study", "po", "ro", "pi", "ri",
+                                     "CPi", "HPP",
+                                     "pr","rr")
+
+summary_table_interim4 <- as.data.frame(summary_table_interim4)
+
+cols <- c(3,5,9)
+# make sure that c, f, r etc are numeric
+summary_table_interim4[,cols] = apply(summary_table_interim4[,cols], 2, function (x) as.numeric(as.character(x)))
+
+#order the table om decreasing ri
+summary_table_interim4 <- summary_table_interim4[order(summary_table_interim4$ri ,summary_table_interim4$pi, decreasing = c(TRUE, FALSE)),]
+
+xt5 <- xtable(summary_table_interim4,
+              align =  c("l", "l","c", "c", "c", "c", "c", "c",
+                         "c", "c"),
+              digits = c(0, 0, 0,  2, 0,  2,1, 1, 1, 2))
+
+names(xt5) <- c("Study",
+                "\\cellcolor{Gray}$p_o$",
+                "$\\hat\\theta_o$",
+                "\\cellcolor{Gray}$p_i$",
+                "$\\hat\\theta_i$",
+                "\\cellcolor{Gray}Cond.",
+                "\\cellcolor{Gray}Pred.",
+                "\\cellcolor{Gray}$p_r$",
+                "$\\hat\\theta_r$")
+
+
+print(xt5,
+      add.to.row = a_header,
+      include.rownames = F,
+      hline.after = F,
+      sanitize.text.function=function(x){x},
+      scalebox='0.6')
+@
+
+\end{frame}
+
+
+
+\begin{frame}{Conclusion/Outlook}
+
+\begin{itemize}
+  \item Incorporation of \alert{smallest effect size of interest}
+  \item Replication of \alert{non-inferiority} and \alert{equivalence} studies
+  \item \alert{Bayes factors} to assess replication success
+  \end{itemize}
+  
+\begin{center}
+\includegraphics[width=8cm]{Seibold_etal2021Top.png}  
+\url{https://doi.org/10.1111/1740-9713.01554}
+  
+%%\fbox{Statisticians to the Rescue!}
+%%\fbox{Statisticians Roll up Your Sleeves!}
+\end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Acknowledgments}
+  
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+    \begin{center}
+      \includegraphics[height=0.275\paperheight]{images_presentation/CRS.png}% \\
+    \end{center}
+    \begin{center}
+    \includegraphics[width=4cm]{images_presentation/SwissRNLogowide.png} \\
+    \end{center}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+      \vspace{0.5cm}
+    \begin{center}
+    \includegraphics[width=5cm]{images_presentation/logo.png}\\
+    {\scriptsize \url{http://p3.snf.ch/Project-189295}}
+    \end{center}
+    \begin{center}
+    \vspace{0.5cm}
+      \includegraphics[width=1.65cm]{images_presentation/pawel_samuel.jpg}\\
+    {\scriptsize Samuel Pawel}
+    \end{center}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+% ============================================================================
+\nocite{Pyc2010, open2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, 
+Held2020, HeldMichPaw2021, MicheloudHeld2021, Protzko2020, Errington2021}
+\begin{frame}[allowframebreaks]{References}
+  \tiny
+  \bibliographystyle{apalike}
+  \bibliography{antritt}
+\end{frame}
+  
+
+
+
+\end{document}

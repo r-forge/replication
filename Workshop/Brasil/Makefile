@@ -4,13 +4,17 @@
 # 2020-01-08
 # ------------------------------------------------------------------------------
 
-all: ReplicationSuccess_Tutorial_Brasil.pdf 
+all: Lecture_Brasil.pdf Workshop_Brasil.pdf
 
-ReplicationSuccess_Tutorial_Brasil.pdf: ReplicationSuccess_Tutorial_Brasil.Rnw Makefile
-	echo "library('knitr'); knit2pdf('ReplicationSuccess_Tutorial_Brasil.Rnw')" | R --no-save --no-restore
-	pdfjam --vanilla --quiet --nup 2x2 --landscape  --outfile ReplicationSuccess_Tutorial_Brasil-nup.pdf ReplicationSuccess_Tutorial_Brasil.pdf
+Lecture_Brasil.pdf: Lecture_Brasil.Rnw Makefile
+	echo "library('knitr'); knit2pdf('Lecture_Brasil.Rnw')" | R --no-save --no-restore
+	pdfjam --vanilla --quiet --nup 2x2 --landscape  --outfile Lecture_Brasil-nup.pdf Lecture_Brasil.pdf
+	
+Workshop_Brasil.pdf: Workshop_Brasil.Rnw Makefile
+	echo "library('knitr'); knit2pdf('Workshop_Brasil.Rnw')" | R --no-save --no-restore
+	pdfjam --vanilla --quiet --nup 2x2 --landscape  --outfile Workshop_Brasil-nup.pdf Workshop_Brasil.pdf
 
 
 
 clean:
-	rm -f *.dvi *.aux *.log *.toc *.bmt *.bbl *.blg *.idx *.ilg *.ind *.mtc* *.flc *.out *.nav *.vrb *.snm *.gz 
+	rm -f *.dvi *.aux *.log *.toc *.bmt *.bbl *.blg *.idx *.ilg *.ind *.mtc* *.flc *.out *.nav *.vrb *.snm *.gz Workshop_Brasil-concordance.tex Lecture_Brasil-concordance.tex Workshop_Brasil.tex Lecture_Brasil.tex
