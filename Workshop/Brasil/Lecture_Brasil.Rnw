@@ -211,16 +211,6 @@ opts_chunk$set(fig.path = "figures/fig",
 \end{frame}
 
 
-
-% CM: delete 
-<< size = "normalsize", eval = F>>=
- library(ReplicationSuccess)
- data("RProjects")
- social <- subset(RProjects,
-                  project == "Social Sciences")
- @
-
-
 \begin{frame}[fragile]{Social sciences replication project}
   \framesubtitle{Correlation scale}
 << echo = FALSE >>=
@@ -247,7 +237,7 @@ gg_r <-  ggplot(data = SSRP, aes(x = ro, y = rr)) +
 
 
 
-\begin{frame}[fragile]{Statistical framework of package}
+\begin{frame}[fragile]{Statistical framework}
 \begin{block}{}
 \begin{itemize}
 \item Effect estimates are assumed to be {\color{red} normally distributed} after suitable transformation \\
