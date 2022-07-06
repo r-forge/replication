@@ -101,7 +101,14 @@ for (p in unique(RProjects$project)) {
 RProjects$ps <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
                                            alternative = "one.sided",
                                            type = "golden"))
+RProjects$psC <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
+                                            alternative = "one.sided",
+                                            type = "controlled"))
 RProjects$pSsuccess <- RProjects$ps < 0.025
+RProjects$pSsuccessC <- RProjects$psC < 0.025
+
+sum(RProjects$pSsuccess == RProjects$pSsuccessC)
+
 allpsDF <- data.frame(project = "all", 
                       success = mean(RProjects$pSsuccess)*100)
 

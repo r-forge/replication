@@ -17,6 +17,15 @@
 \def\NNT{\mbox{NNT}}
 % nicer tables
 \usepackage{booktabs}
+% \usepackage{soul}
+% \makeatletter
+% \let\HL\hl
+% \renewcommand\hl{%
+%   \let\set@color\beamerorig@set@color
+%   \let\reset@color\beamerorig@reset@color
+%   \HL}
+% \makeatother
+% \sethlcolor{red!25}
 
 % define same colors as in plots
 \definecolor{purple3}{RGB}{125,38,205}
@@ -72,6 +81,7 @@
 << include = FALSE, purl = FALSE >>=
 library(knitr)
 library(scales)
+library(biostatUZH)
 opts_chunk$set(fig.path = "figures/fig", 
                cache = TRUE, 
                fig.align = "center",
@@ -445,6 +455,421 @@ study_plot
 \end{frame}
 
 
+\begin{frame}{1. Two-trials rule}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\begin{block}{}
+{\large \textit{Are both estimates statistically significant in the same direction?}} 
+
+$\rightarrow$ Which threshold? \\
+$\rightarrow$ one-sided {$\color{red} \alpha = 0.025$} 
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 10, color = "red") +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 10, color = "red") +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  ylim(-0.05, 1) +
+   labs(x = " ", y = "Effect Size") + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{minipage}
+\end{frame}
+
+\begin{frame}{2. Compatibility of effect estimates}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\begin{block}{}
+% {\large \textit{Is the replication estimate contained in its prediction interval?}} \\
+{\large \textit{Is the meta-analytic $Q$-test of the estimates statistically 
+significant?}} 
+
+% Replication effect contained in its prediction interval? \\ 
+% $\rightarrow$ function \texttt{predictionInterval()} \\
+% $\rightarrow$ $Q$-test statistically significant at two-sided $\alpha = 0.05$? \\ 
+$\rightarrow$ Which threshold? \\
+$\rightarrow$ two-sided {\color{springgreen4}$\alpha = 0.05$}
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+pi_df <- predictionInterval(thetao = study$fiso,
+                            seo = study$se_fiso,
+                            ser = study$se_fisr)
+pi_df <- tanh(pi_df)
+q_pval <- Qtest(thetao = study$fiso, thetar = study$fisr, 
+                seo = study$se_fiso, ser = study$se_fisr)
+
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  annotate(geom = "text", x = 1.47, y = 0.8,
+           label = paste("italic(p)[Q] ==~", formatPval(q_pval)),
+           color = "springgreen4", size = 10, parse = TRUE) +
+   geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  ylim(-0.05, 1) +
+  labs(x = " ", y = "Effect Size") + 
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+@
+\end{minipage}
+\end{frame}
+
+\begin{frame}{3. Meta-analysis of effect estimates}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\begin{block}{}
+{\large \textit{Is a meta-analytic estimate statistically significant?}} 
+
+$\rightarrow$ Which threshold? \\
+$\rightarrow$ {\color{tan3} one-sided $\alpha = 0.025$ or $0.0025$} used in 
+practice\\
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+var_ma_estimate <- with(study, 1/(1/se_fiso^2 + 1/se_fisr^2))
+ma_estimate <- with(study, fiso/se_fiso^2 + fisr/se_fisr^2)*
+               var_ma_estimate
+p_ma <- pnorm(abs(ma_estimate/sqrt(var_ma_estimate)),
+              lower.tail = FALSE)*2
+ma_data <- data.frame(se = sqrt(var_ma_estimate),
+                      ma_estimate = ma_estimate,
+                      ma_estimate_r = tanh(ma_estimate),
+                      p_ma = formatPval(p_ma),
+                      stringsAsFactors = FALSE)
+
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  geom_pointrange(data = ma_data,
+                  aes(x = 1.5, y = ma_estimate_r, 
+                      ymin = ma_estimate - qnorm(0.975)*se,
+                      ymax = ma_estimate + qnorm(0.975)*se),
+                  size = 1.5, color = "tan3") +
+  geom_text(data = ma_data, color = "tan3",
+            aes(x = 1.4, y = ma_estimate_r, 
+                label = paste("italic(p)[M] ==~", p_ma)),
+            nudge_y = 0.31, nudge_x = 0.12, 
+            size = 10, parse = TRUE) +
+    geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  ylim(-0.05, 1) +
+  labs(x = " ", y = "Effect Size") + 
+  theme_bw() +
+  theme(axis.text = element_text(size = 25),
+        axis.title = element_text(size = 30))
+@
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}{Sceptical $p$-value}
+  \framesubtitle{golden vs controlled recalibration}
+<<echo = FALSE>>=
+alpha = 0.025
+alphaU_g <- levelSceptical(level = alpha, alternative = "one.sided", 
+                           type = "golden")
+
+@
+  
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{$p_S$ golden}
+        \begin{itemize}
+        \item penalizes {\color{foo} shrinkage}
+        \item controls Type-I error rate for $c > 1$, but {\color{red} not exactly}
+        \item for $\alpha = \Sexpr{alpha}$, $p_o$ and $p_r$ need to be 
+        $< \Sexpr{biostatUZH::formatPval(alphaU_g)}$.
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \pause 
+    \begin{column}{0.5\textwidth}
+      \begin{block}{$p_S$ controlled}
+        \begin{itemize}
+          \item {\color{red} exact} Type-I error control
+          \item no shrinkage penalization
+          \item upper bound on $p_o$ and $p_r$ {\color{red} depends on $c$}.
+          \item[]
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+  
+\end{frame}
+
+\begin{frame}{Shrinkage penalization}
+  \framesubtitle{Golden vs sceptical $p$-value}
+<<echo = F, fig.height = 4.5>>=
+# Figure 5 - preparation
+par(las = 1, mfrow = c(1, 2))
+
+zalpha = p2z(alpha, alternative = "one.sided")
+
+eps <-  10e-4
+myplim <- c(eps, 0.12)
+mydlim <- c(0.15, 15)
+
+pos <-  seq(10e-200, 0.12, length.out = 1000)
+zos <- p2z(pos, alternative = "one.sided")
+
+c.seq <-  c(0.2, 0.5, 1, 2, 5)
+col.seq <- c(5, 4, 3 , 2, 1)
+
+resultsCont <- results2TR <- resultsGold <-  matrix(NA, nrow = length(zos), ncol = length(c.seq))
+
+for(i in 1:length(c.seq)){
+    resultsCont[, i] <- effectSizeReplicationSuccess(zo = zos, c = c.seq[i], level = alpha, 
+                                                     alternative = "one.sided",
+                                                     type = "controlled")
+    results2TR[, i] <- ifelse(zos > zalpha,  effectSizeSignificance(zo = zos, c = c.seq[i], level = alpha, 
+                                              alternative = "one.sided"), NA)
+    resultsGold[, i]  <- effectSizeReplicationSuccess(zo = zos, c = c.seq[i], level = alpha, 
+                                                      type = "golden", alternative = "one.sided")
+}
+
+
+# bound on p-value
+u_seq <- levelSceptical(level = alpha, 
+                        c = c.seq, 
+                        alternative = "one.sided", 
+                        type = "controlled")
+
+
+### golden plot
+plot(NULL , 
+     xlim = myplim, 
+     ylim = mydlim, 
+     xlab = expression(paste("Original ", italic(p), "-value ", italic(p[o]))), 
+     ylab = expression(paste("Relative effect size ", italic(d))), 
+     log = "xy", 
+     xaxt = "n")##, axes=FALSE)
+title(main = "golden", line = 3)
+
+
+box()
+abline(v = c(alpha), 
+       lty = 2, 
+       col = "darkgrey")
+
+axis(1, at = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), 
+     labels = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1))
+
+
+axis(3, at = alpha, labels = alpha, cex.axis = 0.75, las = 2, col.ticks = "darkgrey", col.axis = "darkgrey")
+
+
+
+yi =  exp(seq(log(1.5), log(0.325), length.out = 5))
+
+for(i in 1:length(c.seq)){
+    lines(pos, 
+          resultsGold[, i], 
+          type = "l", , 
+          col = col.seq[i], 
+          lwd = 2)
+  lines(pos, 
+        lty = 2,
+        results2TR[, i], 
+        col = alpha(col.seq[i], 0.9), 
+        lwd = 2)
+    # where <- which.min((pos - alpha)^2)
+    # 
+    #     text(0.01, yi[i],
+    #      labels = bquote(italic(c) == .(c.seq[i])),
+    #      col = alpha(col.seq[i], 0.75),
+    #      cex = 0.8)
+}
+
+axis(3, at = alphaU_g, labels = formatPval(alphaU_g), 
+     las = 2)
+
+legend("topleft", 
+       c("c = 5", "c = 2", "c = 1", "c = 0.5", "c = 0.2"), 
+       col = rev(col.seq), 
+       lty = 1, 
+       bty = "n")
+
+legend("bottomright", 
+       c("golden", "two-trials rule"), 
+       col = "black", 
+       lty = 1:2,
+         lwd = 2, 
+       bg = "white", 
+       bty = "n")
+
+
+# controlled
+
+
+plot(NULL , 
+     xlim = myplim, 
+     ylim = mydlim, 
+     xlab = expression(paste("Original ", italic(p), "-value ", italic(p[o]))), 
+     ylab = expression(paste("Relative effect size ", italic(d))), 
+     log = "xy", 
+     xaxt = "n") ##, axes=FALSE)
+title(main = "controlled", line = 3)
+
+
+box()
+abline(v = c(alpha), 
+       lty = 2, 
+       col = "darkgrey")
+
+axis(1, at = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), 
+     labels = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1))
+
+for (i in 1:length(u_seq)){
+axis(3, at = u_seq[i], label = round(u_seq[i], 3), col.ticks= col.seq[i], 
+     col.axis = col.seq[i], 
+     las = 2, 
+     cex.axis = 0.75)
+  }
+axis(3, at = alpha, labels = alpha, cex.axis = 0.75, las = 2, col.ticks = "darkgrey", col.axis = "darkgrey")
+
+
+
+yi =  exp(seq(log(1.5), log(0.325), length.out = 5))
+
+for(i in 1:length(c.seq)){
+    lines(pos, 
+          resultsCont[, i], 
+          type = "l", , 
+          col = col.seq[i], 
+          lwd = 2)
+  lines(pos, 
+        lty = 2,
+        results2TR[, i], 
+        col = alpha(col.seq[i], 0.9), 
+        lwd = 2)
+    # where <- which.min((pos - alpha)^2)
+    # 
+    #     text(0.01, yi[i],
+    #      labels = bquote(italic(c) == .(c.seq[i])),
+    #      col = alpha(col.seq[i], 0.75),
+    #      cex = 0.8)
+}
+
+legend("bottomright", 
+       c("controlled", "two-trials rule"), 
+       col = "black", 
+       lty = 1:2,
+         lwd = 2, 
+       bg = "white", 
+       bty = "n")
+
+
+@
+
+\end{frame}
+
+\begin{frame}{Upper bound on $p_o$ and $p_r$}
+  \framesubtitle{$\alpha = 0.025$}
+  \begin{block}{}
+$\rightarrow$ {\color{red} Necessary,} but not sufficient condition for replication success
+\end{block}
+\vspace{-1cm}
+<<echo = F, fig.height = 3.3, fig.width = 5>>=
+par(las = 1, 
+    mar = c(5.1, 4.1, 4.1, 3.2))
+c.seq <- seq(0, 10, by = 0.01)
+lev.seq <- levelSceptical(level = alpha, 
+                          c = c.seq, 
+                          alternative = "one.sided", 
+                          type = "controlled")
+
+plot(c.seq, 
+     lev.seq, 
+     col = "blue", type = "l", lwd = 2, 
+     ylab = "upper bound", 
+     xlab = "c", 
+     yaxt = "n", 
+     cex.axis = 0.9)
+
+axis(2, c(0.025, 0.05, 0.075, 0.1, 0.125, 0.15), 
+     labels = c(0.025, 0.05, 0.075, 0.1, 0.125, 0.15), 
+     cex.axis = 0.9)
+abline(h = alphaU_g, col = "orange", lwd = 2)
+axis(4, at = alphaU_g, labels = formatPval(alphaU_g), 
+     col.axis = "orange", col.ticks = "orange")
+
+legend("bottomright", 
+       lwd = 2, 
+       c("controlled", "golden"), 
+       col = c("blue", "orange"), 
+       bty = "n", 
+       cex = 0.9)
+@
+
+\end{frame}
+
+
 \begin{frame}
 \section{Exercise 1 -- Analysis of replication studies}
   % \begin{block}{}
@@ -473,7 +898,12 @@ study_plot
     \begin{itemize}
       %% \item Statistical methods and functionality for the design and analysis of replication studies (work in progress!)
       \item Installation
-<< eval = FALSE, size = "small" >>=
+<< eval = FALSE, size = "footnotesize" >>=
+# development version 
+devtools::install_github(repo = "SamCH93/ReplicationSuccess",
+                         ref = "T1Econtrol")
+
+# CRAN version 
 install.packages("ReplicationSuccess")
 @
       \item Usage
@@ -612,10 +1042,92 @@ For all studies from the replication projects investigate
      replication success? Use a threshold of $\alpha = 0.025$ for the one-sided 
      $p$-values.
   \end{block}
+    \begin{block}{}
+{\color{darkred} Useful function: \texttt{z2p(..., alternative = "one.sided")}}
+    \end{block}
+\end{frame}
+  
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+For all studies from the replication projects investigate
+\end{block}
   \begin{block}{Exercise 1.2}
-    For how many study pairs do you find evidence for \textbf{incompatible} effect 
-    estimates (on Fisher $z$-scale)? Use the function
-    \texttt{Qtest()} and a threshold of $\alpha = 0.05$ for the resulting $p$-value.
+    \begin{itemize}
+    \item [(a)] For how many study pairs do you find evidence for \textbf{incompatible} effect 
+    estimates (on Fisher $z$-scale)? Use a threshold of $\alpha = 0.05$ for the resulting $p$-value.
+    \end{itemize}
+  \end{block}
+  
+      \begin{block}{}
+{\color{darkred} Useful function: \texttt{Qtest()}}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+{\color{white} For all studies from the replication projects investigate}
+\end{block}
+  \begin{block}{Exercise 1.2}
+    \begin{itemize}
+    \item [(b)] {\bf Compare} the results from exercises 1.1 and 1.2 a). 
+    \item[] Do all the study pairs with evidence for {\bf incompatibility} 
+    also fail the {\bf two-trials rule?}
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+{\color{white}For all studies from the replication projects investigate}
+\end{block}
+  \begin{block}{Exercise 1.2}
+    \begin{itemize}
+    \item [(c)] Choose one study pair where the estimates are
+    incompatible. Calculate the 95\% sceptical confidence interval. What do you observe?
+    \end{itemize}
+  \end{block}
+  
+      \begin{block}{}
+{\color{darkred} Useful function: \texttt{scepticalCI(..., 
+levelCI = 0.95)}}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+{\color{white} For all studies from the replication projects investigate}
+\end{block}
+  \begin{block}{Exercise 1.2}
+    \begin{itemize}
+    \item [(d)] For the same study, 
+    plot the $p$-value function.
+    \end{itemize}
+  \end{block}
+  
+      \begin{block}{}
+{\color{darkred} Useful function: \texttt{pValFunPlot(..., 
+levelCI = 0.95)}}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+{\color{white} For all studies from the replication projects investigate}
+\end{block}
+  \begin{block}{Exercise 1.2}
+    \begin{itemize}
+    \item [(e)] If time allows, {\bf repeat points c) and d)} 
+    with other study pairs, including one where there is no 
+    evidence for incompatibility of the effect estimates.  
+    \end{itemize}
   \end{block}
 \end{frame}
 
@@ -623,17 +1135,64 @@ For all studies from the replication projects investigate
 \begin{frame}[fragile]{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
 
-For all studies from the replication projects investigate
+For all studies from the replication projects 
   \begin{block}{Exercise 1.3}
-    Compute the one-sided \textbf{sceptical $p$-value} (with golden 
-    and controlled recalibration). How many replication 
-    studies are successful at $0.025$? 
-      Use the function \texttt{pSceptical()}. 
+  
+  \begin{itemize}
+    \item[a)]  Compute the one-sided \textbf{golden sceptical $p$-value}.
+    How many replication 
+    studies are successful at level $0.025$? 
+  \end{itemize}
   \end{block}
+  
+    \begin{block}{}
+{\color{darkred} Useful function: \texttt{pSceptical(..., type = "golden")}
+}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+
+For all studies from the replication projects 
+  \begin{block}{Exercise 1.3}
+  
+  \begin{itemize}
+    \item[b)]  Compute the one-sided \textbf{controlled sceptical $p$-value}.
+    How many replication 
+    studies are successful at level $0.025$? 
+  \end{itemize}
+  \end{block}
+  
+    \begin{block}{}
+{\color{darkred} Useful function: \texttt{pSceptical(..., type = "controlled")}
+}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+  \begin{block}{Exercise 1.3}
+  
+  \begin{itemize}
+    \item[c)]  Plot the {\bf golden sceptical $p$-value} against the 
+    {\bf controlled one}.
+    How many study pairs disagree at the 0.025 level? Have a closer look at 
+    these studies. 
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
   \begin{block}{Exercise 1.4}
     Look closer at the studies which show \textbf{discrepancies} in terms of replication 
-    success based on the two-trials rule and the sceptical $p$-value (golden). How do their 
-    effect estimates and sample sizes compare?
+    success based on the \textbf{two-trials rule} and the sceptical $p$-value 
+    \textbf{(controlled)}.
+    What do you observe?
   \end{block}
 \end{frame}
 
@@ -729,6 +1288,7 @@ for (p in unique(RProjects$project)) {
 \end{frame}
 
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+\framesubtitle{Part a)}
 \makebox[1 \textwidth][c]{  
   \resizebox{1\textwidth}{!} {
 << echo = FALSE, results = "asis" >>=
@@ -772,6 +1332,7 @@ print(Table2, include.rownames = FALSE, booktabs = TRUE,
 \end{frame}
 
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+  \framesubtitle{Part a)}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
@@ -783,22 +1344,6 @@ for (p in unique(RProjects$project)) {
   incompatible <- pval_Q_project < 0.05
   PropIncomp <- mean(incompatible)
   color <- ifelse(incompatible == FALSE, "#333333B3", "#8B0000B3")
-  # PI <- predictionInterval(thetao = data_project$fiso,
-  #                          seo = data_project$se_fiso,
-  #                          ser = data_project$se_fisr)
-  # PI <- tanh(PI) # transforming back to correlation scale
-  # within <- (data_project$rr < PI$upper) & (data_project$rr > PI$lower)
-  # coverage <- mean(within)
-  # color <- ifelse(within == TRUE, "#333333B3", "#8B0000B3")
-  # studynr <- seq(1, nrow(data_project))
-  # plot(data_project$rr, studynr, col = color, pch = 20,
-  #      xlim = c(-0.5, 1), xlab = expression(italic(r)[r]),
-  #      main = paste0(p, ": ", round(coverage*100, 0), "% compatible"),
-  #      cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5, yaxt = "n",
-  #      ylab = "")
-  # arrows(PI$lower, studynr, PI$upper, studynr, length = 0.02,
-  #        angle = 90, code = 3, col = color)
-  # abline(v = 0, lty = 3)
   title <- paste0(p, ": ", round(PropIncomp*100, 0), '% incompatible')
   plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
        xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
@@ -814,9 +1359,189 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+  \framesubtitle{Parts b)}
+<<results = 'asis', echo = F>>=
+library(xtable)
+incompSuccess <- paste("\\cellcolor{red!25}{", sum(RProjects$pQ <= 0.05 & RProjects$TTR), "}")
+compSuccess <-  sum(RProjects$pQ > 0.05 & RProjects$TTR)
+incompNoSuccess <- sum(RProjects$pQ <= 0.05 & !RProjects$TTR)
+compNoSuccess <- sum(RProjects$pQ > 0.05 & !RProjects$TTR)
+
+
+comp <- c("$p_Q > 0.05$", compSuccess, compNoSuccess)
+incomp <- c("$p_Q \\leq 0.05$", incompSuccess, incompNoSuccess)
+
+mat <- matrix(c(comp, incomp), nrow = 2, byrow = T)
+colnames(mat) <- c(" ", "yes", "no")
+
+
+xt.mat <- xtable(mat, align = "cc|cc")
+addtorow <- list()
+addtorow$pos <- list( -1)
+addtorow$command <- c(" & \\multicolumn{2}{c}{Success two-trials rule} \\\\\n")
+print(xt.mat, 
+      sanitize.text.function=identity, 
+      add.to.row = addtorow, 
+       hline.after = c(0,2), 
+      include.rownames = F)
+
+@
+
+\begin{itemize}
+  \item[] $\rightarrow$ {\color{red!75} Incompatible} effect estimates can fulfill the 
+  {\color{red!75} two-trials rule}
+\end{itemize}
+  
+  \end{frame}
+  
+  
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+  \framesubtitle{Parts c) and d): Example I}
+
+<<echo = F, fig.height = 2, fig.width = 5>>=
+library(ReplicationSuccess)
+library(tidyverse)
+library(meta)
+source("functions.R")
+ind.Qincompatible <- which(RProjects$Qincompatible)
+incomp <- RProjects[ind.Qincompatible, ]
+no.incomp <- RProjects[-ind.Qincompatible,]
+ex1 <- incomp[1,]
+ex2 <- incomp[23,]
+ex3 <- no.incomp[29,]
+
+pQ_ex1 <- with(ex1, Qtest(thetao = fiso, thetar = fisr, 
+                          seo = se_fiso, ser = se_fisr))
+scepticalCI_ex1 <- with(ex1, scepticalCI(thetao = fiso, thetar = fisr, 
+                          seo = se_fiso, ser = se_fisr))$CI
+
+with(ex1, ForestPlot(thetahat = c(fiso, fisr), 
+                    se = c(se_fiso, se_fisr), 
+                    title = study))
+
+@
+  \begin{block}{}
+    \begin{itemize}
+      \item $Q$-test $p$-value: $p_Q = \Sexpr{biostatUZH::formatPval(pQ_ex1)}$; 
+      {\color{red} conflit}
+      \item sceptical 95\%-CI: $\Sexpr{biostatUZH::formatCI(scepticalCI_ex1)}$
+      \item {\color{red} Two-trials rule unsuccessful}
+    \end{itemize}
+  \end{block}
+  
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+\framesubtitle{Parts c) and d): Example I}
+<<echo = F, fig.height = 3.5, fig.width = 5>>=
+library(tidyverse)
+source("functions.R")
+ind.Qincompatible <- which(RProjects$Qincompatible)
+incomp <- RProjects[ind.Qincompatible, ]
+no.incomp <- RProjects[-ind.Qincompatible,]
+ex1 <- incomp[3,]
+ex2 <- incomp[23,]
+ex3 <- no.incomp[29,]
+
+
+with(ex1, pValFunPlot(thetao = fiso, thetar = fisr, 
+                  seo = se_fiso, ser = se_fisr, 
+                  levelCI = 0.95))
+
+@
+
+\end{frame}
+
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+  \framesubtitle{Parts c) and d): Example II}
+
+<<echo = F, fig.height = 2, fig.width = 5>>=
+
+pQ_ex2 <- with(ex2, Qtest(thetao = fiso, thetar = fisr, 
+                          seo = se_fiso, ser = se_fisr))
+scepticalCI_ex2 <- with(ex1, scepticalCI(thetao = fiso, thetar = fisr, 
+                          seo = se_fiso, ser = se_fisr))$CI
+
+with(ex2, ForestPlot(thetahat = c(fiso, fisr), 
+                    se = c(se_fiso, se_fisr), 
+                    title = study))
+
+@
+  \begin{block}{}
+    \begin{itemize}
+      \item $Q$-test $p$-value: $p_Q = \Sexpr{formatPval(pQ_ex2)}$; 
+      {\color{red} conflit}
+      \item sceptical 95\%-CI: $\Sexpr{formatCI(scepticalCI_ex2)}$
+      \item {\color{olive} Two-trials rule successful}
+    \end{itemize}
+  \end{block}
+  
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+\framesubtitle{Parts c) and d): Example II}
+
+<<echo = F, fig.height = 3.5, fig.width = 5>>=
+
+with(ex2, pValFunPlot(thetao = fiso, thetar = fisr, 
+                  seo = se_fiso, ser = se_fisr, 
+                  levelCI = 0.95))
+
+@
+
+\end{frame}
+
+ % 
+ \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+  \framesubtitle{Parts c) and d): Example III}
+
+<<echo = F, fig.height = 2, fig.width = 5>>=
+
+pQ_ex3 <- with(ex3, Qtest(thetao = fiso, thetar = fisr, 
+                          seo = se_fiso, ser = se_fisr))
+scepticalCI_ex3 <- with(ex1, scepticalCI(thetao = fiso, thetar = fisr, 
+                          seo = se_fiso, ser = se_fisr))$CI
+
+with(ex3, ForestPlot(thetahat = c(fiso, fisr), 
+                    se = c(se_fiso, se_fisr), 
+                    title = study))
+
+@
+  \begin{block}{}
+    \begin{itemize}
+      \item $Q$-test $p$-value: $p_Q = \Sexpr{formatPval(pQ_ex3)}$; 
+      {\color{olive} no conflit}
+      \item sceptical 95\%-CI: $\Sexpr{formatCI(scepticalCI_ex3)}$
+      \item {\color{red} Two-trials rule unsuccessful}
+    \end{itemize}
+  \end{block}
+  
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+\framesubtitle{Parts c) and d): Example III}
+
+<<echo = F, fig.height = 3.5, fig.width = 5>>=
+
+with(ex3, pValFunPlot(thetao = fiso, thetar = fisr, 
+                  seo = se_fiso, ser = se_fisr, 
+                  levelCI = 0.95))
+
+@
+
+\end{frame}
+
+
+
+
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+\framesubtitle{Parts a) and b)}
 << echo = FALSE, fig.height = 4, results = "asis" >>=
 ## computing one.sided sceptical p-value for replication projects
+
 RProjects$ps <- with(RProjects, pSceptical(zo = zo, zr = zr, c = c, 
                                            alternative = "one.sided",
                                            type = "golden"))
@@ -923,14 +1648,107 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+  \framesubtitle{Part c)}
+<<echo = F, fig.height = 4, fig.width = 5>>=
+
+
+discrepantDF2 <- subset(RProjects, pSsuccess != pSsuccessC)[, c("study", "c", "ro", 
+                                                        "rr", "po1", "pr1", "ps",
+                                                        "psC", "zo", "se_fiso", "se_fisr", "fiso", "fisr")]
+
+col_success2 <- ifelse(RProjects$pSsuccess == RProjects$pSsuccessC, "#333333B3", "#8B0000B3")
+ggplot(data= RProjects, aes(x = ps, y = psC)) +
+    geom_point(aes(size = c), color = col_success2) +
+  coord_cartesian(xlim = c(10e-5, 1), ylim = c(10e-5, 1)) + 
+  geom_abline(intercept = 0, slope = 1, color = "grey") + 
+  geom_hline(yintercept = alpha, linetype = "dashed") +
+   geom_vline(xintercept = alpha, linetype = "dashed") +
+  xlab(expression(paste(italic(p[S]), " (golden)"))) + 
+  ylab(expression(paste(italic(p[S]), " (controlled)"))) + 
+    theme_bw()  +
+  theme(axis.text = element_text(size = 10), 
+        axis.title = element_text(size = 10), 
+        panel.background = element_blank()) + 
+  scale_size_continuous(breaks = c(0.2, 1, 2, 3, 4)) +
+   scale_y_continuous(trans='log', 
+                      breaks = c(0.00001, 0.0001, 0.001, 0.01, 0.1, 1),
+                      labels = c(0.00001, 0.0001, 0.001, 0.01, 0.1, 1)) + 
+  scale_x_continuous(trans='log', 
+                     breaks = c(0.00001, 0.0001, 0.001, 0.01, 0.1, 1),
+                      labels = c(0.00001, 0.0001, 0.001, 0.01, 0.1, 1))  
+
+@
+
+\end{frame}
+
+\begin{frame}{Exercise 1.3}
+  \framesubtitle{Part c)}
+<<echo = FALSE>>=
+par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  discrep <- data_project$pSsuccess != data_project$pSsuccessC
+  col_discord <- ifelse(discrep == TRUE,
+                 ifelse(data_project$pSsuccess == TRUE,
+                        "#8B0000B3", "#00008AB3"), "#B2B2B299")
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
+       xlim = c(-0.5, 1), main = p, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]), col = col_discord, pch = 20,
+       cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
+  legend("topleft", legend = c(expression(paste("golden ", italic(p)[s], " only")),
+    expression(paste("controlled ", italic(p)[s], " only"))),
+         title = "success",
+         pch = 20, pt.cex = 2, cex = 1.4,
+         col = c("#8B0000B3", "#00008AB3"), bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
+}
+@
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+\framesubtitle{Part c)}
+
+\makebox[1 \textwidth][c]{  
+  \resizebox{1.1\textwidth}{!} {
+<<echo = F, results = 'asis'>>=
+
+phighlighfun <- function(p) {
+ ifelse(p > 0.025,
+        paste0("\\textcolor{red}{", biostatUZH::formatPval(p), "}"),
+        paste0("\\textcolor{black}{",  biostatUZH::formatPval(p), "}"))
+}
+
+
+
+discrepantDF2$c <- as.character(round(discrepantDF2$c, 1))
+discrepantDF2$ro <- as.character(round(discrepantDF2$ro, 2))
+discrepantDF2$rr <- as.character(round(discrepantDF2$rr, 2))
+discrepantDF2$po1 <- phighlighfun(discrepantDF2$po1)
+discrepantDF2$pr1 <- phighlighfun(discrepantDF2$pr1)
+discrepantDF2$ps <- phighlighfun(discrepantDF2$ps)
+discrepantDF2$psC <- phighlighfun(discrepantDF2$psC)
+
+discTab2 <- xtable(discrepantDF2[, 1:(ncol(discrepantDF2)-5)])
+colnames(discTab2) <- c("Study", "$n_r / n_o$", "$r_o$", "$r_r$", "$p_o$", 
+                       "$p_r$", "$p_s$ (gold)", "$p_S$ (contr)")
+print(discTab2, include.rownames = FALSE, booktabs = TRUE,
+      sanitize.text.function = function(x) {x}, size = "small",
+      floating = FALSE)
+@
+  }
+}
+\end{frame}
+
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.4}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
   data_project <- subset(RProjects, project == p)
-  discrep <- data_project$pSsuccess != data_project$TTR
+  discrep <- data_project$pSsuccessC != data_project$TTR
   col_discord <- ifelse(discrep == TRUE,
-                 ifelse(data_project$pSsuccess == TRUE,
+                 ifelse(data_project$pSsuccessC == TRUE,
                         "#8B0000B3", "#00008AB3"), "#B2B2B299")
   plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
        xlim = c(-0.5, 1), main = p, xlab = expression(italic(r)[o]),
@@ -951,11 +1769,6 @@ for (p in unique(RProjects$project)) {
 \makebox[1 \textwidth][c]{  
   \resizebox{1.2\textwidth}{!} {
 << echo = FALSE, fig.height = 4, results = "asis" >>=
-phighlighfun <- function(p) {
- ifelse(p > 0.025,
-        paste0("\\textcolor{red}{", biostatUZH::formatPval(p), "}"),
-        paste0("\\textcolor{black}{",  biostatUZH::formatPval(p), "}"))
-}
 RProjects$study2 <- RProjects$study
 RProjects$study2[RProjects$study == "K Oberauer"] <- "Oberauer (2008)"
 RProjects$study2[RProjects$study == "JR Schmidt, D Besner"] <- 
@@ -970,8 +1783,9 @@ RProjects$study2[RProjects$study == "Nichols (2006)"] <-
   "Nichols (2006)"
 
 ## discrepant studies
-discrepantDF <- subset(RProjects, pSsuccess != TTR)[, c("study2", "c", "ro", 
-                                                        "rr", "po1", "pr1", "ps", "zo", "se_fiso", "se_fisr", "fiso", "fisr")]
+discrepantDF <- subset(RProjects, pSsuccessC != TTR)[, c("study", "c", "ro", 
+                                                        "rr", "po1", "pr1",
+                                                        "psC", "zo", "se_fiso", "se_fisr", "fiso", "fisr")]
 discrepantDF$c <- as.character(round(discrepantDF$c, 1))
 discrepantDF$ro <- as.character(round(discrepantDF$ro, 2))
 discrepantDF$rr <- as.character(round(discrepantDF$rr, 2))
@@ -981,7 +1795,7 @@ discrepantDF$ps <- phighlighfun(discrepantDF$ps)
 
 discTab <- xtable(discrepantDF[, 1:(ncol(discrepantDF)-5)])
 colnames(discTab) <- c("Study", "$n_r / n_o$", "$r_o$", "$r_r$", "$p_o$", 
-                       "$p_r$", "$p_s$")
+                       "$p_r$", "$p_s$ (controlled)")
 print(discTab, include.rownames = FALSE, booktabs = TRUE,
       sanitize.text.function = function(x) {x}, size = "small",
       floating = FALSE)
