@@ -69,7 +69,7 @@
 % sudo getnonfreefonts --sys -a
 \def\uzhunit{}
 \def\uzhunitext{}
-\title{\centering Design and Analysis of Replication Studies}
+\title{\centering Analysis and Design of Replication Studies}
 \author{\centering \bf  Leonhard Held, Charlotte Micheloud}
 \institute{University of Zurich}
 
@@ -161,15 +161,6 @@ opts_chunk$set(fig.path = "figures/fig",
 \end{minipage}
 \end{frame}
 
-
-\begin{frame}[fragile]{Social sciences replication project} 
-<< size = "normalsize" >>=
- library(ReplicationSuccess)
- data("RProjects")
- social <- subset(RProjects, 
-                  project == "Social Sciences")
- @
-\end{frame}
 
 \begin{frame}[fragile]{Social sciences replication project}
   \framesubtitle{Correlation scale}
@@ -290,6 +281,7 @@ grid.arrange(gg_r2, gg_z2,
 << echo = FALSE >>=
 study <- subset(SSRP,
                 study == "Pyc and Rawson (2010), Science")
+study$c <- with(study, se_fiso^2/se_fisr^2)
 
 ggplot(data = SSRP, aes(x = fiso, y = fisr)) +
   geom_hline(yintercept = 0, lty = 2) +
@@ -443,7 +435,10 @@ study_plot
     \item Two-trials rule (statistical significance)
     \item Compatibility of effect estimates
     \item Meta-analysis of estimates
-    \item Sceptical $p$-value
+  \end{enumerate}
+  \pause
+  \begin{enumerate}
+    \item[4.]{\color{black!25} Sceptical $p$-value (tomorrow)}
   \end{enumerate}
 \end{block}
 \end{minipage}
@@ -566,7 +561,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 {\large \textit{Is a meta-analytic estimate statistically significant?}} 
 
 $\rightarrow$ Which threshold? \\
-$\rightarrow$ {\color{tan3} one-sided $\alpha = 0.025$ or $0.0025$} used in 
+$\rightarrow$ {\color{tan3} two-sided $\alpha = 0.05$ or $0.005$} used in 
 practice\\
 \end{block}
 \end{minipage}
@@ -628,255 +623,13 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 \end{frame}
 
 
-\begin{frame}{Sceptical $p$-value}
-  \framesubtitle{golden vs controlled recalibration}
-<<echo = FALSE>>=
-alpha = 0.025
-alphaU_g <- levelSceptical(level = alpha, alternative = "one.sided", 
-                           type = "golden")
-
-@
-  
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \begin{block}{$p_S$ golden}
-        \begin{itemize}
-        \item penalizes {\color{foo} shrinkage}
-        \item controls Type-I error rate for $c > 1$, but {\color{red} not exactly}
-        \item for $\alpha = \Sexpr{alpha}$, $p_o$ and $p_r$ need to be 
-        $< \Sexpr{biostatUZH::formatPval(alphaU_g)}$.
-        \end{itemize}
-      \end{block}
-    \end{column}
-    \pause 
-    \begin{column}{0.5\textwidth}
-      \begin{block}{$p_S$ controlled}
-        \begin{itemize}
-          \item {\color{red} exact} Type-I error control
-          \item no shrinkage penalization
-          \item upper bound on $p_o$ and $p_r$ {\color{red} depends on $c$}.
-          \item[]
-        \end{itemize}
-      \end{block}
-    \end{column}
-  \end{columns}
-  
-\end{frame}
-
-\begin{frame}{Shrinkage penalization}
-  \framesubtitle{Golden vs sceptical $p$-value}
-<<echo = F, fig.height = 4.5>>=
-# Figure 5 - preparation
-par(las = 1, mfrow = c(1, 2))
-
-zalpha = p2z(alpha, alternative = "one.sided")
-
-eps <-  10e-4
-myplim <- c(eps, 0.12)
-mydlim <- c(0.15, 15)
-
-pos <-  seq(10e-200, 0.12, length.out = 1000)
-zos <- p2z(pos, alternative = "one.sided")
-
-c.seq <-  c(0.2, 0.5, 1, 2, 5)
-col.seq <- c(5, 4, 3 , 2, 1)
-
-resultsCont <- results2TR <- resultsGold <-  matrix(NA, nrow = length(zos), ncol = length(c.seq))
-
-for(i in 1:length(c.seq)){
-    resultsCont[, i] <- effectSizeReplicationSuccess(zo = zos, c = c.seq[i], level = alpha, 
-                                                     alternative = "one.sided",
-                                                     type = "controlled")
-    results2TR[, i] <- ifelse(zos > zalpha,  effectSizeSignificance(zo = zos, c = c.seq[i], level = alpha, 
-                                              alternative = "one.sided"), NA)
-    resultsGold[, i]  <- effectSizeReplicationSuccess(zo = zos, c = c.seq[i], level = alpha, 
-                                                      type = "golden", alternative = "one.sided")
-}
-
-
-# bound on p-value
-u_seq <- levelSceptical(level = alpha, 
-                        c = c.seq, 
-                        alternative = "one.sided", 
-                        type = "controlled")
-
-
-### golden plot
-plot(NULL , 
-     xlim = myplim, 
-     ylim = mydlim, 
-     xlab = expression(paste("Original ", italic(p), "-value ", italic(p[o]))), 
-     ylab = expression(paste("Relative effect size ", italic(d))), 
-     log = "xy", 
-     xaxt = "n")##, axes=FALSE)
-title(main = "golden", line = 3)
-
-
-box()
-abline(v = c(alpha), 
-       lty = 2, 
-       col = "darkgrey")
-
-axis(1, at = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), 
-     labels = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1))
-
-
-axis(3, at = alpha, labels = alpha, cex.axis = 0.75, las = 2, col.ticks = "darkgrey", col.axis = "darkgrey")
-
-
-
-yi =  exp(seq(log(1.5), log(0.325), length.out = 5))
-
-for(i in 1:length(c.seq)){
-    lines(pos, 
-          resultsGold[, i], 
-          type = "l", , 
-          col = col.seq[i], 
-          lwd = 2)
-  lines(pos, 
-        lty = 2,
-        results2TR[, i], 
-        col = alpha(col.seq[i], 0.9), 
-        lwd = 2)
-    # where <- which.min((pos - alpha)^2)
-    # 
-    #     text(0.01, yi[i],
-    #      labels = bquote(italic(c) == .(c.seq[i])),
-    #      col = alpha(col.seq[i], 0.75),
-    #      cex = 0.8)
-}
-
-axis(3, at = alphaU_g, labels = formatPval(alphaU_g), 
-     las = 2)
-
-legend("topleft", 
-       c("c = 5", "c = 2", "c = 1", "c = 0.5", "c = 0.2"), 
-       col = rev(col.seq), 
-       lty = 1, 
-       bty = "n")
-
-legend("bottomright", 
-       c("golden", "two-trials rule"), 
-       col = "black", 
-       lty = 1:2,
-         lwd = 2, 
-       bg = "white", 
-       bty = "n")
-
-
-# controlled
-
-
-plot(NULL , 
-     xlim = myplim, 
-     ylim = mydlim, 
-     xlab = expression(paste("Original ", italic(p), "-value ", italic(p[o]))), 
-     ylab = expression(paste("Relative effect size ", italic(d))), 
-     log = "xy", 
-     xaxt = "n") ##, axes=FALSE)
-title(main = "controlled", line = 3)
-
-
-box()
-abline(v = c(alpha), 
-       lty = 2, 
-       col = "darkgrey")
-
-axis(1, at = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), 
-     labels = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1))
-
-for (i in 1:length(u_seq)){
-axis(3, at = u_seq[i], label = round(u_seq[i], 3), col.ticks= col.seq[i], 
-     col.axis = col.seq[i], 
-     las = 2, 
-     cex.axis = 0.75)
-  }
-axis(3, at = alpha, labels = alpha, cex.axis = 0.75, las = 2, col.ticks = "darkgrey", col.axis = "darkgrey")
-
-
-
-yi =  exp(seq(log(1.5), log(0.325), length.out = 5))
-
-for(i in 1:length(c.seq)){
-    lines(pos, 
-          resultsCont[, i], 
-          type = "l", , 
-          col = col.seq[i], 
-          lwd = 2)
-  lines(pos, 
-        lty = 2,
-        results2TR[, i], 
-        col = alpha(col.seq[i], 0.9), 
-        lwd = 2)
-    # where <- which.min((pos - alpha)^2)
-    # 
-    #     text(0.01, yi[i],
-    #      labels = bquote(italic(c) == .(c.seq[i])),
-    #      col = alpha(col.seq[i], 0.75),
-    #      cex = 0.8)
-}
-
-legend("bottomright", 
-       c("controlled", "two-trials rule"), 
-       col = "black", 
-       lty = 1:2,
-         lwd = 2, 
-       bg = "white", 
-       bty = "n")
-
-
-@
-
-\end{frame}
-
-\begin{frame}{Upper bound on $p_o$ and $p_r$}
-  \framesubtitle{$\alpha = 0.025$}
-  \begin{block}{}
-$\rightarrow$ {\color{red} Necessary,} but not sufficient condition for replication success
-\end{block}
-\vspace{-1cm}
-<<echo = F, fig.height = 3.3, fig.width = 5>>=
-par(las = 1, 
-    mar = c(5.1, 4.1, 4.1, 3.2))
-c.seq <- seq(0, 10, by = 0.01)
-lev.seq <- levelSceptical(level = alpha, 
-                          c = c.seq, 
-                          alternative = "one.sided", 
-                          type = "controlled")
-
-plot(c.seq, 
-     lev.seq, 
-     col = "blue", type = "l", lwd = 2, 
-     ylab = "upper bound", 
-     xlab = "c", 
-     yaxt = "n", 
-     cex.axis = 0.9)
-
-axis(2, c(0.025, 0.05, 0.075, 0.1, 0.125, 0.15), 
-     labels = c(0.025, 0.05, 0.075, 0.1, 0.125, 0.15), 
-     cex.axis = 0.9)
-abline(h = alphaU_g, col = "orange", lwd = 2)
-axis(4, at = alphaU_g, labels = formatPval(alphaU_g), 
-     col.axis = "orange", col.ticks = "orange")
-
-legend("bottomright", 
-       lwd = 2, 
-       c("controlled", "golden"), 
-       col = c("blue", "orange"), 
-       bty = "n", 
-       cex = 0.9)
-@
-
-\end{frame}
 
 
 \begin{frame}
 \section{Exercise 1 -- Analysis of replication studies}
   % \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Exercise Session 1}} 
-  \\~\\
-  {\LARGE Analysis of replication studies}
+  \color{uzh@blue}{\Huge \textbf{Package ReplicationSuccess}} 
    \end{center}
   % \end{block}
 \end{frame}
@@ -1010,17 +763,49 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+
+\begin{frame}
+\section{Exercise 1 -- Analysis of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Preparatory exercises}} 
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Preparatory exercises}
 \begin{block}{}
-Load the package and the data sets with
+\begin{enumerate}
+\item Install the development version of the package + other required packages
+<<eval = F>>=
+install.packages("devtools")
+install.packages("meta")
+install.packages("ggplot2")
+devtools::install_github(repo = "SamCH93/ReplicationSuccess",
+                         ref = "T1Econtrol")
+
+@
+
+
+\item Load the packages and the data sets with
 \vspace{-0.5em}
-<< size = "small", eval = FALSE >>=
+<<eval = FALSE >>=
+
+library(meta)
 library(ReplicationSuccess)
 data("RProjects") 
+
 @
-Compute the key quantities $z_o$, $z_r$, $c$, and the one-sided $p$-values $p_o$ and $p_r$ with
-<< size = "small" >>=
+\end{enumerate}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Preparatory exercises}
+\begin{block}{}
+\begin{enumerate}
+\item[3.] Compute the key quantities $z_o$, $z_r$, $c$, and the one-sided $p$-values $p_o$ and $p_r$ with
+<<>>=
 RProjects$zo <- RProjects$fiso/RProjects$se_fiso
 RProjects$zr <- RProjects$fisr/RProjects$se_fisr
 RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
@@ -1029,15 +814,51 @@ RProjects$po1 <- z2p(RProjects$zo,
 RProjects$pr1 <- z2p(RProjects$zr, 
                      alternative = "one.sided")
 @
+
+
+\item[4.] Explore the \texttt{ReplicationSuccess} package
+<<>>=
+# for example
+vignette("ReplicationSuccess")
+?RProjects
+@
+\end{enumerate}
 \end{block}
 \end{frame}
+
+
+\begin{frame}
+\section{Exercise 1 -- Analysis of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  {\color{uzh@blue}\Huge \textbf{Exercise Session 1}} 
+  \\~\\
+  {\LARGE Analysis of replication studies with traditional methods}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+For all study pairs from the replication projects
+\end{block}
+  \begin{block}{Exercise 1.1}
+Plot the original effect estimate against the replication effect estimate 
+(on Fisher $z$-scale). What do you observe?
+  \end{block}
+    \begin{block}{}
+{\color{darkred} Useful function: \texttt{plot()}}
+    \end{block}
+\end{frame}
+
 
 \begin{frame}[fragile]{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
 \begin{block}{}
 For all studies from the replication projects investigate
 \end{block}
-  \begin{block}{Exercise 1.1}
+  \begin{block}{Exercise 1.2}
      How many study pairs fulfill the \textbf{two-trials rule} criterion for 
      replication success? Use a threshold of $\alpha = 0.025$ for the one-sided 
      $p$-values.
@@ -1052,7 +873,7 @@ For all studies from the replication projects investigate
 \begin{block}{}
 For all studies from the replication projects investigate
 \end{block}
-  \begin{block}{Exercise 1.2}
+  \begin{block}{Exercise 1.3}
     \begin{itemize}
     \item [(a)] For how many study pairs do you find evidence for \textbf{incompatible} effect 
     estimates (on Fisher $z$-scale)? Use a threshold of $\alpha = 0.05$ for the resulting $p$-value.
@@ -1069,146 +890,87 @@ For all studies from the replication projects investigate
 \begin{block}{}
 {\color{white} For all studies from the replication projects investigate}
 \end{block}
-  \begin{block}{Exercise 1.2}
+  \begin{block}{Exercise 1.3}
     \begin{itemize}
-    \item [(b)] {\bf Compare} the results from exercises 1.1 and 1.2 a). 
+    \item [(b)] {\bf Compare} the results from exercises 1.2 and 1.3 a). 
     \item[] Do all the study pairs with evidence for {\bf incompatibility} 
     also fail the {\bf two-trials rule?}
+    \item[] Do all the study pairs without evidence for {\bf incompatibility}
+    fulfill the two-trials rule?
     \end{itemize}
   \end{block}
-
-\end{frame}
-
-
-\begin{frame}[fragile]{Exercises}
+  \end{frame}
+  
+  
+  
+  \begin{frame}[fragile]{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
 \begin{block}{}
-{\color{white}For all studies from the replication projects investigate}
+For all studies from the replication projects
 \end{block}
-  \begin{block}{Exercise 1.2}
-    \begin{itemize}
-    \item [(c)] Choose one study pair where the estimates are
-    incompatible. Calculate the 95\% sceptical confidence interval. What do you observe?
-    \end{itemize}
-  \end{block}
-  
-      \begin{block}{}
-{\color{darkred} Useful function: \texttt{scepticalCI(..., 
-levelCI = 0.95)}}
-    \end{block}
-\end{frame}
-
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-\begin{block}{}
-{\color{white} For all studies from the replication projects investigate}
-\end{block}
-  \begin{block}{Exercise 1.2}
-    \begin{itemize}
-    \item [(d)] For the same study, 
-    plot the $p$-value function.
-    \end{itemize}
-  \end{block}
-  
-      \begin{block}{}
-{\color{darkred} Useful function: \texttt{pValFunPlot(..., 
-levelCI = 0.95)}}
-    \end{block}
-\end{frame}
-
-
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-\begin{block}{}
-{\color{white} For all studies from the replication projects investigate}
-\end{block}
-  \begin{block}{Exercise 1.2}
-    \begin{itemize}
-    \item [(e)] If time allows, {\bf repeat points c) and d)} 
-    with other study pairs, including one where there is no 
-    evidence for incompatibility of the effect estimates.  
-    \end{itemize}
-  \end{block}
-\end{frame}
-
-
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-
-For all studies from the replication projects 
-  \begin{block}{Exercise 1.3}
-  
-  \begin{itemize}
-    \item[a)]  Compute the one-sided \textbf{golden sceptical $p$-value}.
-    How many replication 
-    studies are successful at level $0.025$? 
-  \end{itemize}
-  \end{block}
-  
-    \begin{block}{}
-{\color{darkred} Useful function: \texttt{pSceptical(..., type = "golden")}
-}
-    \end{block}
-\end{frame}
-
-
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-
-For all studies from the replication projects 
-  \begin{block}{Exercise 1.3}
-  
-  \begin{itemize}
-    \item[b)]  Compute the one-sided \textbf{controlled sceptical $p$-value}.
-    How many replication 
-    studies are successful at level $0.025$? 
-  \end{itemize}
-  \end{block}
-  
-    \begin{block}{}
-{\color{darkred} Useful function: \texttt{pSceptical(..., type = "controlled")}
-}
-    \end{block}
-\end{frame}
-
-
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-  \begin{block}{Exercise 1.3}
-  
-  \begin{itemize}
-    \item[c)]  Plot the {\bf golden sceptical $p$-value} against the 
-    {\bf controlled one}.
-    How many study pairs disagree at the 0.025 level? Have a closer look at 
-    these studies. 
-  \end{itemize}
-  \end{block}
-\end{frame}
-
-
-\begin{frame}[fragile]{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
   \begin{block}{Exercise 1.4}
-    Look closer at the studies which show \textbf{discrepancies} in terms of replication 
-    success based on the \textbf{two-trials rule} and the sceptical $p$-value 
-    \textbf{(controlled)}.
-    What do you observe?
+    \begin{itemize}
+\item[a)] Compute the {\bf fixed effect meta-analytic} $p$-value $p_M$.
+How many study pairs
+fulfill the meta-analysis criterion? Use a threshold of
+$\alpha = 0.05$ for the {\bf two-sided $p_M$}.
+  \end{itemize}
+  \end{block}
+
+    \begin{block}{}
+{\color{darkred} Useful function: \texttt{metagen(...)\$pval.fixed}}
+    \end{block}
+\end{frame}
+
+
+  \begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+{\color{white} For all studies from the replication projects investigate}
+\end{block}
+  \begin{block}{Exercise 1.4}
+    \begin{itemize}
+      \item[b)] Compare the results from exercises 1.3 a) and 1.4 a). 
+      Can studies with {\bf incompatible effect estimates} and which 
+      {\bf fail the two-trials rule} fulfill the 
+      {\bf meta-analysis criterion}?
+    \end{itemize}
+
+
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Exercises}
-  \begin{block}{Exercise 1.5 (if time permits)}
-Calculate the \textbf{relative effect size $d = \hat\theta_r/\hat\theta_o$} for the 
-discrepant studies, {\bf as well as the minimum relative effect size $\dmin$}
-with the two approaches (two-trials rule and sceptical $p$-value). 
-\\~\\
-Use the functions \texttt{effectSizeSignificance} and 
-\texttt{effectSizeReplicationSuccess}.
-  \end{block}
 
+\begin{frame}{}
+  \begin{center}
+  {\color{foo} \Huge\bf  Solutions}
+  \end{center}
 \end{frame}
 
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.1}
+
+<<echo = F>>=
+
+
+
+gg_zAll <- ggplot(data = RProjects, aes(x = fiso, y = fisr)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_abline(intercept = 0, slope = 1, col = "grey") +
+  geom_point(alpha = 0.5, size = 7, shape = 21, 
+             fill = "midnightblue") +
+  labs(x = expression(paste("Original effect estimate ", hat(theta)[o])), 
+       y = expression(paste("Replication effect estimate ", hat(theta)[r]))) +
+  lims(x = c(-0.5, 2), y = c(-0.5, 2)) + 
+  coord_fixed() +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 18), 
+        axis.title = element_text(size = 25)); gg_zAll
+@
+
+\end{frame}
+
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
 << echo = FALSE, results = "asis" >>=
 # for (p in unique(RProjects$project)) {
 #   data_project <- subset(RProjects, project == p)
@@ -1257,7 +1019,7 @@ print(Table1, include.rownames = FALSE, booktabs = TRUE,
 @
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
 << echo = FALSE >>=
 ## Plots of effect estimates
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
@@ -1287,7 +1049,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
 \framesubtitle{Part a)}
 \makebox[1 \textwidth][c]{  
   \resizebox{1\textwidth}{!} {
@@ -1331,7 +1093,7 @@ print(Table2, include.rownames = FALSE, booktabs = TRUE,
 }
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
   \framesubtitle{Part a)}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
@@ -1359,15 +1121,51 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+  \framesubtitle{Part b) Example I}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
-  \framesubtitle{Parts b)}
+<<echo = F, fig.height = 2, fig.width = 5>>=
+library(ReplicationSuccess)
+library(tidyverse)
+library(meta) 
+source("functions.R") 
+ind.Qincompatible <- which(RProjects$Qincompatible)
+incomp <- RProjects[ind.Qincompatible, ]
+no.incomp <- RProjects[-ind.Qincompatible,]
+ex1 <- incomp[1,]
+ex2 <- incomp[23,]
+ex3 <- no.incomp[42,]
+
+pQ_ex1 <- with(ex1, Qtest(thetao = fiso, thetar = fisr, 
+                          seo = se_fiso, ser = se_fisr))
+scepticalCI_ex1 <- with(ex1, scepticalCI(thetao = fiso, thetar = fisr, 
+                          seo = se_fiso, ser = se_fisr))$CI
+
+with(ex1, ForestPlot(thetahat = c(fiso, fisr), 
+                    se = c(se_fiso, se_fisr), 
+                    title = study))
+
+@
+  \begin{block}{}
+    \begin{itemize}
+      \item $Q$-test $p$-value: $p_Q = \Sexpr{biostatUZH::formatPval(pQ_ex1)}$; 
+      {\color{red} conflict}
+      % \item sceptical 95\%-CI: $\Sexpr{biostatUZH::formatCI(scepticalCI_ex1)}$
+      \item {\color{red} Two-trials rule unsuccessful}
+    \end{itemize}
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+  \framesubtitle{Part b)}
 <<results = 'asis', echo = F>>=
 library(xtable)
 incompSuccess <- paste("\\cellcolor{red!25}{", sum(RProjects$pQ <= 0.05 & RProjects$TTR), "}")
 compSuccess <-  sum(RProjects$pQ > 0.05 & RProjects$TTR)
 incompNoSuccess <- sum(RProjects$pQ <= 0.05 & !RProjects$TTR)
-compNoSuccess <- sum(RProjects$pQ > 0.05 & !RProjects$TTR)
+compNoSuccess <- paste("\\cellcolor{red!25}{", sum(RProjects$pQ > 0.05 & !RProjects$TTR), "}")
 
 
 comp <- c("$p_Q > 0.05$", compSuccess, compNoSuccess)
@@ -1392,75 +1190,23 @@ print(xt.mat,
 \begin{itemize}
   \item[] $\rightarrow$ {\color{red!75} Incompatible} effect estimates can fulfill the 
   {\color{red!75} two-trials rule}
+  \item[] $\rightarrow$ $Q$-test {\color{red!75}
+  does not take into account significance} 
+  of the effect estimates
 \end{itemize}
   
   \end{frame}
   
   
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
-  \framesubtitle{Parts c) and d): Example I}
-
-<<echo = F, fig.height = 2, fig.width = 5>>=
-library(ReplicationSuccess)
-library(tidyverse)
-library(meta)
-source("functions.R")
-ind.Qincompatible <- which(RProjects$Qincompatible)
-incomp <- RProjects[ind.Qincompatible, ]
-no.incomp <- RProjects[-ind.Qincompatible,]
-ex1 <- incomp[1,]
-ex2 <- incomp[23,]
-ex3 <- no.incomp[29,]
-
-pQ_ex1 <- with(ex1, Qtest(thetao = fiso, thetar = fisr, 
-                          seo = se_fiso, ser = se_fisr))
-scepticalCI_ex1 <- with(ex1, scepticalCI(thetao = fiso, thetar = fisr, 
-                          seo = se_fiso, ser = se_fisr))$CI
-
-with(ex1, ForestPlot(thetahat = c(fiso, fisr), 
-                    se = c(se_fiso, se_fisr), 
-                    title = study))
-
-@
-  \begin{block}{}
-    \begin{itemize}
-      \item $Q$-test $p$-value: $p_Q = \Sexpr{biostatUZH::formatPval(pQ_ex1)}$; 
-      {\color{red} conflit}
-      \item sceptical 95\%-CI: $\Sexpr{biostatUZH::formatCI(scepticalCI_ex1)}$
-      \item {\color{red} Two-trials rule unsuccessful}
-    \end{itemize}
-  \end{block}
-  
-\end{frame}
-
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
-\framesubtitle{Parts c) and d): Example I}
-<<echo = F, fig.height = 3.5, fig.width = 5>>=
-library(tidyverse)
-source("functions.R")
-ind.Qincompatible <- which(RProjects$Qincompatible)
-incomp <- RProjects[ind.Qincompatible, ]
-no.incomp <- RProjects[-ind.Qincompatible,]
-ex1 <- incomp[3,]
-ex2 <- incomp[23,]
-ex3 <- no.incomp[29,]
 
 
-with(ex1, pValFunPlot(thetao = fiso, thetar = fisr, 
-                  seo = se_fiso, ser = se_fisr, 
-                  levelCI = 0.95))
 
-@
-
-\end{frame}
-
-
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
-  \framesubtitle{Parts c) and d): Example II}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+  \framesubtitle{Parts b) Example II}
 
 <<echo = F, fig.height = 2, fig.width = 5>>=
 
-pQ_ex2 <- with(ex2, Qtest(thetao = fiso, thetar = fisr, 
+pQ_ex2 <- with(ex2, Qtest(thetao = fiso, thetar = fisr,   
                           seo = se_fiso, ser = se_fisr))
 scepticalCI_ex2 <- with(ex1, scepticalCI(thetao = fiso, thetar = fisr, 
                           seo = se_fiso, ser = se_fisr))$CI
@@ -1473,30 +1219,17 @@ with(ex2, ForestPlot(thetahat = c(fiso, fisr),
   \begin{block}{}
     \begin{itemize}
       \item $Q$-test $p$-value: $p_Q = \Sexpr{formatPval(pQ_ex2)}$; 
-      {\color{red} conflit}
-      \item sceptical 95\%-CI: $\Sexpr{formatCI(scepticalCI_ex2)}$
+      {\color{red} conflict}
+      % \item sceptical 95\%-CI: $\Sexpr{formatCI(scepticalCI_ex2)}$
       \item {\color{olive} Two-trials rule successful}
     \end{itemize}
   \end{block}
   
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
-\framesubtitle{Parts c) and d): Example II}
-
-<<echo = F, fig.height = 3.5, fig.width = 5>>=
-
-with(ex2, pValFunPlot(thetao = fiso, thetar = fisr, 
-                  seo = se_fiso, ser = se_fisr, 
-                  levelCI = 0.95))
-
-@
-
-\end{frame}
-
  % 
- \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
-  \framesubtitle{Parts c) and d): Example III}
+ \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+  \framesubtitle{Part b) Example III}
 
 <<echo = F, fig.height = 2, fig.width = 5>>=
 
@@ -1508,36 +1241,879 @@ scepticalCI_ex3 <- with(ex1, scepticalCI(thetao = fiso, thetar = fisr,
 with(ex3, ForestPlot(thetahat = c(fiso, fisr), 
                     se = c(se_fiso, se_fisr), 
                     title = study))
-
 @
   \begin{block}{}
     \begin{itemize}
       \item $Q$-test $p$-value: $p_Q = \Sexpr{formatPval(pQ_ex3)}$; 
-      {\color{olive} no conflit}
-      \item sceptical 95\%-CI: $\Sexpr{formatCI(scepticalCI_ex3)}$
+      {\color{olive} no conflict}
+      % \item sceptical 95\%-CI: $\Sexpr{formatCI(scepticalCI_ex3)}$
       \item {\color{red} Two-trials rule unsuccessful}
     \end{itemize}
   \end{block}
   
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
-\framesubtitle{Parts c) and d): Example III}
 
-<<echo = F, fig.height = 3.5, fig.width = 5>>=
 
-with(ex3, pValFunPlot(thetao = fiso, thetar = fisr, 
-                  seo = se_fiso, ser = se_fisr, 
-                  levelCI = 0.95))
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.4}
+  \framesubtitle{Part a)}
+<<echo = F, results = 'asis'>>=
+
+pval_meta <- c()
+for(i in 1:nrow(RProjects)){
+  pval_meta[length(pval_meta) + 1] <- with(RProjects[i, ],
+                                           metagen(TE = c(fiso, fisr),
+                                                   seTE = c(se_fiso, se_fisr))$pval.fixed)
+}
+
+RProjects$pMeta <- pval_meta
+RProjects$pMsuccess <- RProjects$pMeta < 0.05
+
+allMetaDF <- data.frame(project = "all", meta = mean(RProjects$pMsuccess)*100, 
+                     type = "Q-test",
+                     metaFormat = paste0(round(mean(RProjects$pMsuccess)*100, 0),
+                                           "\\% (", sum(RProjects$pMsuccess),
+                                           "/", length(RProjects$pMsuccess), ")"))
+## compute for each project
+MetaList <- lapply(X = unique(RProjects$project), FUN = function(p) {
+  data_project <- subset(RProjects, project == p)
+  data.frame(project = p, meta = mean(data_project$pMsuccess)*100, type = "meta-analysis",
+             metaFormat = paste0(round(mean(data_project$pMsuccess)*100, 0), 
+                                    "\\% (", sum(data_project$pMsuccess), "/", 
+                                    length(data_project$pMsuccess), ")"))
+})
+MetaDF <- do.call("rbind", MetaList) 
+
+## table
+dfTableMeta <- rbind(MetaDF, allMetaDF)[,c(1, 4)]
+TableMeta <- xtable(dfTableMeta, digits = 1)
+colnames(TableMeta) <- c("Project", 
+                      "$p_M < 0.05$")
+print(TableMeta, include.rownames = FALSE, booktabs = TRUE,
+      add.to.row = list(pos = list(4), command = "\\midrule \n"),
+      sanitize.text.function = function(x) {x}, floating = FALSE)
+@
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.4}
+  \framesubtitle{Part a)}
+<<echo = F>>=
+
+par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  success <- data_project$pMeta < 0.05
+  col_success <- ifelse(success == FALSE, "#333333B3", "#8B0000B3")
+  title <- paste0(p, ": ", round(mean(success)*100, 0), "% (",
+                  sum(success), "/",  length(success), ")")
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
+       xlim = c(-0.5, 1), main = title, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]), col = col_success, pch = 20,
+       cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
+  legend("topleft", c(expression(italic(p)[M] < 0.05),
+                      expression(italic(p)[M] >= 0.05)),
+         pch = 20, pt.cex = 2, cex = 1.4,
+         col = c("#8B0000B3", "#333333B3"), bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
+}
+@
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.4}
+  \framesubtitle{Part b)}
+  
+<<echo = F, fig.height = 2, fig.width = 5>>=
+source("functions.R")
+ind.weird <- which(RProjects$pMsuccess & RProjects$Qincompatible & !RProjects$TTR )
+ex1.4 <- RProjects[ind.weird[3],]
+with(ex1.4, 
+     ForestPlot(thetahat = c(fiso, fisr), se = c(se_fiso, se_fisr), 
+                metaAn = TRUE, 
+                scepticalCI = F, 
+                title = study))
+@
+   \begin{block}{}
+    \begin{itemize}
+      \item $Q$-test $p$-value: $p_Q = \Sexpr{formatPval(ex1.4$pQ)}$; 
+      {\color{darkred} conflict}
+      \item {\color{red} Two-trials rule unsuccessful}
+      \item[] $\rightarrow$ {\bf Success with the meta-analysis criterion!}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{}
+\begin{center}
+  \color{uzh@blue}{\Huge \textbf{Conclusion}} \\[1cm]
+  \color{uzh@blue}{\Large Traditional methods}
+   \end{center}
+\end{frame}
+
+
+
+\begin{frame}{Assessement of replication success}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\vspace{-1.5em}
+\begin{block}{}
+  \begin{itemize}
+    \item {\color{Rred} Two-trials rule} doesn't take into account effect size
+    \item {\color{springgreen4}$Q$-test} doesn't take into account significance
+    \item {\color{tan3}Meta-analysis} assumes exchangeability and doesn't take 
+    into account compatibility
+  \end{itemize} 
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  # geom_text(data = data.frame(x = 1.5, y = 0.9, 
+  #                             ps = formatPval(ps)),
+  #           aes(x = x, y = y, 
+  #               label = paste("italic(p)[S] ==~", ps, sep = "")),
+  #           parse = TRUE, size = 10, color = "purple3") +
+  geom_text(data = ma_data, color = "tan3",
+            aes(x = 1.4, y = ma_estimate_r, 
+                label = paste("italic(p)[M] ==~", p_ma)),
+            nudge_y = 0.31, nudge_x = 0.12, 
+            size = 10, parse = TRUE)  +
+    annotate(geom = "text", x = 1.47, y = 0.7, 
+             label = paste("italic(p)[Q] ==~", formatPval(q_pval)),
+             color = "springgreen4", size = 10, parse = TRUE) +
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8, color = "red") +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8, color = "red") +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[r] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  geom_pointrange(data = ma_data,
+                  aes(x = 1.5, y = ma_estimate_r, 
+                      ymin = ma_estimate - qnorm(0.975)*se,
+                      ymax = ma_estimate + qnorm(0.975)*se),
+                  size = 1.5, color = "tan3") + 
+   labs(x = " ", y = "Effect Size") +  
+  ylim(-0.05, 1) +
+  theme_bw() +
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30))
+@
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}{}
+  \begin{center}
+  \color{uzh@blue}{\Huge \textbf{Day two}}
+   \end{center}
+\end{frame}
+
+\begin{frame}{When is a replication successful?}
+\section{When is a replication successful?}
+\begin{minipage}[t][3cm][t]{\textwidth}
+\vspace{-1.5em}
+\begin{block}{Some proposed criteria}
+  \begin{enumerate}
+    \item Two-trials rule (statistical significance)
+    \item Compatibility of effect estimates
+    \item Meta-analysis of estimates
+  \end{enumerate}
+  \begin{enumerate}
+    \item[4.] \textbf{Sceptical $p$-value}
+  \end{enumerate}
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+study_plot
+@
+\end{minipage}
+\end{frame}
+
+\begin{frame}{4. Sceptical $p$-value}
+\framesubtitle{New definition of replication success}
+\vspace{1cm}
+\begin{columns}
+\begin{column}{0.3\textwidth}
+  % \centering
+\includegraphics[width=1.1\textwidth]{images_presentation/Held2020.png}
+
+\vspace{6em}
+\begin{center}
+{\scriptsize \url{https://doi.org/10.1111/rssa.12493}}\\
+  \color{white}{\scriptsize published in JRSSA}
+\end{center}
+\end{column}
+
+\begin{column}{0.3\textwidth}
+\includegraphics[width=0.95\textwidth]{images_presentation/Heldetal2021.png}
+
+\vspace{0.8em}
+\begin{center}
+{\scriptsize \url{https://doi.org/10.1214/21-AOAS1502}}\\
+  \end{center}
+\end{column}
+
+\begin{column}{0.3\textwidth}
+\includegraphics[width=1.3\textwidth]{images_presentation/Held-etal2022.png}
+
+\vspace{0.8em}
+\begin{center}
+{\scriptsize \url{https://arxiv.org/abs/2207.00464}}\\
+  \color{darkred}{\scriptsize preprint}
+  \end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{4. Sceptical $p$-value}
+\framesubtitle{New definition of replication success}
+\begin{minipage}[t][2.7cm][t]{\textwidth}
+\vspace{-2.5em}
+\begin{block}{}
+\vspace{0.5em}
+% 
+% $\rightarrow$ \texttt{pSceptical()} returns one-sided sceptical $p$-value $p_S$ \\
+% % per default 
+% $\rightarrow$ recalibration by default
+
+\vspace{.15cm}
+\begin{center}
+{\color{red} If $p_S \leq \alpha$ we have replication success at level $\alpha$} 
+\end{center}
+Two types of sceptical $p$-values: 
+  \begin{itemize}
+    \item {\color{orange} golden}
+    \item {\color{blue} controlled}
+  \end{itemize}
+\end{block}
+\end{minipage}
+\begin{minipage}[t][6cm][t]{\textwidth}
+<< fig.height = 4.5, echo = FALSE >>=
+ssv <- function(zo, so, a) {
+  tau2 <- so^2/(zo^2/qnorm(p = a/2, lower.tail = FALSE)^2 - 1)
+  return(tau2)
+}
+S <- function(U, L) (U - L)^2/(4*sqrt(U*L))
+
+ps_uncalibrated <- pSceptical(zo = study$fiso/study$se_fiso, 
+                              zr = study$fisr/study$se_fisr, 
+                              c = study$se_fiso^2/study$se_fisr^2,
+                              alternative = "one.sided", 
+                              type = "nominal")
+ps <- pSceptical(zo = study$fiso/study$se_fiso, 
+                 zr = study$fisr/study$se_fisr, 
+                 c = study$se_fiso^2/study$se_fisr^2,
+                 alternative = "one.sided",
+                 type = "golden")
+psC <- pSceptical(zo = study$fiso/study$se_fiso, 
+                 zr = study$fisr/study$se_fisr, 
+                 c = study$se_fiso^2/study$se_fisr^2,
+                 alternative = "one.sided",
+                 type = "controlled")
+
+s <- S(U = study$fiso + qnorm(0.975)*study$se_fiso,
+       L = study$fiso - qnorm(0.975)*study$se_fiso)
+tau2 <- ssv(zo = study$fiso/study$se_fiso, 
+            so = study$se_fiso, a = ps_uncalibrated*2)
+sprior_df <- data.frame(x = 1.5, mu = 0,
+                        upper = qnorm(p = 0.975)*sqrt(tau2),
+                        lower = qnorm(p = 0.025)*sqrt(tau2))
+scept_plot <- ggplot(data = plot_df, aes(x = Study, y = z)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_pointrange(aes(ymin = z - qnorm(0.975)*se, 
+                      ymax = z + qnorm(0.975)*se),
+                  size = 1.5) +
+  # geom_pointrange(data = sprior_df, 
+  #                 aes(x = 1.5, y = 0, 
+  #                     ymin = lower, ymax = upper),
+  #                 color = "purple3", size = 1.5) +
+  # geom_text(data = sprior_df, 
+  #           aes(x = 1.5, y = upper,
+  #               label = "sceptical prior"),
+  #           nudge_y = 0.15, nudge_x = 0,
+  #           color = "purple3", size = 9) +
+  geom_text(data = data.frame(x = 1.5, y = 0.9, 
+                              ps = formatPval(ps)),
+            aes(x = x, y = y, 
+                label = paste("italic(p)[S] ==~", ps, sep = "")),
+            parse = TRUE, size = 10, color = "orange") +
+  
+    geom_text(data = data.frame(x = 1.5, y = 0.4, 
+                              ps = formatPval(psC)),
+            aes(x = x, y = y, 
+                label = paste("italic(p)[S] ==~", formatPval(psC), sep = "")),
+            parse = TRUE, size = 10, color = "blue") +
+  
+  geom_text(aes(label = paste("italic(p)[o] ==~", 
+                              p[1], sep = "")), parse = TRUE, 
+            x = 1, y = 0.8, size = 8) +
+    geom_text(aes(label = paste("italic(p)[r] ==~", 
+                              p[2], sep = "")), parse = TRUE, 
+            x = 2, y = 0.8, size = 8) +
+  geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[1], 2), 
+                              sep = "")), parse = TRUE, 
+            x = 0.7, y = 0.38, size = 8) +
+   geom_text(aes(label = paste("hat(theta)[o] ==~", 
+                              round(z[2], 2), 
+                              sep = "")), parse = TRUE, 
+           x = 2.3,y = 0.25, size = 8) +
+  geom_text(aes(label = paste("italic(n)[o] ==~", n[1], sep = "")),
+            parse = TRUE, 
+            x = 0.7, y = 0.25, size = 8) +
+   geom_text(aes(label = paste("italic(n)[r] ==~", n[2], sep = "")),
+            parse = TRUE, 
+             x = 2.3, y = 0.1, size = 8) +
+  labs(x = " ", y = "Effect Size") + 
+  ylim(-0.35, 1) +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 25), 
+        axis.title = element_text(size = 30)) 
+scept_plot
+@
+\end{minipage}
+\end{frame}
+
+
+
+\begin{frame}{Sceptical $p$-value}
+<<echo = FALSE>>=
+alpha = 0.025
+alphaU_g <- levelSceptical(level = alpha, alternative = "one.sided", 
+                           type = "golden")
+
+@
+  
+      \begin{block}{Golden $p_S$}
+        \begin{itemize}
+        \item penalizes {\color{foo} shrinkage} of replication effect estimate
+          \begin{itemize}
+            \item[] $\rightarrow$ a {\color{red} borderline significant original 
+            study} can only 
+            lead to success if there is {\color{red} no shrinkage}
+          \end{itemize}
+          \pause
+        \item controls Type-I error rate for $c > 1$, but {\color{red} not exactly}
+        \pause
+        \item {\color{red} Necessary condition:} $p_o$ and $p_r$
+        $< \Sexpr{biostatUZH::formatPval(alphaU_g)}$.
+        \end{itemize}
+      \end{block}
+  
+\end{frame}
+
+\begin{frame}{Shrinkage penalization}
+  \framesubtitle{Relative effect size perspective}
+<<echo = F, fig.height = 4.5>>=
+# Figure 5 - preparation
+par(las = 1, mfrow = c(1, 2))
+
+zalpha = p2z(alpha, alternative = "one.sided")
+
+eps <-  10e-4
+myplim <- c(eps, 0.15)
+mydlim <- c(0.15, 15)
+
+pos <-  seq(10e-200, 0.15, length.out = 1000)
+zos <- p2z(pos, alternative = "one.sided")
+
+c.seq <-  c(0.5, 1, 2, 5, 10)
+col.seq <- c(5, 4, 3 , 2, 1)
+
+resultsCont <- results2TR <- resultsGold <-  matrix(NA, nrow = length(zos), ncol = length(c.seq))
+
+for(i in 1:length(c.seq)){
+    resultsCont[, i] <- effectSizeReplicationSuccess(zo = zos, c = c.seq[i], level = alpha, 
+                                                     alternative = "one.sided",
+                                                     type = "controlled")
+    results2TR[, i] <- ifelse(zos > zalpha,  effectSizeSignificance(zo = zos, c = c.seq[i], level = alpha, 
+                                              alternative = "one.sided"), NA)
+    resultsGold[, i]  <- effectSizeReplicationSuccess(zo = zos, c = c.seq[i], level = alpha, 
+                                                      type = "golden", alternative = "one.sided")
+}
+
+
+# bound on p-value
+u_seq <- levelSceptical(level = alpha, 
+                        c = c.seq, 
+                        alternative = "one.sided", 
+                        type = "controlled")
+
+
+### golden plot
+plot(NULL , 
+     xlim = myplim, 
+     ylim = mydlim, 
+     xlab = expression(paste("Original ", italic(p), "-value ", italic(p[o]))), 
+     ylab = expression(paste("Relative effect size ", italic(d))), 
+     log = "xy", 
+     xaxt = "n")##, axes=FALSE)
+title(main = "golden", line = 3)
+
+
+box()
+abline(v = c(alpha), 
+       lty = 2, 
+       col = "darkgrey")
+
+axis(1, at = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), 
+     labels = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1))
+
+
+axis(3, at = alpha, labels = alpha, cex.axis = 0.75, las = 2, col.ticks = "darkgrey", col.axis = "darkgrey")
+
+
+
+yi =  exp(seq(log(1.5), log(0.325), length.out = 5))
+
+for(i in 1:length(c.seq)){
+    lines(pos, 
+          resultsGold[, i], 
+          type = "l", , 
+          col = col.seq[i], 
+          lwd = 2)
+  lines(pos, 
+        lty = 2,
+        results2TR[, i], 
+        col = alpha(col.seq[i], 0.9), 
+        lwd = 2)
+    # where <- which.min((pos - alpha)^2)
+    # 
+    #     text(0.01, yi[i],
+    #      labels = bquote(italic(c) == .(c.seq[i])),
+    #      col = alpha(col.seq[i], 0.75),
+    #      cex = 0.8)
+}
+
+axis(3, at = alphaU_g, labels = formatPval(alphaU_g), 
+     las = 2)
+
+legend("topleft", 
+       c("c = 10", "c = 5", "c = 2", "c = 1", "c = 0.5", "c = 0.2"), 
+       col = rev(col.seq), 
+       lty = 1, 
+       bty = "n")
+
+legend("bottomright", 
+       c("golden", "two-trials rule"), 
+       col = "black", 
+       lty = 1:2,
+         lwd = 2, 
+       bg = "white", 
+       bty = "n")
+
+
+
+
 
 @
 
 \end{frame}
 
 
+\begin{frame}{Sceptical $p$-value}
+<<echo = FALSE>>=
+alpha = 0.025
+alphaU_g <- levelSceptical(level = alpha, alternative = "one.sided", 
+                           type = "golden")
+
+@
+
+      \begin{block}{Controlled $p_S$}
+        \begin{itemize}
+          \item {\color{red} exact} Type-I error control {\color{red} at level 
+          $\alpha^2 = \Sexpr{format(alpha^2, scientific = FALSE)}$.}
+          \item no shrinkage penalization
+          \item {\color{red} Necessary condition:} 
+          upper bound on $p_o$ and $p_r$ {\color{red} depends on $c$}.
+        \pause
+        \item Allow calculation of {\bf sceptical confidence interval}
+        and {\bf $p$-value function}.
+        \end{itemize}
+      \end{block}
+  
+\end{frame}
+
+\begin{frame}{Shrinkage penalization}
+  \framesubtitle{Relative effect size perspective}
+<<echo = F, fig.height = 4.5>>=
+# Figure 5 - preparation
+par(las = 1, mfrow = c(1, 2))
+
+zalpha = p2z(alpha, alternative = "one.sided")
+
+eps <-  10e-4
+myplim <- c(eps, 0.15)
+mydlim <- c(0.15, 15)
+
+pos <-  seq(10e-200, 0.15, length.out = 1000)
+zos <- p2z(pos, alternative = "one.sided")
+
+c.seq <-  c(0.5, 1, 2, 5, 10)
+col.seq <- c(5, 4, 3 , 2, 1)
+
+resultsCont <- results2TR <- resultsGold <-  matrix(NA, nrow = length(zos), ncol = length(c.seq))
+
+for(i in 1:length(c.seq)){
+    resultsCont[, i] <- effectSizeReplicationSuccess(zo = zos, c = c.seq[i], level = alpha, 
+                                                     alternative = "one.sided",
+                                                     type = "controlled")
+    results2TR[, i] <- ifelse(zos > zalpha,  effectSizeSignificance(zo = zos, c = c.seq[i], level = alpha, 
+                                              alternative = "one.sided"), NA)
+    resultsGold[, i]  <- effectSizeReplicationSuccess(zo = zos, c = c.seq[i], level = alpha, 
+                                                      type = "golden", alternative = "one.sided")
+}
 
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+# bound on p-value
+u_seq <- levelSceptical(level = alpha, 
+                        c = c.seq, 
+                        alternative = "one.sided", 
+                        type = "controlled")
+
+
+### golden plot
+plot(NULL , 
+     xlim = myplim, 
+     ylim = mydlim, 
+     xlab = expression(paste("Original ", italic(p), "-value ", italic(p[o]))), 
+     ylab = expression(paste("Relative effect size ", italic(d))), 
+     log = "xy", 
+     xaxt = "n")##, axes=FALSE)
+title(main = "golden", line = 3)
+
+
+box()
+abline(v = c(alpha), 
+       lty = 2, 
+       col = "darkgrey")
+
+axis(1, at = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), 
+     labels = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1))
+
+
+axis(3, at = alpha, labels = alpha, cex.axis = 0.75, las = 2, col.ticks = "darkgrey", col.axis = "darkgrey")
+
+
+
+yi =  exp(seq(log(1.5), log(0.325), length.out = 5))
+
+for(i in 1:length(c.seq)){
+    lines(pos, 
+          resultsGold[, i], 
+          type = "l", , 
+          col = col.seq[i], 
+          lwd = 2)
+  lines(pos, 
+        lty = 2,
+        results2TR[, i], 
+        col = alpha(col.seq[i], 0.9), 
+        lwd = 2)
+    # where <- which.min((pos - alpha)^2)
+    # 
+    #     text(0.01, yi[i],
+    #      labels = bquote(italic(c) == .(c.seq[i])),
+    #      col = alpha(col.seq[i], 0.75),
+    #      cex = 0.8)
+}
+
+axis(3, at = alphaU_g, labels = formatPval(alphaU_g), 
+     las = 2)
+
+legend("topleft", 
+       c("c = 10", "c = 5", "c = 2", "c = 1", "c = 0.5"), 
+       col = rev(col.seq), 
+       lty = 1, 
+       bty = "n")
+
+legend("bottomright", 
+       c("golden", "two-trials rule"), 
+       col = "black", 
+       lty = 1:2,
+         lwd = 2, 
+       bg = "white", 
+       bty = "n")
+
+
+# controlled
+
+
+plot(NULL , 
+     xlim = myplim, 
+     ylim = mydlim, 
+     xlab = expression(paste("Original ", italic(p), "-value ", italic(p[o]))), 
+     ylab = expression(paste("Relative effect size ", italic(d))), 
+     log = "xy", 
+     xaxt = "n") ##, axes=FALSE)
+title(main = "controlled", line = 3)
+
+
+box()
+abline(v = c(alpha), 
+       lty = 2, 
+       col = "darkgrey")
+
+axis(1, at = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1), 
+     labels = c(0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1))
+
+for (i in 1:length(u_seq)){
+axis(3, at = u_seq[i], label = round(u_seq[i], 3), col.ticks= col.seq[i], 
+     col.axis = col.seq[i], 
+     las = 2, 
+     cex.axis = 0.75)
+  }
+axis(3, at = alpha, labels = alpha, cex.axis = 0.75, las = 2, col.ticks = "darkgrey", col.axis = "darkgrey")
+
+
+
+yi =  exp(seq(log(1.5), log(0.325), length.out = 5))
+
+for(i in 1:length(c.seq)){
+    lines(pos, 
+          resultsCont[, i], 
+          type = "l", , 
+          col = col.seq[i], 
+          lwd = 2)
+  lines(pos, 
+        lty = 2,
+        results2TR[, i], 
+        col = alpha(col.seq[i], 0.9), 
+        lwd = 2)
+    # where <- which.min((pos - alpha)^2)
+    # 
+    #     text(0.01, yi[i],
+    #      labels = bquote(italic(c) == .(c.seq[i])),
+    #      col = alpha(col.seq[i], 0.75),
+    #      cex = 0.8)
+}
+
+legend("bottomright", 
+       c("controlled", "two-trials rule"), 
+       col = "black", 
+       lty = 1:2,
+         lwd = 2, 
+       bg = "white", 
+       bty = "n")
+
+
+@
+\end{frame}
+
+\begin{frame}{Controlled sceptical $p$-value}
+  \framesubtitle{Upper bound on $p_o$ and $p_r$ for $\alpha = 0.025$.}
+  \begin{block}{}
+$\rightarrow$ {\color{red} Necessary,} but not sufficient condition for replication success
+\end{block}
+\vspace{-1cm}
+<<echo = F, fig.height = 3.3, fig.width = 4.5>>=
+par(las = 1, 
+    mar = c(5.1, 4.1, 4.1, 3.2))
+alpha = 0.025
+cval <- c(0.5, 1, 2, 5, 10)
+aval <- levelSceptical(c = cval, alternative = "one.sided", level = alpha, 
+                        type = "controlled")
+
+
+addon = 0.003
+alphaU <- seq(alpha+.001, 0.145, 0.001)
+mycol <- col.seq
+
+
+alphaU <- c(alpha, alphaU)
+c <- c(0, c)  
+
+c_plot <- seq(0.5, 20, by = 0.01)
+alphaU_plot <- levelSceptical(level = alpha, 
+                              c = c_plot, 
+                              alternative = "one.sided", 
+                              type = "controlled")
+c_sub2 <- c(0.5, 1, 2, 5, 10)
+
+
+
+plot(c_plot + addon, alphaU_plot, type="l", lwd=1.5, xlab=bquote(paste("Relative sample size ", c)),
+     ylab = "upper bound", axes=FALSE, 
+                  log = "xy", cex.lab = 0.8, ylim = c(0.05, 0.15), xlim = c(0.4, 10))
+            axis(2, at = aval, labels =formatPval(aval), cex.axis = 0.6, 
+                 mgp = c(1, 0.9, 0))
+            
+            myalphaU <- numeric()
+            for(i in 1:length(c_sub2)){
+              axis(1, at = c_sub2[i] + addon, labels = c_sub2[i], cex.axis = 0.65, 
+                   col.ticks = mycol[i], col.axis = mycol[i])
+               myalphaU[i] <- levelSceptical(c = c_sub2[i], level = alpha, type = "controlled")
+              points(c_sub2[i] + addon, myalphaU[i], pch=19, col = mycol[i], cex = 0.75)
+              lines( c(10e-10, c_sub2[i] + addon), rep(myalphaU[i],2), lty=2, col = mycol[i], 
+                    lwd = 1.5)
+              lines(rep(c_sub2[i] + addon,2), c(10e-10, myalphaU[i]), lty=2, col = mycol[i], lwd = 1.5)
+            }
+            box()
+@
+
+\end{frame}
+
+
+
+\begin{frame}
+\section{Exercise 1 -- Analysis of replication studies}
+  % \begin{block}{}
+  \begin{center}
+  {\color{uzh@blue} \Huge \textbf{Exercise Session 2}} 
+  \\~\\
+  {\LARGE Analysis of replication studies with the sceptical $p$-value}
+   \end{center}
+  % \end{block}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+
+For all studies from the replication projects 
+  \begin{block}{Exercise 2.1}
+  
+  \begin{itemize}
+    \item[a)]  Compute the one-sided \textbf{golden sceptical $p$-value}.
+    How many replication 
+    studies are successful at level $0.025$? 
+  \end{itemize}
+  \end{block}
+  
+    \begin{block}{}
+{\color{darkred} Useful function: \texttt{pSceptical(..., type = "golden")}
+}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+
+For all studies from the replication projects 
+  \begin{block}{Exercise 2.1}
+  
+  \begin{itemize}
+    \item[b)]  Compute the one-sided \textbf{controlled sceptical $p$-value}.
+    How many replication 
+    studies are successful at level $0.025$? 
+  \end{itemize}
+  \end{block}
+  
+    \begin{block}{}
+{\color{darkred} Useful function: \texttt{pSceptical(..., type = "controlled")}
+}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+  \begin{block}{Exercise 2.1}
+  
+  \begin{itemize}
+    \item[c)]  Plot the {\bf golden sceptical $p$-value} against the 
+    {\bf controlled one}.
+    How many study pairs disagree at the 0.025 level? Have a closer look at 
+    these studies. 
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+  \begin{block}{Exercise 2.2}
+  \begin{itemize}
+    \item[a)] Look closer at the studies which show \textbf{discrepancies} in terms of replication 
+    success based on the \textbf{two-trials rule} and the sceptical $p$-value 
+    \textbf{\color{red}(controlled)}.
+    What do you observe?
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+  \begin{block}{Exercise 2.2}
+  \begin{itemize}
+    \item[b)] Look closer at the studies which show \textbf{discrepancies} in terms of replication 
+    success based on the \textbf{two-trials rule} and the sceptical $p$-value 
+    \textbf{\color{red} (golden)}.
+    What do you observe?
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+{\color{white}For all studies from the replication projects investigate}
+\end{block}
+  \begin{block}{Exercise 2.3}
+    \begin{itemize}
+    \item [a)] Choose one study pair where the estimates are
+    incompatible (according to $p_Q$). \\
+    Calculate the 95\% sceptical confidence interval. What do you observe?
+    \end{itemize}
+  \end{block}
+  
+      \begin{block}{}
+{\color{darkred} Useful function: \texttt{scepticalCI(..., 
+levelCI = 0.95)}}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+\begin{block}{}
+{\color{white} For all studies from the replication projects investigate}
+\end{block}
+  \begin{block}{Exercise 2.3}
+    \begin{itemize}
+    \item [b)] For the same study, 
+    plot the $p$-value function.
+    \end{itemize}
+  \end{block}
+  
+      \begin{block}{}
+{\color{darkred} Useful function: \texttt{pValFunPlot(..., 
+levelCI = 0.95)}}
+    \end{block}
+\end{frame}
+
+\begin{frame}{}
+  \begin{center}
+  {\color{foo} \Huge\bf  Solutions}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
 \framesubtitle{Parts a) and b)}
 << echo = FALSE, fig.height = 4, results = "asis" >>=
 ## computing one.sided sceptical p-value for replication projects
@@ -1599,7 +2175,7 @@ print(Table3, include.rownames = FALSE, booktabs = TRUE,
 @
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
 \framesubtitle{golden recalibration}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
@@ -1624,7 +2200,7 @@ for (p in unique(RProjects$project)) {
 \end{frame}
 
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
 \framesubtitle{controlled recalibration}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
@@ -1648,7 +2224,8 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
   \framesubtitle{Part c)}
 <<echo = F, fig.height = 4, fig.width = 5>>=
 
@@ -1682,7 +2259,7 @@ ggplot(data= RProjects, aes(x = ps, y = psC)) +
 
 \end{frame}
 
-\begin{frame}{Exercise 1.3}
+\begin{frame}{Exercise 2.1}
   \framesubtitle{Part c)}
 <<echo = FALSE>>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
@@ -1707,7 +2284,7 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.3}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
 \framesubtitle{Part c)}
 
 \makebox[1 \textwidth][c]{  
@@ -1741,7 +2318,8 @@ print(discTab2, include.rownames = FALSE, booktabs = TRUE,
 }
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.4}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.2}
+\framesubtitle{Part a)}
 << echo = FALSE >>=
 par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
 for (p in unique(RProjects$project)) {
@@ -1754,7 +2332,7 @@ for (p in unique(RProjects$project)) {
        xlim = c(-0.5, 1), main = p, xlab = expression(italic(r)[o]),
        ylab = expression(italic(r)[r]), col = col_discord, pch = 20,
        cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
-  legend("topleft", legend = c(expression(paste(italic(p)[s], " only")),
+  legend("topleft", legend = c(expression(paste("controlled ", italic(p)[s], " only")),
                       "two-trials rule only"),
          title = "success",
          pch = 20, pt.cex = 2, cex = 1.4,
@@ -1765,7 +2343,8 @@ for (p in unique(RProjects$project)) {
 @
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.4}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.2}
+\framesubtitle{Part a)}
 \makebox[1 \textwidth][c]{  
   \resizebox{1.2\textwidth}{!} {
 << echo = FALSE, fig.height = 4, results = "asis" >>=
@@ -1791,7 +2370,7 @@ discrepantDF$ro <- as.character(round(discrepantDF$ro, 2))
 discrepantDF$rr <- as.character(round(discrepantDF$rr, 2))
 discrepantDF$po1 <- phighlighfun(discrepantDF$po1)
 discrepantDF$pr1 <- phighlighfun(discrepantDF$pr1)
-discrepantDF$ps <- phighlighfun(discrepantDF$ps)
+discrepantDF$psC <- phighlighfun(discrepantDF$psC)
 
 discTab <- xtable(discrepantDF[, 1:(ncol(discrepantDF)-5)])
 colnames(discTab) <- c("Study", "$n_r / n_o$", "$r_o$", "$r_r$", "$p_o$", 
@@ -1804,100 +2383,432 @@ print(discTab, include.rownames = FALSE, booktabs = TRUE,
 }
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.5}
 
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.2}
+\framesubtitle{Part b)}
+<< echo = FALSE >>=
+par(mfrow = c(2, 2), las = 1, mai = rep(0.68, 4))
+for (p in unique(RProjects$project)) {
+  data_project <- subset(RProjects, project == p)
+  discrep <- data_project$pSsuccess != data_project$TTR
+  col_discord <- ifelse(discrep == TRUE,
+                 ifelse(data_project$pSsuccess == TRUE,
+                        "#8B0000B3", "#00008AB3"), "#B2B2B299")
+  plot(rr ~ ro, data = data_project, ylim = c(-0.5, 1), cex = 2.5,
+       xlim = c(-0.5, 1), main = p, xlab = expression(italic(r)[o]),
+       ylab = expression(italic(r)[r]), col = col_discord, pch = 20,
+       cex.main = 1.8, cex.axis = 1.5, cex.lab = 1.5)
+  legend("topleft", legend = c(expression(paste("golden ", italic(p)[s], " only")),
+                      "two-trials rule only"),
+         title = "success",
+         pch = 20, pt.cex = 2, cex = 1.4,
+         col = c("#8B0000B3", "#00008AB3"), bty = "n")
+  abline(h = 0, lty = 2)
+  abline(a = 0, b = 1, col = "grey")
+}
+@
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.2}
+\framesubtitle{Part b)}
 \makebox[1 \textwidth][c]{  
   \resizebox{1.2\textwidth}{!} {
-<<echo = F, results = 'asis'>>=
+<< echo = FALSE, fig.height = 4, results = "asis" >>=
+RProjects$study2 <- RProjects$study
+RProjects$study2[RProjects$study == "K Oberauer"] <- "Oberauer (2008)"
+RProjects$study2[RProjects$study == "JR Schmidt, D Besner"] <- 
+  "Schmidt and Besner (2008)"
+RProjects$study2[RProjects$study == "BK Payne, MA Burkley, MB Stokes"] <- 
+  "Payne, Burkley, and Stokes (2008)"
+RProjects$study2[RProjects$study == "Balafoutas and Sutter (2012), Science"] <- 
+  "Balafoutas and Sutter (2012)"
+RProjects$study2[RProjects$study == "Pyc and Rawson (2010), Science"] <- 
+  "Pyc and Rawson (2010)"
+RProjects$study2[RProjects$study == "Nichols (2006)"] <- 
+  "Nichols (2006)"
 
-phighlighfun2 <- function(dmin, d) {
- ifelse(dmin > d,
-        paste0("\\textcolor{red}{", round(dmin, 2), "}"),
-        paste0("\\textcolor{black}{",  round(dmin, 2), "}"))
-}
+## discrepant studies
+discrepantDF <- subset(RProjects, pSsuccess != TTR)[, c("study", "c", "ro", 
+                                                        "rr", "po1", "pr1",
+                                                        "ps", "zo", "se_fiso", "se_fisr", "fiso", "fisr")]
+discrepantDF$c <- as.character(round(discrepantDF$c, 1))
+discrepantDF$ro <- as.character(round(discrepantDF$ro, 2))
+discrepantDF$rr <- as.character(round(discrepantDF$rr, 2))
+discrepantDF$po1 <- phighlighfun(discrepantDF$po1)
+discrepantDF$pr1 <- phighlighfun(discrepantDF$pr1)
+discrepantDF$ps <- phighlighfun(discrepantDF$ps)
 
-discrepantDF$d <- discrepantDF$fisr/discrepantDF$fiso
-discrepantDF$dminSign <- effectSizeSignificance(zo = discrepantDF$zo,
-                                c = discrepantDF$se_fiso^2/discrepantDF$se_fisr^2, level = 0.025)
-discrepantDF$dminRS <- effectSizeReplicationSuccess(zo = discrepantDF$zo,
-                                        c = discrepantDF$se_fiso^2/discrepantDF$se_fisr^2, level = 0.025,
-                             type = "golden")
-discrepantDF$dminSign <- phighlighfun2(dmin = discrepantDF$dminSign, d = discrepantDF$d)
-discrepantDF$dminRS <- phighlighfun2(dmin = discrepantDF$dminRS, d = discrepantDF$d)
-discrepantDF$d <- paste0("\\textcolor{blue}{", round(discrepantDF$d, 2) , "}")
-
-
-
-discTab2 <- xtable(discrepantDF[, -c(3:4, 6:12)])
-colnames(discTab2) <- c("Study", "$n_r / n_o$", "$p_o$",
-                        "$d$", "$d_{min} (2TR)$", "$d_{min} (p_S)$")
-print(discTab2, include.rownames = FALSE, booktabs = TRUE,
+discTab <- xtable(discrepantDF[, 1:(ncol(discrepantDF)-5)])
+colnames(discTab) <- c("Study", "$n_r / n_o$", "$r_o$", "$r_r$", "$p_o$", 
+                       "$p_r$", "$p_s$ (golden)")
+print(discTab, include.rownames = FALSE, booktabs = TRUE,
       sanitize.text.function = function(x) {x}, size = "small",
       floating = FALSE)
-
 @
-  } 
+ }
 }
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 1.5 (extended)}
-  \framesubtitle{Significant original studies only}
-  \begin{center}
-  Minimum relative effect size $\dmin$ with the 
-  {\color{foo} two-trials rule} 
-  vs the {\color{foo} sceptical $p$-value}
-  \end{center}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.3}
+  \framesubtitle{Part a)}
   
-  \makebox[1\textwidth][c]{  
-  \resizebox{0.75\textwidth}{!} {
-<<echo = F>>=
-RProjects$po1 <- z2p(RProjects$fiso/RProjects$se_fiso, "one.sided")
-RProjects_sign <- which(RProjects$po1 < 0.025)
-dmin_sign <- effectSizeSignificance(zo = RProjects$zo[RProjects_sign],
-                                    c = RProjects$c[RProjects_sign],
-                                    level = 0.025)
-dmin_rs <- effectSizeReplicationSuccess(zo = RProjects$zo[RProjects_sign],
-                                        c = RProjects$c[RProjects_sign],
-                                        level = 0.025,
-                                        type = "golden",
-                                        alternative = "one.sided")
-dmin_DF <- as.data.frame(cbind(dmin_sign, dmin_rs,
-                               RProjects$c[RProjects_sign]))
-colnames(dmin_DF) <-  c("dmin_sign", "dmin_rs", "c")
-                               
-                               
-ggplot(data= dmin_DF, aes(x = dmin_sign, y = dmin_rs)) +
-   geom_point(aes(size  = c, col = c)) +
-  xlim(0, 2) +
-  ylim(0, 2) +
-  geom_abline(intercept = 0, slope = 1, color = "grey") + 
-  xlab(expression(paste(d[min], " (two-trials rule)"))) + 
-  ylab(expression(paste(d[min], " (sceptical p-value)"))) + 
-    theme_bw()  +
-  theme(axis.text = element_text(size = 20), 
-        axis.title = element_text(size = 25), 
-        panel.background = element_blank()) + 
-  scale_size(breaks = c(10, 5, 1, 0.2)) + 
-  scale_colour_gradientn(colours = (c("orange", "red", "darkred", "black")))
-
-
+<<echo = F, fig.height = 2.5, fig.width = 4>>=
+with(ex1.4, 
+     ForestPlot(thetahat = c(fiso, fisr), 
+                se = c(se_fiso, se_fisr), 
+                scepticalCI = T, 
+                metaAn = T, 
+                title = study))
 @
+  
+\end{frame}
 
-  } 
-} 
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.3}
+  \framesubtitle{Part b)}
+  
+<<echo = F, fig.height = 2.5, fig.width = 4>>=
+with(ex1.4, 
+     pValFunPlot(thetao = fiso, thetar = fisr, 
+                 seo = se_fiso, ser = se_fisr))
+@
+  
 \end{frame}
 
 
 \begin{frame}
-\section{Exercise 2 -- Design of replication studies}
-  % \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Exercise session 2}}
+  \color{uzh@blue}{\Huge \textbf{Design of replication studies}}
+   \end{center}
+\end{frame}
+
+
+\begin{frame}{Design of replication studies}
+\begin{block}{Sample size of replication study}
+  \begin{itemize}
+  \item Direct replication $\rightarrow$ procedures of replication study as closely matched as possible to original study 
+\item \alert{But} same sample size as in original study can lead to a very low power \citep{Goodman1992}
+\item[] $\rightarrow$ proper sample size calculation is essential 
+  \end{itemize}
+\end{block}
+\centering
+\includegraphics[width=0.8\textwidth]{images_presentation/goodmana.pdf}
+\end{frame}
+
+\begin{frame}{Two strategies}
+\begin{block}{Sample size calculation}
+\vspace{1.2cm}
+\begin{itemize}
+  \item Based on the two-trials rule 
+  \item[] {\color{gray} Standard practice}\\[1cm]
+  \item Based on the sceptical $p$-value
+  \item[] {\color{gray} New developments}
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Two strategies}
+\begin{block}{Sample size calculation}
+\vspace{1.2cm}
+\begin{itemize}
+  \item {\bf Based on the two-trials rule} 
+   \item[] {\bf \color{gray} Standard practice} \\[1cm]
+  \item Based on the sceptical $p$-value
+   \item[] {\color{gray} New developments}
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{What is used in practice}
+\begin{block}{Standard sample size calculation}
+  \begin{itemize}
+<< echo = FALSE, eval = FALSE >>=
+sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
+  u <- qnorm(p = power)
+  v <- qnorm(p = 1 - sig.level/2)
+  n <- 2*(u + v)^2*sd^2/delta^2
+  return(n)
+}
+sampleSizeZtest(delta = 0.25, sd = 0.4, sig.level = 0.01, power = 0.95)
+@
+    \item Goal is to have high power (usually 80\%-95\%) to achieve a 
+    {\color{red} significant replication $p$-value $p_r$.}
+    \item Conditional on the {\color{red}{effect estimate from the original study}}.
+    \item Original effect estimate is sometimes shrunken by a factor of 50\%.
+    \item Uncertainty of original effect estimate is ignored
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Standard sample size calculation}
+<<echo = F>>=
+sampleSizeZtest = function(delta, sd, sig.level = 0.05, power){
+  u <- qnorm(p = power)
+  v <- qnorm(p = 1 - sig.level/2)
+  n <- 2*(u + v)^2*sd^2/delta^2
+  return(n)
+}
+
+grid <- seq(0.09, 0.225, 0.001)
+deltahat <- 0.15
+se <- 0.025
+ss <- sampleSizeZtest(delta = grid, sd = 0.4, sig.level = 0.01, power = 0.95)
+ss1 <- sampleSizeZtest(delta = deltahat, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+set.seed(12345)
+nsim <- 100000
+deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+library(gplots)
+par(las=1)
+
+plot(grid, 
+     ss, 
+     type="l", 
+     xlab="Original effect estimate", 
+     ylab="Replication sample size", 
+     ylim=c(0, 800), 
+     cex.lab = 1.5, 
+     cex.axis = 1.2, 
+     lwd = 2)
+
+legend("topright", 
+       "Power = 95%", 
+       bty = "n", 
+       cex = 1.75)
+
+@
+
+\end{frame}
+
+
+\begin{frame}{Standard sample size calculation}
+<<echo = F>>=
+
+set.seed(12345)
+nsim <- 100000
+deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+library(gplots)
+par(las=1)
+
+plot(grid, 
+     ss, 
+     type="l", 
+     xlab="Original effect estimate", 
+     ylab="Replication sample size", 
+     ylim=c(0, 800), 
+     cex.lab = 1.5, 
+     cex.axis = 1.2, 
+     lwd = 2)
+lines(rep(deltahat, 2), 
+      c(0, ss1), 
+      lty=2,
+      lwd = 2)
+points(deltahat, 
+       ss1, 
+       pch=19, 
+       cex=1.2, 
+       col=1) 
+points(deltahat, 
+       0, 
+       pch=19, 
+       cex=1.2, 
+       col=1) 
+lines(c(0, deltahat), 
+      rep(ss1, 2), 
+      lty = 2,
+      col = 1, 
+      lwd = 2)
+axis(2, 
+     at=ss1, 
+     label=round(ss1), 
+     col=1, 
+     col.axis=1, 
+     cex.axis = 1.2)
+
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
+
+@
+
+\end{frame}
+\begin{frame}{Incorporation of uncertainty}
+<<echo = F>>=
+
+set.seed(12345)
+nsim <- 100000
+deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+library(gplots)
+par(las=1)
+
+plot(grid, 
+     ss, 
+     type="l", 
+     xlab="Original effect estimate", 
+     ylab="Replication sample size", 
+     ylim=c(0, 800), 
+     cex.lab = 1.5, 
+     cex.axis = 1.2, 
+     lwd = 2)
+lines(rep(deltahat, 2), 
+      c(0, ss1), 
+      lty=2,
+      lwd = 2)
+points(deltahat, 
+       ss1, 
+       pch=19, 
+       cex=1.2, 
+       col=1) 
+points(deltahat, 
+       0, 
+       pch=19, 
+       cex=1.2, 
+       col=2) 
+lines(c(0, deltahat), 
+      rep(ss1, 2), 
+      lty = 2,
+      col = 1, 
+      lwd = 2)
+axis(2, 
+     at=ss1, 
+     label=round(ss1), 
+     col=1, 
+     col.axis=1, 
+     cex.axis = 1.2)
+
+plotCI(x = deltahat,
+       y = 0, 
+       li = quantile(deltahat2, 0.025), 
+       ui = quantile(deltahat2, 0.975),
+       col=2, lwd=2, add=TRUE, err="x")
+
+
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
+
+@
+\end{frame}
+
+\begin{frame}{Incorporation of uncertainty}
+<<echo = F>>=
+set.seed(12345)
+nsim <- 100000
+deltahat2 <- rnorm(nsim, mean=deltahat, sd=se)
+ss2 <- sampleSizeZtest(delta = deltahat2, sd = 0.4, sig.level = 0.01, power = 0.95)
+
+library(gplots)
+par(las=1)
+
+plot(grid, 
+     ss, 
+     type="l", 
+     xlab="Original effect estimate", 
+     ylab="Replication sample size", 
+     ylim=c(0, 800), 
+     cex.lab = 1.5, 
+     cex.axis = 1.2, 
+     lwd = 2)
+lines(rep(deltahat, 2), 
+      c(0, ss1), 
+      lty=2,
+      lwd = 2)
+points(deltahat, 
+       ss1, 
+       pch=19, 
+       cex=1.2, 
+       col=1) 
+points(deltahat, 
+       0, 
+       pch=19, 
+       cex=1.2, 
+       col=2) 
+points(min(grid), 
+       mean(ss2), 
+       pch=19, 
+       cex=1.2, 
+       col=2) 
+lines(c(0, deltahat), 
+      rep(ss1, 2), 
+      lty = 2,
+      col = 1, 
+      lwd = 2)
+axis(2, 
+     at=ss1, 
+     label=round(ss1), 
+     col=1, 
+     col.axis=1, 
+     cex.axis = 1)
+
+plotCI(x = deltahat, y=0, li=quantile(deltahat2, 0.025), ui = quantile(deltahat2, 0.975),
+       col=2, lwd=2, add=TRUE, err="x")
+
+plotCI(x = min(grid), y=mean(ss2), li=quantile(ss2, 0.025), ui = quantile(ss2, 0.975),
+       col=2, lwd=2, add=TRUE, err="y")
+lines(rep(quantile(deltahat2, 0.025), 2), 
+      c(0, quantile(ss2, 0.975)), 
+      lty=2, col=2,  
+      lwd = 2)
+lines(rep(quantile(deltahat2, 0.975), 2), 
+      c(0, quantile(ss2, 0.025)), 
+      lty=2, col=2, 
+      lwd = 2)
+lines(c(0, quantile(deltahat2, 0.975)), 
+      rep(quantile(ss2, 0.025), 2), 
+      lty=2, 
+      col=2, 
+      lwd = 2)
+lines(c(0, quantile(deltahat2, 0.025)), 
+      rep(quantile(ss2, 0.975), 2), 
+      lty =2, 
+      col=2, 
+      lwd = 2)
+axis(2, 
+     at=mean(ss2), 
+     label=round(mean(ss2)), 
+     col = 2, 
+     col.axis = 2, 
+     cex.axis = 1.2)
+
+legend("topright", 
+       "Power = 95%", 
+       bty = "n",
+       cex = 1.75)
+
+@
+\end{frame}
+
+
+\begin{frame}{Incorporation of uncertainty}
+\begin{block}{Design prior}
+\begin{itemize}
+\item{\color{red} \emph{Conditional}}: ignores uncertainty of original study
+\item {\color{red} \emph{Predictive}}: reflects that there is 
+uncertainty about the true effect after the original experiment
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{}
+ \begin{center}
+  {\Huge \bf \color{foo} Exercise session 3}
   \\~\\
   {\LARGE Design based on the two-trials rule}
-   \end{center}
-  % \end{block}
+ \end{center}
 \end{frame}
+
 
 \begin{frame}{Design based on the two-trials rule} 
 %%    \framesubtitle{Functions}
@@ -1924,11 +2835,11 @@ Main arguments (\texttt{default}):
 \end{frame}
 
 \begin{frame}[fragile]{Example from \citet{Pyc2010}}
-\framesubtitle{No shrinkage}
+% \framesubtitle{No shrinkage}
   \begin{block}{}
     \begin{itemize}
       \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
-      \item relative sample size $c =$ \Sexpr{round(c,1)}
+      \item relative sample size $c =$ \Sexpr{round(study$c,1)}
     \end{itemize}
 
   \end{block}
@@ -1942,37 +2853,40 @@ powerSignificance(zo = p2z(0.011, alternative = "one.sided"),
 @
   
 \end{frame}
-\begin{frame}[fragile]{Example from \citet{Pyc2010}}
-\framesubtitle{With 50\% shrinkage}
-  \begin{block}{}
-    \begin{itemize}
-      \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
-      \item relative sample size $c =$ \Sexpr{round(c,1)}
-    \end{itemize}
 
-  \end{block}
-  
-<<>>=
+% \begin{frame}[fragile]{Example from \citet{Pyc2010}}
+% \framesubtitle{With 50\% shrinkage}
+%   \begin{block}{}
+%     \begin{itemize}
+%       \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
+%       \item relative sample size $c =$ \Sexpr{round(study$c,1)}
+%     \end{itemize}
+% 
+%   \end{block}
+%   
+<<echo = F, eval = F>>=
 
 # power calculation
-powerSignificance(zo = p2z(0.011, alternative = "one.sided"), 
-                  c = 9.2, 
-                  shrinkage = 0.5, 
+powerSignificance(zo = p2z(0.011, alternative = "one.sided"),
+                  c = 9.2,
+                  shrinkage = 0.5,
                   designPrior = "conditional")
 @
-  
-\end{frame}
+%   
+% \end{frame}
 
 \begin{frame}{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-\begin{block}{Exercise 2.1}
+\begin{block}{Exercise 3.1}
 We have five original studies that we want to replicate. The one-sided $p$-values are 
 $0.0001$, $0.001$, $0.005$, $0.01$, and $0.025$, respectively. 
 We decide to use the same sample size as in the original study ($c = 1$). 
 \begin{itemize}
-\item Compute and plot the conditional and predictive power of the five replication studies. Use the function \texttt{powerSignificance()} % Goal: bordeline significant original study: very low power with both methods
-\item Shrink the original effect estimate by a factor of 25\% and use a conditional design prior. How does the power compare to the conditional power without shrinkage?
+\item Compute and plot the conditional and predictive power of the five replication studies.
 \end{itemize}
+  \end{block}
+  \begin{block}
+    {\color{darkred} Useful function: \texttt{powerSignificance(..., designPrior = c("conditional", "predictive))}}
   \end{block}
 <<echo = FALSE, eval = F>>=
 
@@ -1986,17 +2900,27 @@ lines(pval.or, pow.pred, col = "blue")
 
 \begin{frame}{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-  \begin{block}{Exercise 2.2}
+  \begin{block}{Exercise 3.2}
 % We now know that taking the same sample size as in the original study is not optimal and want to perform a proper sample size calculation. 
 \begin{itemize}
 \item Compute and plot the relative sample sizes of the five studies to achieve a power of 80\% with the conditional and the predictive design prior. Use the function \texttt{sampleSizeSignificance()}.
-\item Shrink the original effect estimate by a factor of 25\% and use a conditional design prior. How does the required relative sample size change compared to not shrinking the estimate?  
 \end{itemize}
+  \end{block}
+  
+    \begin{block}
+    {\color{darkred} Useful function: \texttt{sampleSizeSignificance(..., designPrior = c("conditional", "predictive))}}
   \end{block}
   
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
+
+\begin{frame}{}
+  \begin{center}
+  {\color{foo} \Huge\bf  Solutions}
+  \end{center}
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 3.1}
 
 <<echo = FALSE, eval = T, fig.height = 8>>=
 par(las = 1)
@@ -2033,7 +2957,7 @@ legend("topright",
 
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 3.1}
 <<echo = FALSE, eval = T, fig.height = 8>>=
 par(las = 1)
 
@@ -2064,45 +2988,11 @@ legend("topright",
 
 \end{frame}
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 2.1}
-<<echo = FALSE, eval = T, fig.height = 8>>=
-par(las = 1)
-
-pow.cond2 <- powerSignificance(zo = p2z(po.plot, alternative = "one.sided"), 
-                              c = 1, designPrior = "conditional")
-pow.condshrink2 <- powerSignificance(zo = p2z(po.plot, alternative = "one.sided"), 
-                                    c = 1, designPrior = "conditional", 
-                                    shrinkage = 0.25)
-plot(po.plot, pow.cond2*100, col = "red", ylim = c(0,100), type = "l", 
-      xlab = "One-sided original p-value",
-     ylab = "Power (in %)", 
-     lwd = 2, 
-    cex.lab = 1.5, 
-     cex.axis = 1.5)
-lines(po.plot, pow.condshrink2*100, col = "red", lty = 2,
-      lwd = 2)
-abline(h = 50, lty = 3)
-axis(2, at = 50, label = "50", cex.axis = 1.5,
-     col = "gray40")
-points(pval.or, pow.cond*100, col = "red", pch = 20, cex = 1.75)
-points(pval.or, pow.condshrink*100, col = "red", pch = 20, cex = 1.75)
-legend("topright", 
-        c("Conditional without shrinkage", "Conditional with 25% shrinkage"), 
-        col = c("red", "red"), 
-       lty = c(1, 2), bty = "n", 
-       cex = 2.2, 
-       lwd = 2)
-
-  @
-
-\end{frame}
 
 
 
 
-
-
-\begin{frame}<handout:0>{Solution: Exercise 2.2}
+\begin{frame}<handout:0>{Solution: Exercise 3.2}
 <<echo = FALSE, fig.height = 8>>=
 par(las = 1)
 
@@ -2135,179 +3025,45 @@ legend("topleft",
 \end{frame}
 
 
-\begin{frame}<handout:0>{Solution: Exercise 2.2}
-<<echo = FALSE, fig.height = 8>>=
-par(las = 1)
 
-ss.condshrink1 <- sampleSizeSignificance(zo = p2z(po.plot, alternative = "one.sided"), 
-                                        power = 0.8, designPrior = "conditional", 
-                                        shrinkage = 0.25)
 
-plot(po.plot, ss.cond1, type = "l", ylim = c(0, 4), col = "red", 
-     xlab = "One-sided original p-value", 
-     ylab = "Relative sample size", 
-     lwd = 2, 
-     cex.lab = 1.5, 
-     cex.axis = 1.5)
-lines(po.plot, ss.condshrink1, col = "red", lty = 2, 
-      lwd = 2)
-abline(h = c(1, 2, 3), col = "grey", lty = 2)
-points(pval.or, ss.cond, col = "red", pch = 20, cex = 1.75)
-points(pval.or, ss.condshrink, col = "red", pch = 20, cex = 1.75)
-legend("topleft", 
-        c("Conditional without shrinkage", "Conditional with 25% shrinkage"), 
-        col = c("red", "red"), 
-       lty = c(1, 2), bty = "n", 
-       cex = 2.2, 
-       lwd = 2)
 
-@
-  
+\begin{frame}{Two strategies}
+\begin{block}{Sample size calculation}
+\vspace{1.2cm}
+\begin{itemize}
+  \item {Based on the two-trials rule} 
+   \item[] {\color{gray} Standard practice} \\[1cm]
+  \item  {\bf Based on the sceptical $p$-value}
+   \item[] {\color{gray} \bf New developments}
+\end{itemize}
+\end{block}
 \end{frame}
 
-% 19.02.2021 : removed exercises 2.3 and 2.4 for time reason
-%\begin{frame}[fragile]{Exercises}
-% \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
-% 
-%   \begin{block}{Exercise 2.3}
-%   For the experimental economics replication project
-%   \begin{itemize}
-%   \item Calculate the conditional power for significance of each study.
-%     \item Calculate now the predictive power and compare.
-%   \end{itemize}
 
-<<echo = F, eval = F>>=
-eco <- subset(RProjects, project == "Experimental Economics")
-@
-
-%   \end{block}
-% \end{frame}
-
-
-% \begin{frame}[fragile]{Solution: Exercise 2.3}
-
-<<echo = FALSE, fig.height=8, eval = F>>=
-library("lattice")
-
-pow_c1 <- powerSignificance(zo = p2z(eco$po),
-      c = eco$se_fiso^2/eco$se_fisr^2, level = 0.025, 
-                             alternative = "one.sided",
-                             designPrior = "conditional")
-
-pow_p1 <- powerSignificance(zo = p2z(eco$po),
-      c = eco$se_fiso^2/eco$se_fisr^2, level = 0.025, 
-                             alternative = "one.sided",
-                             designPrior = "predictive")
-
-
-mat1 <- matrix(c(rep(eco$study, times=2),pow_c1*100, pow_p1*100,rep(c("Conditional","Predictive"), times=c(nrow(eco),nrow(eco)))), ncol=3)
-
-colnames(mat1) <- c("ID","power", "group")
-mat1 <- as.data.frame(mat1)
-mat1$ID <- as.factor(mat1$ID)
-mat1$group <- factor(mat1$group, levels=c("Conditional","Predictive"), order=TRUE)
-mat1$power <- as.numeric(as.character(mat1$power))
-
-trellis.par.set(
- list(
-   plot.symbol = list(col = 1, pch = 20, cex = 0.7),
-   box.rectangle = list(col = alpha("black",0.5)),
-   box.umbrella = list(lty = 1, col = alpha("black",0.5)),
-   strip.background = list(col = "white")
- )
-)
-panel_bw <- function(x, y, groups, subscripts, ...) {
- panel.bwplot(x = x, y = y, ...)
- tapply(1:length(y), groups[subscripts], function(i) {
-   llines(
-     x = 1:nlevels(x),
-     y = y[i][order(x[i])],
-     col = rgb(.2, .2, .2, .2)
-   )
-   lpoints(
-    x = 1:nlevels(x),
-    y = y[i][order(x[i])],
-    col = rgb(.2, .2, .2, .2),
-    pch = 16,
-    cex = 1.2
-   )
- })
-  panel.abline(h=50, col="red", lty=2)
-
-}
-bwplot(power~group, data=mat1, groups = ID, panel = panel_bw, 
-        xlab=list(""),
-        ylab=list("Power (in %)", cex = 2),
-        between = list(x = 1), scales = list(x = "free", y="free", rot=0, cex =2),
-        pch = "|")
-
-@
-
-% \end{frame}
-
-
-% \begin{frame}{Exercises}
-% \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
-% 
-%   \begin{block}{Exercise 2.4}
-%   For the experimental philosophy replicability project
-%   \begin{itemize}
-%   \item Calculate for each study the required relative sample size to reach a power for significance of 95\%. Use the conditional design prior.
-%   \item Compare them to the actually used relative sample sizes.
-%   \end{itemize}
-
-<<size = "scriptsize", echo = F, eval = F>>=
-philo <- subset(RProjects, 
-                 project == "Experimental Philosophy")
-@
-
-  
-%   \end{block}
-% \end{frame}
+\begin{frame}{Sample size calculation based on $p_S$}
+  \begin{itemize}
+  \item Goal is to have high power to achieve 
+  {\color{red} a `significant' {\it sceptical} $p$-value}: $p_S < 0.025$ (controlled or golden)
+  \item {\color{red} Conditional} on the original effect estimate
+  \item Can also take into account its uncertainty $\rightarrow$ {\color{red} predictive}
+  \end{itemize}
+\end{frame}
 
 
 
 
-% \begin{frame}[fragile]{Solution: Exercise 2.4}
 
 
-<<fig.height = 7, echo = FALSE, eval = F>>=
-par(mai = c(1,1.5,1,1))
-ss_aut <- philo$se_fiso^2/philo$se_fisr^2
-ss_cond1 <- sampleSizeSignificance(zo = p2z(philo$po), power = 0.95,
-                             designPrior = "conditional")
-
-plot(ss_aut, ss_cond1, 
-     xlim = c(0.01,50), 
-     ylim = c(0.01,50), 
-     xlab = "Reported relative sample size", 
-     ylab = "Calculated relative sample size", 
-     pch = 20, 
-     cex = 2.2, 
-     cex.lab = 1.7, 
-     cex.axis = 1.7, 
-     log = "xy", 
-     xaxt = "n", 
-     yaxt = "n")
-abline(a = 0, b = 1, 
-       col = "lightpink")
-
-axis(1, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"),cex.axis = 1.4)
-axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", "10", "50"), cex.axis = 1.4)
-
-
-@
-
-% \end{frame}
 
 
 \begin{frame}
   \section{Exercise 3 -- Design of replication studies}
   % \begin{block}{}
   \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Exercise Session 3}}
+  {\color{uzh@blue}\Huge \textbf{Exercise Session 4}}
   \\~\\
-  {\LARGE Design based on replication success (sceptical $p$-value)}
+  {\LARGE Design based on the sceptical $p$-value}
    \end{center}
   % \end{block}
 \end{frame}
@@ -2340,7 +3096,7 @@ Main arguments (\texttt{default}):
 \begin{frame}[fragile]{Example from \citet{Pyc2010}}
     \begin{itemize}
       \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
-      \item relative sample size $c = $ \Sexpr{round(c,1)}
+      \item relative sample size $c = $ \Sexpr{round(study$c,1)}
     \end{itemize}
 <<>>=
 # power calculation
@@ -2354,71 +3110,42 @@ powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"),
 \end{frame}
 
 
-\begin{frame}[fragile]{Example from \citet{Pyc2010}}
-\framesubtitle{With 50\% shrinkage}
-  \begin{block}{}
+\begin{frame}[fragile]{Exercises}
+\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
+  \begin{block}{Exercise 4.1}
     \begin{itemize}
-      \item $p$-value $p_o =$ \Sexpr{round(study$po/2, 3)}
-      \item relative sample size $c =$ \Sexpr{round(c,1)}
+    \item For the same original studies as in exercise 2.1 and $c = 1$, 
+    compare the power of the two-trials rule with the power of the 
+    golden sceptical $p$-value (only conditional). 
+    \item Repeat the exercise above but with the controlled sceptical 
+    $p$-value instead of the golden one. 
     \end{itemize}
-
   \end{block}
-  
-<<>>=
 
-# power calculation
-powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"), 
-                  c = 9.2, 
-                  shrinkage = 0.5, 
-                  designPrior = "conditional")
-@
-  
 \end{frame}
-
-
-%% \begin{frame}{TO DO}
-
-%%   \begin{itemize}
-%%   \item Think about the exercises for this part 
-%%   \item Currently not so good as sample size for RS explodes for large po.
-%%   \end{itemize}
-%% \end{frame}
 
 \begin{frame}[fragile]{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-  \begin{block}{Exercise 3.1}
+  \begin{block}{Exercise 4.2}
     \begin{itemize}
-    \item Compute and plot the conditional and predictive power for replication success. 
-      % using the controlled ($\alpha$ = 0.065) threshold. 
-      Use the function
-    \texttt{powerReplicationSuccess()} with
-   $c = 1$ and $p_o = 0.0001, 0.001, 0.005, 0.01$ and $0.025$.
-    \item Compare conditional power for replication success with conditional power for significance (exercise 2.1).
+    \item For the same original studies, compute and plot the relative
+    sample sizes to achieve a conditional power of 80\% with the two-trials 
+    rule and the golden sceptical $p$-value.
+    \item Repeat the exercise above but with the controlled sceptical 
+    $p$-value instead of the golden one. 
     \end{itemize}
   \end{block}
 
 \end{frame}
 
-%% \begin{frame}[fragile]{Exercises}
-%% \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-%%   \begin{block}{Exercise 3.2}
-%% \begin{itemize}
-%%   \item Compute and plot the relative sample sizes of the five
-%% studies to achieve a power of 80\% with the conditional
-%% and the predictive design prior. Use the function
-%% \texttt{sampleSizeReplicationSuccess()}.
-
-%%     \item Compare the relative sample sizes with the ones
-%%     obtained in exercise 2.2 (only for the conditional 
-%%     design prior).
-%%   \end{itemize}
-%%   \end{block}
-%% \end{frame}
 
 
-
-
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 3.1}
+\begin{frame}{}
+  \begin{center}
+  {\color{foo} \Huge\bf  Solutions}
+  \end{center}
+\end{frame}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.1}
 
 <<echo = F, fig.height = 8>>=
 par(las = 1)
@@ -2431,159 +3158,158 @@ pow.pred2 <- powerReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"
                                      alternative = "one.sided")
 
 plot(po.plot, pow.cond2*100, type = "l", col = "red", ylim = c(0,100), 
-     lwd = 1.5, 
+     lwd = 2.1, 
      xlab = "One-sided original p-value", 
      ylab = "Power (in %)", 
      cex.lab = 1.5, 
      cex.axis = 1.5, 
      lty = 1)
-lines(po.plot, pow.pred2*100, col = "blue", lwd = 1.5, lty = 1)
+lines(po.plot, pow.cond1*100, col = "blue", lwd = 2.1, lty = 1)
 abline(h = 50, lty = 3, lwd = 1.5)
-points(pval.or, pow.condRS*100, col = "red", pch = 20, cex = 1.75)
-points(pval.or, pow.predRS*100, col = "blue", pch = 20, cex = 1.75)
+# points(pval.or, pow.condRS*100, col = "red", pch = 20, cex = 1.75)
+# points(pval.or, pow.predRS*100, col = "blue", pch = 20, cex = 1.75)
 axis(2, at = 50, label = "50", cex.axis = 1.5,
      col = "gray40")
 
 legend("topright", 
-        c("Conditional", "Predictive"), 
-        col = c("red", "blue"), 
+        c("two-trials rule", expression(paste("golden ", p[S]))), 
+        col = c("blue", "red"), 
        lty = 1.5, bty = "n", 
        cex = 2.2, 
-       lwd = 1.5)
-# legend("bottomleft", 
-#        c("Replication success"), 
-#        lty = c(1), 
-#        bty = "n", 
-#        cex = 2.2, 
-#        lwd = 1.5)
+       lwd = 2)
+
 @
 
 \end{frame}
 
 
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 3.1}
- 
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.1}
+
 <<echo = F, fig.height = 8>>=
 par(las = 1)
-plot(po.plot, pow.cond2*100, type = "l", col = "red", ylim = c(0,100), 
-     lwd = 1.5, 
+pow.cond3 <- powerReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
+                                     c = 1, designPrior = "conditional", 
+                                     alternative = "one.sided", 
+                                     type = "controlled")
+
+pow.pred3 <- powerReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
+                                     c = 1, designPrior = "predictive", 
+                                     alternative = "one.sided", 
+                                     type = "controlled")
+
+plot(po.plot, pow.cond3*100, type = "l", col = "red", ylim = c(0,100), 
+     lwd = 2.1, 
      xlab = "One-sided original p-value", 
      ylab = "Power (in %)", 
      cex.lab = 1.5, 
      cex.axis = 1.5, 
      lty = 1)
-## lines(po.plot, pow.pred2*100, col = "blue", lwd = 1.5, 
-##       lty = 1)
-lines(po.plot, pow.cond1*100, col = "red", lty = 2,
-      lwd = 1.5)
-## lines(po.plot, pow.pred1*100, col = "blue", lty = 2, 
-##       lwd = 1.5)
-abline(h = 50, 
-       lty = 3, 
-       lwd = 1.5)
-points(pval.or, pow.condRS*100, col = "red", pch = 20, cex = 1.75)
-## points(pval.or, pow.predRS*100, col = "blue", pch = 20, cex = 1.75)
-points(pval.or, pow.cond*100, col = "red", pch = 20, cex = 1.75)
-## points(pval.or, pow.pred*100, col = "blue", pch = 20, cex = 1.75)
+lines(po.plot, pow.cond1*100, col = "blue", lwd = 2.1, lty = 1)
+abline(h = 50, lty = 3, lwd = 1.5)
+# points(pval.or, pow.condRS*100, col = "red", pch = 20, cex = 1.75)
+# points(pval.or, pow.predRS*100, col = "blue", pch = 20, cex = 1.75)
 axis(2, at = 50, label = "50", cex.axis = 1.5,
      col = "gray40")
 
-## legend("topright", 
-##         c("Conditional", "Predictive"), 
-##         col = c("red", "blue"), 
-##        lty = 1.5, bty = "n", 
-##        cex = 2.2, 
-##        lwd = 1.5)
-
 legend("topright", 
-       c("Sceptical p-value", "Two-trials rule"), 
-       lty = c(1, 2), col = "red", 
-       bty = "n", 
+        c("two-trials rule", expression(paste("controlled ", p[S]))), 
+        col = c("blue", "red"), 
+       lty = 1.5, bty = "n", 
        cex = 2.2, 
-       lwd = 1.5)
-  @
+       lwd = 2)
+
+@
+
+\end{frame}
+
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.2}
+
+ <<echo = F, fig.height = 7>>=
+par(mfrow = c(1,1),
+    las = 1)
+
+ss.cond2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
+                                         power = 0.8,
+                                         alternative = "one.sided",
+                                         type = "golden",
+                                         designPrior = "conditional",
+                                         level = 0.025)
+ss.cond3 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
+                                         power = 0.8,
+                                         alternative = "one.sided",
+                                         type = "controlled",
+                                         designPrior = "conditional",
+                                         level = 0.025)
+
+ss.pred2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
+                                         power = 0.8,
+                                         alternative = "one.sided",
+                                         designPrior = "predictive",
+                                         type = "golden",
+                                         level = 0.025)
+plot(po.plot,
+     ss.cond2,
+     type = "l",
+     col = "red",
+     ylim = c(0, 12),
+     cex.lab = 1.5,
+     cex.axis = 1.5,
+     ylab = "Relative sample size",
+      xlab = "One-sided original p-value",
+     lwd = 2)
+
+lines(po.plot,
+      ss.cond1,
+      type = "l",
+      col = "blue",
+      lwd = 2)
+
+legend("topleft", 
+        c("two-trials rule", expression(paste("golden ", p[S]))), 
+        col = c("blue", "red"), 
+       lty = 1.5, bty = "n", 
+       cex = 2.2, 
+       lwd = 2)
+@
 \end{frame}
 
 
-
-%% \begin{frame}[fragile]{Solution: Exercise 3.2}
-
-%% <<echo = F, fig.height = 7>>=
-%% par(mfrow = c(1,1), 
-%%     las = 1)
-
-%% ss.cond2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"),
-%%                                          power = 0.8, 
-%%                                          alternative = "one.sided", 
-%%                                          type = "golden", 
-%%                                          designPrior = "conditional",
-%%                                          level = 0.025)
-
-%% ss.pred2 <- sampleSizeReplicationSuccess(zo = p2z(po.plot, alternative = "one.sided"), 
-%%                                          power = 0.8, 
-%%                                          alternative = "one.sided", 
-%%                                          designPrior = "predictive",
-%%                                          type = "golden", 
-%%                                          level = 0.025)
-%% plot(po.plot, 
-%%      ss.cond2, 
-%%      type = "l", 
-%%      col = "red", 
-%%      ylim = c(0, 10), 
-%%      cex.lab = 1.5, 
-%%      cex.axis = 1.5, 
-%%      ylab = "Relative sample size", 
-%%       xlab = "One-sided original p-value", 
-%%      lwd = 2)
-
-%% lines(po.plot, 
-%%       ss.pred2, 
-%%       type = "l", 
-%%       col = "blue", 
-%%       lwd = 2)
-
-%% legend("topleft", 
-%%        c("Conditional", "Predictive"), 
-%%        col = c("red", "blue"), 
-%%        lty = 1, 
-%%        bty = "n", 
-%%        cex = 1.75, 
-%%        lwd = 2)
-%% @
-%% \end{frame}
+\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.2}
 
 
-%% \begin{frame}[fragile]{Solution: Exercise 3.2}
+ <<echo = F, fig.height = 7>>=
+
+par(mfrow = c(1,1),
+    las = 1)
+
+plot(po.plot,
+     ss.cond3,
+     type = "l",
+     col = "red",
+     ylim = c(0, 4),
+     cex.lab = 1.5,
+     cex.axis = 1.5,
+     ylab = "Relative sample size",
+      xlab = "One-sided original p-value",
+     lwd = 2)
+
+lines(po.plot,
+      ss.cond1,
+      type = "l",
+      col = "blue",
+      lwd = 2)
+
+legend("topright", 
+        c("two-trials rule", expression(paste("controlled ", p[S]))), 
+        col = c("blue", "red"), 
+       lty = 1.5, bty = "n", 
+       cex = 2.2, 
+       lwd = 2)
+
+ @
+\end{frame}
 
 
-%% <<echo = F, fig.height = 7>>=
-
-%% par(mfrow = c(1,1), 
-%%     las = 1)
-%% plot(po.plot, ss.cond1, type = "l", ylim = c(0, 10), col = "red", 
-%%      xlab = "One-sided original p-value", 
-%%      ylab = "Relative sample size", 
-%%      lwd = 2,
-%%      cex.lab = 1.5, 
-%%      cex.axis = 1.5, 
-%%      lty = 2)
-
-%% lines(po.plot, ss.cond2, 
-%%       col = "red", 
-%%       lty = 1, 
-%%       lwd = 2)
-
-%% legend("topleft", 
-%%        c("Replication Success", "Significance"),
-%%        lty = c(1, 2), 
-%%        col = "red",
-%%        bty = "n", 
-%%        cex = 1.75, 
-%%        lwd = 2)
-
-%% @
-
-%% \end{frame}
 % 19.2.2021 Removed from time reason
 % \begin{frame}[fragile]{Exercises}
 % \framesubtitle{(Solutions available at \url{https://osf.io/fcrj6/})}
@@ -2699,389 +3425,6 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 % \end{frame}
 
-\begin{frame}
-\section{Exercise 4 -- Multiple replication studies}
-  % \begin{block}{}
-  \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Exercise Session 4}} 
-  \\~\\
-  {\LARGE Multiple replication studies}
-   \end{center}
-  % \end{block}
-\end{frame}
-
-
-
-\begin{frame}{Assessing replication success}
-  \begin{block}{How to assess replication success with multiple replication 
-  studies?}
-  
-    \begin{itemize}
-    \item[] One option: 
-      \begin{enumerate}
-      \item Perform a {\color{red} meta-analysis} with the replication studies
-     
-      \item Retrieve/compute: 
-        \begin{itemize}
-        \item the {\color{foo} meta-analytic combined effect} $\hat\theta_r$
-        \item the {\color{foo} standard error of the combined effect} $\sigma_r = \se(\hat\theta_r)$
-        \item the {\color{foo} meta-analytic $z$-value} $z_r = \hat\theta_r/\sigma_r$
-        \item the {\color{foo} variance ratio (relative sample size)} $c = \sigma_o^2/\sigma_r^2$
-        \end{itemize}
-      
-      \item Apply the {\color{red} same methods} as in a 1-1 scenario
-      \end{enumerate}
-    \end{itemize}
-  \end{block}
-\end{frame}
-
-
-\begin{frame}[fragile]{Example for experiment FSD}
-  \begin{block}{Meta-analysis of the external replications}
-  \end{block}
-<<size = "tiny">>=
-FSD <-  subset(protzko2020, experiment == "FSD") 
-(meta_FSD <- metagen(TE = smd, seTE = se, studlab = lab, 
-                     exclude = (type == "original" | type == "self-replication"), 
-                     data = FSD, sm = "SMD"))
-@
-
-\end{frame}
-
-
-
-\begin{frame}[fragile]{Retrieving results}
-<<eval = T, size="tiny">>=
-
-(thetar_FSD <- meta_FSD$TE.fixed) # meta-analytic estimate
-(se_thetar_FSD <- meta_FSD$seTE.fixed) # standard error of estimate
-(zr_FSD <- meta_FSD$zval.fixed) # meta-analytic z-value
-
-
-FSD_ori <- subset(FSD, type == "original")
-(c_FSD <- FSD_ori$se^2/se_thetar_FSD^2) # variance ratio (relative sample size)
-
-@
-\end{frame}
-
-\begin{frame}[fragile]{Assessing replication success}
-\vspace{0.5cm}
-  
-  \begin{block}{Two-trials rule}
-<<size = "tiny">>=
-zo_FSD <- FSD_ori$smd/FSD_ori$se
-(po_FSD <- z2p(zo_FSD, alternative = "one.sided"))
-(pr_FSD <- z2p(zr_FSD, alternative = "one.sided"))
-@
-\begin{center}
-{\color{red} Replication success with the two-trials rule}
-\end{center}
-  \end{block}
-\pause
-  \begin{block}{Sceptical $p$-value}
-<<size = "tiny">>=
-(pS_FSD <- pSceptical(zo = zo_FSD, zr = zr_FSD, c = c_FSD, 
-                     alternative = "one.sided", type = "golden"))
-@
-  \begin{center}
-{\color{red} Replication success with the sceptical $p$-value}
-\end{center}
-  \end{block}
-
-\begin{center}
-\end{center}
-\end{frame}
-
-
-\begin{frame}[fragile]{Forest plot of experiment FSD}
-\vspace{1cm}
-<<echo = T, eval = F>>=
-forest(meta_FSD)
-@
-\vspace{-1cm}
-<<echo = F, eval = T>>=
-forest(meta_FSD)
-@
-\end{frame}
-
-\begin{frame}
-\frametitle{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-
-\begin{block}{}
-For each experiment in the Protzko dataset
-\end{block}
-
-  \begin{block}{Exercise 4.1}
-  Compute a fixed and random-effects meta-analysis for the external replications. \\
-  Extract the meta-analytic combined estimate ($\hat\theta_r$) and compute 
-  the relative effect size ($d = \hat\theta_r/\hat\theta_o$). \\
- {\it Hint: Use the function} \texttt{metagen} {\it from the R package} \texttt{meta}.
-  \end{block}
-
-  \begin{block}{Exercise 4.2}
-  Compute Higgins' $I^2$.
-  \end{block}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Exercises}
-\framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
-
-  \begin{block}{Exercise 4.3}
-  Using the results from Exercise 4.1, assess replication success
-  in the 16 experiments with the two methods (two-trials rule
-  and replication success) \\
-  {\it Hint:
-  \begin{enumerate}
-  \item Compute the original $z$-value
-  \item Extract the meta-analytic $z$-value
-  \item Compute the variance ratio
-  (using the standard error of the meta-analytic estimate)
-  \item Using these quantities, calculate the original, replication
-  and sceptical $p$-values
-  \end{enumerate}}
-  \end{block}
-\end{frame}
-
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.1}
-<<echo = T>>=
-
-for(i in unique(protzko2020$experiment)){
-  dat <-  subset(protzko2020, experiment == i)
-  ma <- metagen(TE = smd, seTE = se, studlab = lab,
-                exclude = (type == "original" | type == "self-replication"),
-                data = dat, sm = "SMD")
-  thetar_fixed <- ma$TE.fixed
-  thetar_random <- ma$TE.random
-}
-@
-\end{frame}
-
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.1}
-<<echo = F>>=
-d_mat <- matrix(NA, 
-                nrow = 16, 
-                ncol = 3) 
-
-for(i in 1:length(unique(protzko2020$experiment))){
-  ex <- unique(protzko2020$experiment)[i]
-  dat <-  subset(protzko2020, experiment == ex)
-  ma <- metagen(TE = smd, seTE = se, studlab = lab,
-                exclude = (type == "original" | type == "self-replication"),
-                data = dat, sm = "SMD")
-  ori_dat <- subset(dat, type == "original")
-  thetao <- ori_dat$smd
-  thetar_fixed <- ma$TE.fixed
-  thetar_random <- ma$TE.random
-  d_mat[i, 1] <-  ex
-  d_mat[i, 2] <- thetar_fixed/thetao
-  d_mat[i, 3] <- thetar_random/thetao
-
-}
-
-par(las = 1, mar = c(10, 5, 4, 2) + 0.1)
-
-
-matplot(d_mat[, c(1, 2)], 
-        ylim = c(-2.5, 2.5), 
-        col = alpha("blue", 0.5), 
-        pch = 19, 
-        xaxt = "n", 
-        cex = 2.5, 
-        ylab = "Relative effect size", 
-        cex.lab = 1.5)
-matpoints(d_mat[, c(1,3)], 
-          col = alpha("red", 0.5), 
-          pch = 19, 
-          cex = 2.5)
-
-
-axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
-     las = 3,
-     cex.axis = 1.5)
-
-abline(h = 1, 
-       col = "darkgrey", lty = 2)
-
-legend("bottomright", 
-       c("fixed effect", "random effects"), 
-       col = c(alpha("blue", 0.5), alpha("red", 0.5)), 
-       pch = 19, 
-       cex = 1.9, 
-       bty = "n")
-
-
-
-@
-\end{frame}
-
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.2}
-
-\makebox[1\textwidth][c]{
-  \resizebox{0.9\textwidth}{!} {
-<<echo = F>>=
-
-par(las = 1, mar = c(10, 5, 4, 2) + 0.1)
-ma_mat <-   matrix(data = NA,
-                   nrow = length(unique(protzko2020$experiment)),
-                   ncol = 4)
-
-colnames(ma_mat) <-  c("I2", "zr", "sefixed", "experiment")
-
-for(i in 1:length(unique(protzko2020$experiment))){
-  ex <- unique(protzko2020$experiment)[i]
-  dat = protzko2020[protzko2020$experiment == ex, ]
-  ma <- metagen(TE = smd, seTE = se, data = dat, sm = "SMD",
-                exclude = (type == "original" | type == "self-replication"))
-  ma_mat[i, 1] <-  ma$I2*100
-  ma_mat[i, 2] <- ma$zval.fixed
-  ma_mat[i, 3] <- ma$seTE.fixed
-  ma_mat[i, 4] <-  ex
-
-}
-
-matplot(ma_mat[, c(1, 4)],
-     pch = 19,
-     xaxt = "n",
-     xlab = "",
-     ylab = expression(paste("Higgins' ", I^2, " (%)")),
-     cex.axis = 1.5,
-     cex.lab = 1.5,
-     ylim = c(0, 100),
-     cex = 2.5,
-     col = alpha("blue", 0.6))
-
-axis(side = 1, at = 1:16, labels = unique(protzko2020$experiment),
-     las = 3,
-     cex.axis = 1.5)
-
-
-@
-  }
-}
-\end{frame}
-
-\begin{frame}<handout:0>[fragile]{Forest plots}
-  \framesubtitle{Higgins' $I^2$ in brackets}
-<<echo = F>>=
-parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(4, 4))
-experiments <- unique(protzko2020$experiment)
-for (ex in experiments) {
-  ## compute CIs
-  dat <- subset(protzko2020, experiment == ex)
-  ma <- metagen(TE = smd, seTE = se, 
-                data = dat, 
-                sm = "SMD", 
-                exclude = (type == "original" | type == "self-replication"))
-  I2 <- ma$I2
-  # re-ordering
-  ori.index <- which(dat$type == "original")
-  self.index <- which(dat$type == "self-replication")
-  extern.index <- which(dat$type == "external-replication")
-  dat <- dat[ c(extern.index, self.index, ori.index),]
-  za <- qnorm(p = 0.975)
-  plotDF <- data.frame(lower = dat$smd - za*dat$se,
-                       est = dat$smd,
-                       upper = dat$smd + za*dat$se)
-colpalette <- c("#000000", "#1B9E77", "#D95F02")
-cols <- colpalette[dat$type]
-yseq <- seq(1, nrow(dat))
-
-## forestplot
-plot(x = plotDF$est, y = yseq, xlim = c(-0.15, 0.8),
-     ylim = c(0.8*min(yseq), 1.05*max(yseq)), type = "n",
-     yaxt = "n", xlab = "Effect estimate (SMD)", ylab = "")
-abline(v = 0, col = "#0000004D")
-arrows(x0 = plotDF$lower, x1 = plotDF$upper, y0 = yseq, angle = 90,
-       code = 3, length = 0.05, col = cols)
-points(y = yseq, x = plotDF$est, pch = 20, lwd = 2, col = cols)
-axis(side = 2, at = yseq, las = 1, labels = dat$type, cex.axis = 0.85)
-title(main = paste0(ex , " (", round(I2*100)," %)"), cex.main = 0.9)
-}
-par(parOld)
-@
-
-\end{frame}
-
-
-\begin{frame}<handout:0>[fragile]{Solution: Exercise 4.3}
-
-<<results = 'asis', echo = F>>=
-
-zr_ma <- as.numeric(ma_mat[, 2])
-pr_ma <- z2p(zr_ma, alternative = "one.sided")
-ori_subset <- subset(protzko2020, type == "original")
-zo_ma <- ori_subset$smd/ori_subset$se
-po_ma <- z2p(zo_ma, alternative = "one.sided")
-c_ma = ori_subset$se^2/as.numeric(ma_mat[, 3])^2
-pS_ma <- pSceptical(zo = zo_ma, zr = zr_ma, c = c_ma )
-
-
-summary_ma <-  matrix(c(unique(protzko2020$experiment),
-                        phighlighfun(as.numeric(po_ma)),
-                        phighlighfun(as.numeric(pr_ma)),
-                        phighlighfun(as.numeric(pS_ma))),
-                      ncol = 4)
-
-xt_ma <- xtable(summary_ma)
-names(xt_ma) <-  c("Experiment",
-                   "$p_o$",
-                   "$p_r$ (meta-analysis)",
-                  "$p_S$ (meta-analysis)")
-
-print.xtable(xt_ma,
-            include.rownames = F,
-      hline.after = F,
-      sanitize.text.function=function(x){x},
-      scalebox='0.6')
-@
-
-\end{frame}
-
-\begin{frame}<handout:0>
-\frametitle{Solution: Exercise 4.3}
-  \framesubtitle{Forest plots of studie with replication failure}
-
-\makebox[1\textwidth][c]{  
-  \resizebox{1.1\textwidth}{!} {
-<<echo = F, fig.height = 4>>=
-# graphics.off()
-parOld <- par(mar = c(5, 8, 4, 2), mfrow = c(1, 3))
-experiments <- c("Prediction", "Redemption", "Misreporting")
-for (ex in experiments) {
-  ## compute CIs
-  dat <- subset(protzko2020, experiment == ex)
-  # re-ordering
-  ori.index <- which(dat$type == "original")
-  self.index <- which(dat$type == "self-replication")
-  extern.index <- which(dat$type == "external-replication")
-  dat <- dat[ c(extern.index, self.index, ori.index),]
-  za <- qnorm(p = 0.975)
-  plotDF <- data.frame(lower = dat$smd - za*dat$se,
-                       est = dat$smd,
-                       upper = dat$smd + za*dat$se)
-colpalette <- c("#000000", "#1B9E77", "#D95F02")
-cols <- colpalette[dat$type]
-yseq <- seq(1, nrow(dat))
-
-## forestplot
-plot(x = plotDF$est, y = yseq, xlim = c(-0.15, 0.8),
-     ylim = c(0.8*min(yseq), 1.05*max(yseq)), type = "n",
-     yaxt = "n", xlab = "Effect estimate (SMD)", ylab = "")
-abline(v = 0, col = "#0000004D")
-arrows(x0 = plotDF$lower, x1 = plotDF$upper, y0 = yseq, angle = 90,
-       code = 3, length = 0.05, col = cols)
-points(y = yseq, x = plotDF$est, pch = 20, lwd = 2, col = cols)
-axis(side = 2, at = yseq, las = 1, labels = dat$type, cex.axis = 0.85)
-title(main = ex)
-}
-par(parOld)
-@
-  }
-} 
-\end{frame}
 
 
 \begin{frame}

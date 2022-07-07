@@ -12,7 +12,9 @@ ForestPlot <- function(thetahat, se,
                        level = 0.95, 
                        studyNames = c("original", "replication"),
                        TTR = FALSE, 
-                       title = NA){
+                       title = NA, 
+                       scepticalCI = FALSE, 
+                       metaAn = FALSE){
   
   diamond <- function(center, height, width) {
     base <- matrix(c(1, 0, 0, 1, -1, 0, 0, -1), nrow = 2) 
@@ -74,6 +76,7 @@ ForestPlot <- function(thetahat, se,
           plot.title = element_text(size = 10, face = "bold", hjust=0.5)) +
       ggtitle(title) 
   
+  if(scepticalCI == TRUE){
   if(!is.null(hMean)){
     p <- p + geom_segment(data = hMean,
                           mapping = aes(x = lower, xend = upper),
@@ -83,11 +86,15 @@ ForestPlot <- function(thetahat, se,
     p <- p + geom_text(label = "skeptical", x = textStart, y = 0, hjust = 0) +
       geom_point(data = studies, mapping = aes(x=y), y=0, color="blue", size=cex)
   }
-  
-  if(!is.null(fixedEffect)){
-    p <- p + diamond(center = c(mean(c(fixedEffect$lower, fixedEffect$upper)), -1),
-                     height = .2, width = (fixedEffect$upper-fixedEffect$lower)/2) 
-    p <- p + geom_text(label = "meta-analysis", x = textStart, y = -1 , hjust = 0)
   }
+  
+  if(metaAn == TRUE){
+  if(!is.null(fixedEffect)){
+    p <- p + diamond(center = c(mean(c(fixedEffect$lower, fixedEffect$upper)), ifelse(scepticalCI == TRUE, -1, 0)),
+                     height = .2, width = (fixedEffect$upper-fixedEffect$lower)/2) 
+    p <- p + geom_text(label = "meta-analysis", x = textStart, y =  ifelse(scepticalCI == TRUE, -1, 0) , hjust = 0)
+  }
+}
+  
     return(p)
 }
