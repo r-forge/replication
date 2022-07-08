@@ -66,7 +66,7 @@ ForestPlot <- function(thetahat, se,
     geom_vline(xintercept = 0, linetype = "dashed", col="darkgrey") +
     xlim(c(plotMargin, mmax)) +
     geom_text(aes(label = names), x = textStart, hjust = 0) + 
-    xlab(expression(mu)) + 
+    xlab(expression(theta)) + 
     scale_y_continuous(expand = c(.1, .1)) +
     theme_classic() +
     theme(axis.title.y=element_blank(),
@@ -83,7 +83,7 @@ ForestPlot <- function(thetahat, se,
                           y= 0, yend=0,
                           arrow = arrow(ends="both", length = unit(arrowHeight, "in")),
                           color="red", size=lwd) 
-    p <- p + geom_text(label = "skeptical", x = textStart, y = 0, hjust = 0) +
+    p <- p + geom_text(label = "sceptical", x = textStart, y = 0, hjust = 0) +
       geom_point(data = studies, mapping = aes(x=y), y=0, color="blue", size=cex)
   }
   }

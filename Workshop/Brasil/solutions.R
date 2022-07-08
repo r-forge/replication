@@ -1,12 +1,13 @@
 # ======================================================================
 # Solutions to exercises from tutorial on R-package ReplicationSuccess #
-# C. Micheloud, S.Pawel 
+# C. Micheloud, L. Held,  S.Pawel 
 # charlotte.micheloud@uzh.ch
 # ======================================================================
 
 
 # Loading package and data
 # ----------------------------------------------------------------------
+library("meta")
 library("ReplicationSuccess")
 data("RProjects")
 
@@ -21,6 +22,10 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 ## computing 1-sided p-values (all original estimates coded in positive direction)
 RProjects$po1 <- z2p(RProjects$zo, alternative = "greater")
 RProjects$pr1 <- z2p(RProjects$zr, alternative = "greater")
+
+# Exercise 1.1 (Original versus replication effect estimate)
+# ----------------------------------------------------------------------
+
 
 
 # Exercise 1.1 (Success based on statistical significance)
