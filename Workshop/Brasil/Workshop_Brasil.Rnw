@@ -84,7 +84,7 @@ library(knitr)
 library(scales)
 library(biostatUZH)
 opts_chunk$set(fig.path = "figures/fig", 
-               cache = TRUE, 
+               cache = FALSE, 
                fig.align = "center",
                fig.height = 8,
                fig.width = 10,
@@ -819,7 +819,7 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 
 
 \item[4.] Explore the \texttt{ReplicationSuccess} package
-<<>>=
+<<eval = FALSE>>=
 # for example
 vignette("ReplicationSuccess")
 ?RProjects
@@ -953,8 +953,6 @@ $\alpha = 0.05$ for the {\bf two-sided $p_M$}.
 
 <<echo = F>>=
 
-
-
 gg_zAll <- ggplot(data = RProjects, aes(x = fiso, y = fisr)) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_abline(intercept = 0, slope = 1, col = "grey") +
@@ -974,21 +972,6 @@ gg_zAll <- ggplot(data = RProjects, aes(x = fiso, y = fisr)) +
 
 \begin{frame}<handout:0>[fragile]{Solution: Exercise 1.2}
 << echo = FALSE, results = "asis" >>=
-# for (p in unique(RProjects$project)) {
-#   data_project <- subset(RProjects, project == p)
-#   significant_O <- data_project$po < 0.05
-#   significant_R <- data_project$pr < 0.05
-#   success <- significant_O & significant_R & 
-#       (sign(data_project$fiso) == sign(data_project$fisr))
-#   cat(paste0(p, ": \n"))
-#   cat(paste0(round(mean(significant_O)*100, 1), "% original studies significant (", 
-#              sum(significant_O), "/", length(significant_O), ")\n"))
-#   cat(paste0(round(mean(significant_R)*100, 1), "% replications significant (", 
-#              sum(significant_R), "/", length(significant_R), ")\n"))
-#   cat(paste0(round(mean(success)*100, 1), 
-#              "% both significant, same direction (",
-#              sum(success), "/", length(success), ") \n \n"))
-# }
 
 ## compute for all projects
 significant_O <- RProjects$po1 < 0.025
@@ -1327,9 +1310,8 @@ for (p in unique(RProjects$project)) {
   \framesubtitle{Part b)}
   
 <<echo = F, fig.height = 2, fig.width = 5>>=
-source("functions.R")
-ind.weird <- which(RProjects$pMsuccess & RProjects$Qincompatible & !RProjects$TTR )
-ex1.4 <- RProjects[ind.weird[3],]
+# ind.weird <- which(RProjects$pMsuccess & RProjects$Qincompatible & !RProjects$TTR )
+ex1.4 <- RProjects[8,]
 with(ex1.4, 
      ForestPlot(thetahat = c(fiso, fisr), se = c(se_fiso, se_fisr), 
                 metaAn = TRUE, 
