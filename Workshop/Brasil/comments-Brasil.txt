@@ -2,9 +2,6 @@ CM, June 13 2022
 
 Some comments/questions about the workshop in Brasil
 
-- I think it is good to keep a small introduction on replication in the workshop, as not everyone might have been present during Leo's talk.
-- Make the slides of the lecture available on gitlab/github so that users can refer to that during the workshop.
+- Make the slides of the lecture/workshop available on gitlab so that users can refer to that during the workshop.
 - Update vignette 
-- Two.sided pM in theory? ok
 - Try to install the package on Linux, Mac, and Windows
-- MA: random or fixed effect MA?

@@ -439,7 +439,7 @@ study_plot
   \end{enumerate}
   \pause
   \begin{enumerate}
-    \item[4.]{\color{black!25} Sceptical $p$-value (tomorrow)}
+    \item[4.]{\color{black!25} Sceptical $p$-value (second part)}
   \end{enumerate}
 \end{block}
 \end{minipage}
@@ -1422,12 +1422,13 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 \end{minipage}
 \end{frame}
 
-
 \begin{frame}{}
-  \begin{center}
-  \color{uzh@blue}{\Huge \textbf{Day two}}
+\begin{center}
+  \color{uzh@blue}{\Huge \textbf{When is a replication successul?}} \\[1cm]
+  \color{uzh@blue}{\Large Newly developed method}
    \end{center}
 \end{frame}
+
 
 \begin{frame}{When is a replication successful?}
 \section{When is a replication successful?}
@@ -1450,6 +1451,7 @@ study_plot
 @
 \end{minipage}
 \end{frame}
+
 
 \begin{frame}{4. Sceptical $p$-value}
 \framesubtitle{New definition of replication success}
@@ -3604,7 +3606,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 % ============================================================================
 \nocite{Pyc2010, open2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, 
-Held2020, HeldMichPaw2021, MicheloudHeld2021, Protzko2020, Errington2021}
+Held2020, HeldMichPaw2021, MicheloudHeld2021, Errington2021}
 \begin{frame}[allowframebreaks]{References}
   \tiny
   \bibliographystyle{apalike}
