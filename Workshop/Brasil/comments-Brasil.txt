@@ -4,4 +4,7 @@ Some comments/questions about the workshop in Brasil
 
 - Make the slides of the lecture/workshop available on gitlab so that users can refer to that during the workshop.
 - Update vignette 
-- Try to install the package on Linux, Mac, and Windows
+- Try to install the package on Linux, Mac, and Windows 
+- seems to be problematic with Windows (obviously) - solution with Francesca: disable vignette building
+- Send e-mail to Marcos so that he tells participants to bring a computer and have a recent R version installed
+- How do we split?
