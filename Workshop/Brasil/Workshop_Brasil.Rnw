@@ -439,7 +439,7 @@ study_plot
   \end{enumerate}
   \pause
   \begin{enumerate}
-    \item[4.]{\color{black!25} Sceptical $p$-value (second part)}
+  {\color{black!25} \item[4.] Sceptical $p$-value (second part)}
   \end{enumerate}
 \end{block}
 \end{minipage}
