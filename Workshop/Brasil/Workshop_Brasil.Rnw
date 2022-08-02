@@ -2,6 +2,9 @@
 % handout options: version without solutions for the participants
 \documentclass[english]{beamer}
 
+% necessary for Charlotte's Mac!!
+% \pdfmapfile{=ua1.map}
+
 % Leos shortcuts
 \input{newCommands.tex}
 \def\SE{\mbox{se}}
@@ -655,9 +658,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 << eval = FALSE, size = "footnotesize" >>=
 # development version 
 devtools::install_github(repo = "SamCH93/ReplicationSuccess",
-                         ref = "T1Econtrol", 
-                         # build_vignettes = TRUE
-                         )
+                         ref = "T1Econtrol")
 
 # CRAN version 
 install.packages("ReplicationSuccess")
@@ -665,7 +666,6 @@ install.packages("ReplicationSuccess")
       \item Usage
     << size = "small", eval = FALSE >>=
 library(ReplicationSuccess)
-vignette("ReplicationSuccess")
 ?pSceptical # documentation
 news(package = "ReplicationSuccess") # news page
 @
@@ -784,6 +784,7 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 \begin{frame}[fragile]{Preparatory exercises}
 \begin{block}{}
 \begin{enumerate}
+\item Visit {\small \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}}
 \item Install the development version of the package + other required packages
 <<eval = F>>=
 install.packages("devtools")
@@ -812,7 +813,7 @@ data("RProjects")
 \begin{frame}[fragile]{Preparatory exercises}
 \begin{block}{}
 \begin{enumerate}
-\item[3.] Compute the key quantities $z_o$, $z_r$ and $c$ with
+\item[4.] Compute the key quantities $z_o$, $z_r$ and $c$ with
 <<>>=
 RProjects$zo <- RProjects$fiso/RProjects$se_fiso
 RProjects$zr <- RProjects$fisr/RProjects$se_fisr
@@ -820,10 +821,9 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 @
 
 
-\item[4.] Explore the \texttt{ReplicationSuccess} package
+\item[5.] Explore the \texttt{ReplicationSuccess} package
 <<eval = FALSE>>=
 # for example
-vignette("ReplicationSuccess")
 ?RProjects
 @
 \end{enumerate}
@@ -945,7 +945,7 @@ $\alpha = 0.05$ for the {\bf two-sided $p_M$}.
 \end{frame}
 
 
-\begin{frame}{}
+\begin{frame}<handout:0>{}
   \begin{center}
   {\color{foo} \Huge\bf  Solutions}
   \end{center}
@@ -2092,7 +2092,7 @@ levelCI = 0.95)}}
     \end{block}
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}<handout:0>{}
   \begin{center}
   {\color{foo} \Huge\bf  Solutions}
   \end{center}
@@ -2978,7 +2978,7 @@ For all the original studies from the replication projects
 
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}<handout:0>{}
   \begin{center}
   {\color{foo} \Huge\bf  Solutions}
   \end{center}
@@ -3254,7 +3254,7 @@ powerReplicationSuccess(zo = p2z(0.011, alternative = "one.sided"),
 
 
 
-\begin{frame}{}
+\begin{frame}<handout:0>{}
   \begin{center}
   {\color{foo} \Huge\bf  Solutions}
   \end{center}
