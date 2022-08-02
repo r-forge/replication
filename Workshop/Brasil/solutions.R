@@ -1,6 +1,6 @@
 # ======================================================================
 # Solutions to exercises from tutorial on R-package ReplicationSuccess #
-# C. Micheloud, L. Held
+# C. Micheloud, S. Pawel, L. Held
 # charlotte.micheloud@uzh.ch
 # ======================================================================
 
@@ -17,10 +17,7 @@ pkgs <- sapply(c("meta", "devtools", "ggplot2"), installpkg)
 
 # ReplicationSuccess package 
 devtools::install_github(repo = "SamCH93/ReplicationSuccess",
-                         ref = "T1Econtrol", 
-                         build_vignettes = TRUE)
-vignette("ReplicationSuccess")
-
+                         ref = "T1Econtrol")
 
 
 # Loading package and data
