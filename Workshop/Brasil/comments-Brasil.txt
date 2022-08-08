@@ -1,25 +1,6 @@
-CM, June 13 2022
+CM, Aug 8 2022 - Debriefing of the Workshop given in Gramado (Brasil) during SINPAE conference: 
 
-last update: Jul 13
-
-Some comments/questions about the workshop in Brasil
-
-- Make the slides of the lecture/workshop available on gitlab so that users can refer to that during the workshop. (CM; on monday or tuesday before the conference)
-
-
-- Update vignette (done) 
-- Update news file (done) 
-
-- Try to install the package on Linux, Mac, and Windows (done, list of problems): 
-	- latex is required to build the vignette, so maybe without the vignette and put in on  GitLab? 
-	- keep in mind: Lisa (windows) had a problem installing the package because she missed the "RTools" package
-
-	- with Francesca (Windows): disable vignette building 
-	
-- Send e-mail to Marcos so that he tells participants to bring a computer and have a recent R version installed
-- Tell them during Leo's talk to bring computer + install R + try to install package and come to me if problem
-
-
-- How do we split?
+Because most of them were professors and we were a small group, we didn't make them do the exercises. Instead I presented the solutions. This worked well and generated a lot of interesting discussion. 
+--> Keep this is mind for next time, and think whether we want to do it the standard way or like in Gramado. 
 
 

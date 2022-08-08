@@ -843,21 +843,7 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
 \end{frame}
 
 
-\begin{frame}{Important functions}
-
-  \begin{block}{Two-trials rule}
-   \begin{itemize}
-    \item[] Function: \texttt{z2p}
-    \item[] Arguments
-      \begin{itemize}
-        \item \texttt{z}
-        \item \texttt{alternative ("one.sided")}
-      \end{itemize}
-  \end{itemize}
-  
-  \end{block}
-  
-  \pause
+\begin{frame}{Important function}
   
   \begin{block}{Incompatibility of effect estimates}
   
@@ -870,6 +856,8 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
         \item \texttt{seo}
         \item \texttt{ser}
       \end{itemize}
+      
+    \item[] Returns \texttt{p\_Q}, the $p$-value from the Q-test
   \end{itemize}
   
   \end{block}
@@ -883,7 +871,6 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
       $\hat\theta_r = \Sexpr{round(study$fisr, 2)}$
       \item Standard errors: $\sigma_o = \Sexpr{round(study$se_fiso, 2)}$, 
       $\sigma_r = \Sexpr{round(study$se_fisr, 2)}$
-      \item $p$-values: $p_o =$ \Sexpr{round(study$po1, 3)}, $p_r =$ \Sexpr{round(study$pr1, 3)}
     \end{itemize}
     
 <<>>=
@@ -891,7 +878,10 @@ Qtest(thetao = 0.4, thetar = 0.15,
       seo = 0.17, ser = 0.06)
 @
     
-    
+
+\pause 
+
+{\color{darkred} No evidence for incompatibility at level $\alpha = 5$\%}
 
   \end{block}
   
@@ -1753,7 +1743,7 @@ axis(3, at = alphaU_g, labels = formatPval(alphaU_g),
      las = 2)
 
 legend("topleft", 
-       c("c = 10", "c = 5", "c = 2", "c = 1", "c = 0.5", "c = 0.2"), 
+       c("c = 10", "c = 5", "c = 2", "c = 1", "c = 0.5"), 
        col = rev(col.seq), 
        lty = 1, 
        bty = "n")
@@ -2027,6 +2017,178 @@ plot(c_plot + addon, alphaU_plot, type="l", lwd=1.5, xlab=bquote(paste("Relative
    \end{center}
   % \end{block}
 \end{frame}
+
+% - 
+
+\begin{frame}{Important function}
+  
+  \begin{block}{Sceptical $p$-value}
+  
+  \begin{itemize}
+    \item[] Function: \texttt{pSceptical}
+    \item[] Arguments (\texttt{default})
+      \begin{itemize}
+        \item \texttt{zo}
+        \item \texttt{zr}
+        \item \texttt{c}
+        \item \texttt{alternative ("one.sided")}
+        \item \texttt{type ("golden")}
+      \end{itemize}
+  \end{itemize}
+  
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Example from \citet{Pyc2010}}
+  \begin{block}{}
+    \begin{itemize}
+  \item $z_o = \Sexpr{round(study$fiso/study$se_fiso, 2)} \longleftrightarrow p_o = \Sexpr{formatPval(study$po)}$
+    \item $z_r = \Sexpr{round(study$fisr/study$se_fisr, 2)} \longleftrightarrow p_r = \Sexpr{formatPval(study$pr)}$
+    \item $c = \Sexpr{round(study$c, 2)}$
+    \end{itemize}
+    
+<<>>=
+pSceptical(zo = 2.27, zr = 2.63, c = 9.2, alternative = "one.sided", 
+           type = c("golden", "controlled"))
+@
+    
+
+\pause 
+
+{\color{darkred} Replication success with the controlled $p_S$ 
+but not with the golden $p_S$ at level $\alpha = 0.025$}
+
+  \end{block}
+  
+\end{frame}
+% - 
+
+\begin{frame}{Important function}
+  
+  \begin{block}{Sceptical confidence interval}
+  
+  \begin{itemize}
+    \item[] Function: \texttt{scepticalCI}
+    \item[] Arguments (\texttt{default})
+      \begin{itemize}
+        \item \texttt{thetao}
+        \item \texttt{thetar}
+        \item \texttt{seo}
+        \item \texttt{ser}
+        \item \texttt{levelCI (0.95)}
+      \end{itemize}
+      
+    \item[] Returns a confidence \emph{interval} or a confidence \emph{set}
+  \end{itemize}
+  
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Example from \citet{Pyc2010}}
+  \begin{block}{}
+    \begin{itemize}
+      \item Effect estimates: $\hat\theta_o = \Sexpr{round(study$fiso, 2)}$, 
+      $\hat\theta_r = \Sexpr{round(study$fisr, 2)}$
+      \item Standard errors: $\sigma_o = \Sexpr{round(study$se_fiso, 2)}$, 
+      $\sigma_r = \Sexpr{round(study$se_fisr, 2)}$
+    \end{itemize}
+    
+<<>>=
+scepticalCI(thetao = 0.4, thetar = 0.15, 
+            seo = 0.17, ser = 0.06, 
+            levelCI = 0.95)$CI
+@
+    
+
+\pause 
+
+{\color{darkred} Sceptical confidence \emph{interval}}
+
+  \end{block}
+  
+\end{frame}
+% - 
+
+
+\begin{frame}[fragile]{Example from \citet{Storm2008}}
+
+<<echo = FALSE>>=
+study2 <- RProjects[4, ]
+@
+
+  \begin{block}{}
+    \begin{itemize}
+      \item Effect estimates: $\hat\theta_o = \Sexpr{round(study2$fiso, 2)}$, 
+      $\hat\theta_r = \Sexpr{round(study2$fisr, 2)}$
+      \item Standard errors: $\sigma_o = \Sexpr{round(study2$se_fiso, 2)}$, 
+      $\sigma_r = \Sexpr{round(study2$se_fisr, 2)}$
+    \end{itemize}
+    
+<<>>=
+scepticalCI(thetao = 0.23, thetar = -0.01, 
+            seo = 0.07, ser = 0.06, 
+            levelCI = 0.95)$CI
+@
+    
+
+\pause 
+
+{\color{darkred} Sceptical confidence \emph{set}}
+
+  \end{block}
+  
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}{Important function}
+  
+  \begin{block}{p-value function}
+  
+  \begin{itemize}
+    \item[] Function: \texttt{pValFunPlot}
+    \item[] Arguments (\texttt{default})
+      \begin{itemize}
+        \item \texttt{thetao}
+        \item \texttt{thetar}
+        \item \texttt{seo}
+        \item \texttt{ser}
+        \item \texttt{levelCI (0.95)}
+      \end{itemize}
+      
+    \item[] Plots the $p$-value function
+  \end{itemize}
+  
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Example from \citet{Pyc2010}}
+  \begin{block}{}
+    \begin{itemize}
+      \item Effect estimates: $\hat\theta_o = \Sexpr{round(study$fiso, 2)}$, 
+      $\hat\theta_r = \Sexpr{round(study$fisr, 2)}$
+      \item Standard errors: $\sigma_o = \Sexpr{round(study$se_fiso, 2)}$, 
+      $\sigma_r = \Sexpr{round(study$se_fisr, 2)}$
+    \end{itemize}
+    
+<<fig.height = 4>>=
+pValFunPlot(thetao = 0.4, thetar = 0.15, 
+            seo = 0.17, ser = 0.06, 
+            levelCI = 0.95)
+@
+
+
+  \end{block}
+  
+\end{frame}
+
 
 
 
@@ -2993,7 +3155,7 @@ We decide to use the same sample size as in the original study ($c = 1$).
 \end{itemize}
   \end{block}
   \begin{block}
-    {\color{darkred} Useful function: \texttt{powerSignificance(..., designPrior = c("conditional", "predictive))}}
+    {\color{darkred} Useful function: \texttt{powerSignificance(..., designPrior = c("conditional", "predictive"))}}
   \end{block}
 <<echo = FALSE, eval = F>>=
 
@@ -3015,7 +3177,7 @@ lines(pval.or, pow.pred, col = "blue")
   \end{block}
   
     \begin{block}
-    {\color{darkred} Useful function: \texttt{sampleSizeSignificance(..., designPrior = c("conditional", "predictive))}}
+    {\color{darkred} Useful function: \texttt{sampleSizeSignificance(..., designPrior = c("conditional", "predictive"))}}
   \end{block}
   
 \end{frame}
@@ -3646,7 +3808,7 @@ axis(2, las = 1, at = c(0.01, 0.1, 1, 10, 50), labels = c("1/100", "1/10", "1", 
 
 % ============================================================================
 \nocite{Pyc2010, open2015, Camerer2016, Camerer2018, Cova2018, Pawel2020, 
-Held2020, HeldMichPaw2021, MicheloudHeld2021, Errington2021}
+Held2020, HeldMichPaw2021, MicheloudHeld2022, Errington2021}
 \begin{frame}[allowframebreaks]{References}
   \tiny
   \bibliographystyle{apalike}
