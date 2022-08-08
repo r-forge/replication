@@ -842,6 +842,62 @@ RProjects$c <- RProjects$se_fiso^2/RProjects$se_fisr^2
   % \end{block}
 \end{frame}
 
+
+\begin{frame}{Important functions}
+
+  \begin{block}{Two-trials rule}
+   \begin{itemize}
+    \item[] Function: \texttt{z2p}
+    \item[] Arguments
+      \begin{itemize}
+        \item \texttt{z}
+        \item \texttt{alternative ("one.sided")}
+      \end{itemize}
+  \end{itemize}
+  
+  \end{block}
+  
+  \pause
+  
+  \begin{block}{Incompatibility of effect estimates}
+  
+  \begin{itemize}
+    \item[] Function: \texttt{Qtest}
+    \item[] Arguments
+      \begin{itemize}
+        \item \texttt{thetao}
+        \item \texttt{thetar}
+        \item \texttt{seo}
+        \item \texttt{ser}
+      \end{itemize}
+  \end{itemize}
+  
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Example from \citet{Pyc2010}}
+  \begin{block}{}
+    \begin{itemize}
+      \item Effect estimates: $\hat\theta_o = \Sexpr{round(study$fiso, 2)}$, 
+      $\hat\theta_r = \Sexpr{round(study$fisr, 2)}$
+      \item Standard errors: $\sigma_o = \Sexpr{round(study$se_fiso, 2)}$, 
+      $\sigma_r = \Sexpr{round(study$se_fisr, 2)}$
+      \item $p$-values: $p_o =$ \Sexpr{round(study$po1, 3)}, $p_r =$ \Sexpr{round(study$pr1, 3)}
+    \end{itemize}
+    
+<<>>=
+Qtest(thetao = 0.4, thetar = 0.15, 
+      seo = 0.17, ser = 0.06)
+@
+    
+    
+
+  \end{block}
+  
+\end{frame}
+
+
 \begin{frame}[fragile]{Exercises}
 \framesubtitle{(Solutions: {\scriptsize \url{https://gitlab.uzh.ch/charlotte.micheloud/replicationstudies}})}
 \begin{block}{}
@@ -1408,7 +1464,7 @@ ggplot(data = plot_df, aes(x = Study, y = z)) +
 
 \begin{frame}{}
 \begin{center}
-  \color{uzh@blue}{\Huge \textbf{When is a replication successul?}} \\[1cm]
+  \color{uzh@blue}{\Huge \textbf{When is a replication successful?}} \\[1cm]
   \color{uzh@blue}{\Large Newly developed method}
    \end{center}
 \end{frame}
